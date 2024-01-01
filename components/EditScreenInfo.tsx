@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, TextInput } from 'react-native';
 
 import Colors from '../constants/Colors';
 import { ExternalLink } from './ExternalLink';
@@ -8,15 +8,22 @@ import { Text, View } from './Themed';
 
 
 export default function EditScreenInfo({ path }: { path: string }) {
+  const [idText, onChangeIdText] = useState('아이디');
+  const [pwText, onChangePwText] = useState('패스워드');
+
   return (
     <View>
       <View style={styles.getStartedContainer}>
-        <Text
-          style={styles.getStartedText}
-          lightColor="rgba(0,0,0,0.8)"
-          darkColor="rgba(255,255,255,0.8)">
-          Open up the code for this screen:
-        </Text>
+        <TextInput
+          style={styles.commonTextInput}
+          onChangeText={onChangeIdText}
+          value={idText}
+        />
+        <TextInput
+          style={styles.commonTextInput}
+          onChangeText={onChangePwText}
+          value={pwText}
+        />
 
         <View
           style={[styles.codeHighlightContainer, styles.homeScreenFilename]}
@@ -57,6 +64,14 @@ const styles = StyleSheet.create({
   codeHighlightContainer: {
     borderRadius: 3,
     paddingHorizontal: 4,
+  },
+  commonTextInput: {
+    marginTop: 5,
+    width: 200,
+    height: 30,
+    padding: 5,
+    borderWidth: 1,
+    borderColor: '#000',
   },
   getStartedText: {
     fontSize: 17,
