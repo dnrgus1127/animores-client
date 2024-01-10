@@ -3,6 +3,7 @@ import { StyleSheet, TextInput } from 'react-native';
 
 import EditScreenInfo from '../../components/EditScreenInfo';
 import { Text, View } from '../../components/Themed';
+import Join from '../(auth)/join';
 
 export default function TabTwoScreen() {
   const [idText, onChangeIdText] = useState('아이디');
@@ -10,22 +11,7 @@ export default function TabTwoScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>회원가입</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <View>
-        <View style={styles.getStartedContainer}>
-          <TextInput
-            style={styles.commonTextInput}
-            onChangeText={onChangeIdText}
-            value={idText}
-          />
-          <TextInput
-            style={styles.commonTextInput}
-            onChangeText={onChangePwText}
-            value={pwText}
-          />
-        </View>
-      </View>
+      <Join />
     </View>
   );
 }
@@ -33,7 +19,6 @@ export default function TabTwoScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
     justifyContent: 'center',
   },
   title: {
