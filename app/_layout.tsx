@@ -5,8 +5,6 @@ import { SplashScreen, Stack } from 'expo-router';
 import { useEffect } from 'react';
 import { useColorScheme } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
-import Join from './(auth)/join';
-import Login from './(auth)/login';
 
 const StackNavigator = createStackNavigator();
 
@@ -17,7 +15,7 @@ export {
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)',
+  initialRouteName: 'member',
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -52,14 +50,9 @@ function RootLayoutNav() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      {/* <NavigationContainer>
-        <StackNavigator.Navigator initialRouteName="로그인">
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        </StackNavigator.Navigator>
-      </NavigationContainer> */}
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        {/* <Stack.Screen name="member" options={{ headerShown: true }} /> */}
         <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
       </Stack>
     </ThemeProvider>

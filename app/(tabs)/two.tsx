@@ -3,15 +3,13 @@ import { StyleSheet, TextInput } from 'react-native';
 
 import EditScreenInfo from '../../components/EditScreenInfo';
 import { Text, View } from '../../components/Themed';
-import Join from '../(auth)/join';
+import MemberHome from '../member';
 
 export default function TabTwoScreen() {
-  const [idText, onChangeIdText] = useState('아이디');
-  const [pwText, onChangePwText] = useState('패스워드');
 
   return (
     <View style={styles.container}>
-      <Join />
+      <MemberHome />
     </View>
   );
 }

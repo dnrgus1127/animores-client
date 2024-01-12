@@ -13,8 +13,6 @@ import Colors from '../../constants/Colors';
 import EditScreenInfo from '../../components/EditScreenInfo';
 import { Text, View } from '../../components/Themed';
 import { Link, Tabs } from 'expo-router';
-import Join from '../(auth)/join';
-import Login from '../(auth)/login';
 
 export default function TabOneScreen() {
   const colorScheme = useColorScheme();
@@ -23,7 +21,7 @@ export default function TabOneScreen() {
 
   return (
     <View style={styles.container}>
-      <Login />
+      <Link href={{ pathname: 'login'} as never}>로그인</Link>
     </View>
   );
 }
@@ -32,6 +30,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
+    alignItems: 'center',
   },
   top: {
     flex: 0.3,

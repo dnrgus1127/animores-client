@@ -18,30 +18,26 @@ export default function Join() {
   return (
     <View style={styles.container}>
       <View style={styles.top}>
-        <Title style={styles.title}>회원가입</Title>
+        <TextInput
+          style={styles.commonTextInput}
+          onChangeText={onChangeIdText}
+          value={idText}
+        />
+        <TextInput
+          style={styles.commonTextInput}
+          onChangeText={onChangePwText}
+          value={pwText}
+        />
+        <Button mode="contained" onPress={() => console.log('Pressed')}>
+          회원가입
+        </Button>
       </View>
       <View style={styles.middle}>
         <Text>회원가입 페이지</Text>
-        <View style={styles.getStartedContainer}>
-          <TextInput
-            style={styles.commonTextInput}
-            onChangeText={onChangeIdText}
-            value={idText}
-          />
-          <TextInput
-            style={styles.commonTextInput}
-            onChangeText={onChangePwText}
-            value={pwText}
-          />
-        </View>
       </View>
       <View style={styles.bottom}>
 
       </View>
-
-      {/* <Button mode="contained" onPress={() => navigation.navigate('로그인')}>
-        로그인
-      </Button> */}
 
     </View>
   );
