@@ -1,2 +1,0 @@
-# animores-client
-animores-client
