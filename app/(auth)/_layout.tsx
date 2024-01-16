@@ -1,9 +1,9 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Link, Tabs } from 'expo-router';
-import { Text, View } from '../../components/Themed';
-import { StyleSheet, TextInput, Pressable, useColorScheme } from 'react-native';
-
+import React, { useEffect } from 'react';
+import { Link, Stack } from 'expo-router';
+import { StyleSheet, Text, View, Pressable, useColorScheme } from 'react-native';
 import Colors from '../../constants/Colors';
+import Login from './login';
 
 /**
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
@@ -19,28 +19,10 @@ export default function TabLayout() {
   const colorScheme = useColorScheme();
 
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-      }}
-    >
-      <Tabs.Screen
-        name="index"
+    <View style={styles.container}>
+      <Stack.Screen 
         options={{
-          title: '홈',
-          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
-          header: () => (
-            <View style={styles.separator}>
-              <Text style={styles.title}>홈</Text>
-            </View>
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="two"
-        options={{
-          title: '모든할일',
-          tabBarIcon: ({ color }) => <TabBarIcon name="list-alt" color={color} />,
+          title: "로그인",
           header: () => (
             <View style={styles.separator}>
               <Link style={styles.topLink} href="/" asChild>
@@ -55,16 +37,23 @@ export default function TabLayout() {
                   )}
                 </Pressable>
               </Link>
-              <Text style={styles.title}>모든할일</Text>
+              <Text style={styles.title}>로그인</Text>
             </View>
           ),
         }}
       />
-    </Tabs>
+      <Login />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'space-between',
+    backgroundColor: '#fff',
+    padding: 20,
+  },
   separator: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -83,4 +72,3 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   }
 });
-

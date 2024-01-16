@@ -3,29 +3,13 @@ import { StyleSheet, TextInput } from 'react-native';
 
 import EditScreenInfo from '../../components/EditScreenInfo';
 import { Text, View } from '../../components/Themed';
+import MemberHome from '../member';
 
 export default function TabTwoScreen() {
-  const [idText, onChangeIdText] = useState('아이디');
-  const [pwText, onChangePwText] = useState('패스워드');
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>회원가입</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <View>
-        <View style={styles.getStartedContainer}>
-          <TextInput
-            style={styles.commonTextInput}
-            onChangeText={onChangeIdText}
-            value={idText}
-          />
-          <TextInput
-            style={styles.commonTextInput}
-            onChangeText={onChangePwText}
-            value={pwText}
-          />
-        </View>
-      </View>
+      <MemberHome />
     </View>
   );
 }
@@ -33,7 +17,6 @@ export default function TabTwoScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
     justifyContent: 'center',
   },
   title: {

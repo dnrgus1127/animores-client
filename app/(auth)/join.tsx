@@ -1,27 +1,44 @@
 import React, { useState } from 'react';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { StyleSheet, TextInput, Pressable, useColorScheme } from 'react-native';
+import { View, Platform, TextInput } from 'react-native';
+import { Link } from 'expo-router';
 import {
   Card,
   Title,
   Paragraph,
   Button,
+  Text,
   PaperProvider,
 } from 'react-native-paper';
-import Colors from '../../constants/Colors';
+import { StyleSheet } from 'react-native';
 
-import EditScreenInfo from '../../components/EditScreenInfo';
-import { Text, View } from '../../components/Themed';
-import { Link, Tabs } from 'expo-router';
-
-export default function TabOneScreen() {
-  const colorScheme = useColorScheme();
+export default function Join() {
   const [idText, onChangeIdText] = useState('아이디');
   const [pwText, onChangePwText] = useState('패스워드');
 
   return (
     <View style={styles.container}>
-      <Link href={{ pathname: 'login'} as never}>로그인</Link>
+      <View style={styles.top}>
+        <TextInput
+          style={styles.commonTextInput}
+          onChangeText={onChangeIdText}
+          value={idText}
+        />
+        <TextInput
+          style={styles.commonTextInput}
+          onChangeText={onChangePwText}
+          value={pwText}
+        />
+        <Button mode="contained" onPress={() => console.log('Pressed')}>
+          회원가입
+        </Button>
+      </View>
+      <View style={styles.middle}>
+        <Text>회원가입 페이지</Text>
+      </View>
+      <View style={styles.bottom}>
+
+      </View>
+
     </View>
   );
 }
@@ -29,8 +46,10 @@ export default function TabOneScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#fff',
+    padding: 20,
+    margin: 10,
   },
   top: {
     flex: 0.3,
@@ -50,6 +69,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   title: {
+    textAlign: 'center',
     fontSize: 20,
     fontWeight: 'bold',
   },
@@ -58,9 +78,18 @@ const styles = StyleSheet.create({
     height: 1,
     width: '80%',
   },
-  getStartedContainer: {
-    alignItems: 'center',
+  innerContainer: {
+    width: '90%',
     marginHorizontal: 50,
+    borderRadius: 0,
+    ...Platform.select({
+      ios: {
+        shadowOpacity: 0,
+      },
+      android: {
+        elevation: 0,
+      }
+    })
   },
   homeScreenFilename: {
     marginVertical: 7,
@@ -76,6 +105,10 @@ const styles = StyleSheet.create({
     padding: 5,
     borderWidth: 1,
     borderColor: '#000',
+  },
+  getStartedContainer: {
+    alignItems: 'center',
+    marginHorizontal: 50,
   },
   getStartedText: {
     fontSize: 17,
