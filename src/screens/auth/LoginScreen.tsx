@@ -1,18 +1,16 @@
 import React, { useState } from 'react';
-import { View, Text, Platform, TextInput, StyleSheet, Pressable, Image } from "react-native";
-//import { IconCheck } from '../../assets/icons';
-//import CheckIcon from '../../assets/icon.png'
-
-let CheckIco = require('../../assets/icons/check.svg');
+import { View, Text, Platform, TextInput, StyleSheet, Pressable } from "react-native";
+import TestSvg from '../../assets/icons/check.svg'
 
 // navigate pages
 import JoinScreen from "./JoinScreen";
 
 interface InputProps {
   placeholder?: string;
+  secureTextEntry?: boolean;
 }
 export const BasicInput = (props:InputProps) => {
-  const { placeholder } = props;
+  const { placeholder, secureTextEntry } = props;
   const [value, setValue] = useState('');
 
   const onChangeText = (inputText:string) => {
@@ -25,6 +23,7 @@ export const BasicInput = (props:InputProps) => {
       onChangeText={onChangeText}
       value={value}
       placeholder={placeholder ? placeholder : ''}
+      secureTextEntry={secureTextEntry}
     />
   )
 }
@@ -61,9 +60,7 @@ export const BasicCheckbox = (props: CheckboxProps) => {
         ]}
       >
         {isChecked && (
-          // <IconCheck style={{ color: disabled ? '#333' : '#ff0000' }} />
-          // <Image source={CheckIco} />
-          <Text style={{ color: '#fff' }}>V</Text>
+          <TestSvg style={styles.checkboxIcon} />
         )}
       </View>
       
@@ -87,7 +84,7 @@ const LoginScreen = () => {
       <View style={styles.top}>
         <View style={styles.getStartedContainer}>
           <BasicInput placeholder='이메일' />
-          <BasicInput placeholder='비밀번호' />
+          <BasicInput placeholder='비밀번호' secureTextEntry={true} />
         </View>
         <BasicCheckbox 
           isChecked={isChecked}
@@ -209,6 +206,12 @@ const styles = StyleSheet.create({
   },
   disabled: {
     backgroundColor: '#DBDBDB',
+  },
+  checkboxIcon: {
+    width: 14,
+    height: 10,
+    marginTop: 1,
+    marginLeft: 6,
   },
   label: {
     color: '#AEAEAE',
