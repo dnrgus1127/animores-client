@@ -12,7 +12,7 @@ const HomeScreen = ({ navigation }: any) => {
       <Text>
         홈
       </Text>
-      <Pressable onPress={() => navigation.navigate('로그인')}>
+      <Pressable onPress={() => navigation.navigate('Login')}>
         <Text>로그인</Text>
       </Pressable>
     </View>
