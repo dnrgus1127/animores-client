@@ -28,6 +28,7 @@ const Tabs = () => {
         name="Home" 
         component={HomeScreen} 
         options={{ 
+          title: "홈",
           tabBarLabel: "홈",
           tabBarIcon: () => (
             <Text>🏠</Text>
@@ -38,6 +39,7 @@ const Tabs = () => {
         name="AllTodo" 
         component={AllTodoScreen} 
         options={{ 
+          title: "모든할일",
           tabBarLabel: "모든할일",
           tabBarIcon: () => (
             <Text>📜</Text>
