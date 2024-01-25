@@ -24,8 +24,26 @@ export default RootLayout;
 const Tabs = () => {
   return (
     <Tab.Navigator>
-      <Tab.Screen name="홈" component={HomeScreen} />
-      <Tab.Screen name="모든할일" component={AllTodoScreen} />
+      <Tab.Screen 
+        name="Home" 
+        component={HomeScreen} 
+        options={{ 
+          tabBarLabel: "홈",
+          tabBarIcon: () => (
+            <Text>🏠</Text>
+          )
+        }} 
+      />
+      <Tab.Screen 
+        name="AllTodo" 
+        component={AllTodoScreen} 
+        options={{ 
+          tabBarLabel: "모든할일",
+          tabBarIcon: () => (
+            <Text>📜</Text>
+          )
+        }} 
+      />
     </Tab.Navigator>
   )
 }
@@ -36,10 +54,10 @@ const App = () => {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <NavigationContainer>
-          <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="홈">
+          <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Home">
             <Stack.Screen name="Tabs" component={Tabs} options={{ title: 'Tabs' }} />
-            <Stack.Screen name="로그인" component={LoginScreen} options={{ title: '로그인' }} />
-            <Stack.Screen name="회원가입" component={JoinScreen} options={{ title: '회원가입' }} />
+            <Stack.Screen name="Login" component={LoginScreen} options={{ title: '로그인' }} />
+            <Stack.Screen name="Join" component={JoinScreen} options={{ title: '회원가입' }} />
           </Stack.Navigator>
         </NavigationContainer>
       </SafeAreaProvider>
