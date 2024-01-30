@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, Platform, TextInput, StyleSheet, Pressable } from "react-native";
-import TestSvg from '../../assets/icons/check.svg'
+import { View, Text, TextInput, StyleSheet, Pressable, Image } from "react-native";
+import { IconCheck, IconSnsApple, IconSnsFacebook, IconSnsKakao, IconSnsNaver } from '../../assets/icons';
 
 // navigate pages
 import JoinScreen from "./JoinScreen";
@@ -60,13 +60,13 @@ export const BasicCheckbox = (props: CheckboxProps) => {
         ]}
       >
         {isChecked && (
-          <TestSvg style={styles.checkboxIcon} />
+          <IconCheck style={styles.checkboxIcon} />
         )}
       </View>
       
       {label && (
         <Text style={[
-          styles.label,
+          styles.autoLoginLabel,
           isChecked && styles.checkedLabel,
         ]}>
           {label}
@@ -82,7 +82,7 @@ const LoginScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.top}>
-        <View style={styles.getStartedContainer}>
+        <View style={styles.loginInputWrap}>
           <BasicInput placeholder='이메일' />
           <BasicInput placeholder='비밀번호' secureTextEntry={true} />
         </View>
@@ -101,66 +101,60 @@ const LoginScreen = () => {
 
       <View style={styles.middle}>
         <View style={styles.commonRowContainer}>
-          <View style={{flex: 1, height: 1, backgroundColor: '#AEAEAE'}} />
+          <View style={styles.separator} />
           <View>
             <Text style={{textAlign: 'center', paddingHorizontal:8, color: '#AEAEAE' }}>SNS 간편 로그인</Text>
           </View>
-          <View style={{flex: 1, height: 1, backgroundColor: '#AEAEAE'}} />
+          <View style={styles.separator} />
         </View>
         <View style={styles.commonRowContainer}>
-          {/* <IconButton
-            icon="facebook"
-            iconColor="#fff"
-            size={20}
-            onPress={() => console.log('Pressed')}
-            style={styles.snsButton}
-          />
-          <IconButton
-            icon="apple"
-            iconColor="#fff"
-            size={20}
-            onPress={() => console.log('Pressed')}
-            style={styles.snsButton}
-          />
-          <IconButton
-            icon="facebook"
-            iconColor="#fff"
-            size={20}
-            onPress={() => console.log('Pressed')}
-            style={styles.snsButton}
-          />
-          <IconButton
-            icon="apple"
-            iconColor="#fff"
-            size={20}
-            onPress={() => console.log('Pressed')}
-            style={styles.snsButton}
-          /> */}
+          <View style={{marginTop: 20, flexDirection: 'row', justifyContent: 'space-around', width: '70%'}}>
+            <Pressable
+              onPress={() => console.log('apple Pressed')}
+            >
+              <Image source={IconSnsApple} alt="icon sns apple" />
+            </Pressable>
+            <Pressable
+              onPress={() => console.log('facebook Pressed')}
+            >
+              <Image source={IconSnsFacebook} alt="icon sns facebook" />
+            </Pressable>
+            <Pressable
+              onPress={() => console.log('kakao Pressed')}
+            >
+              <Image source={IconSnsKakao} alt="icon sns kakao" />
+            </Pressable>
+            <Pressable
+              onPress={() => console.log('naver Pressed')}
+            >
+              <Image source={IconSnsNaver} alt="icon sns naver" />
+            </Pressable>
+          </View>
         </View>
       </View>
       <View style={styles.bottom}>
         <View style={styles.commonRowContainer}>
-          {/* <Button 
-            mode='text'
-            onPress={() => console.log('Pressed')}
-            textColor='#AEAEAE'
+          <Pressable
+            onPress={() => console.log('아이디찾기')}
           >
-            아이디 찾기
-          </Button>
-          <View style={{ borderLeftWidth: 1, borderLeftColor: '#AEAEAE', height: 15 }}></View>
-          <Button 
-            mode='text'
-            onPress={() => router.replace('join')}
-            textColor='#AEAEAE'
+            <Text
+              style={{color: '#AEAEAE'}}
+            >아이디찾기</Text>
+          </Pressable>
+          <View style={styles.verticalBar}></View>
+          <Pressable
+            onPress={() => console.log('비밀번호 찾기')}
           >
-            비밀번호 찾기
-          </Button>
-          <View style={{ borderLeftWidth: 1, borderLeftColor: '#AEAEAE', height: 15 }}></View>
-          <Link 
-            href={{ pathname: 'join'}}
+            <Text
+              style={{color: '#AEAEAE'}}
+            >비밀번호 찾기</Text>
+          </Pressable>
+          <View style={styles.verticalBar}></View>
+          <Pressable
+            onPress={() => console.log('회원가입')}
           >
-            회원가입
-          </Link> */}
+            <Text>회원가입</Text>
+          </Pressable>
         </View>
       </View>
     </View>
@@ -183,8 +177,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   top: {
-    paddingTop: 40,
+    flex: 0.55,
+    paddingTop: 20,
     //backgroundColor: 'yellow',
+  },
+  loginInputWrap: {
+    alignItems: 'center',
+    marginHorizontal: 50,
+  },
+  commonTextInput: {
+    marginTop: 8,
+    width: 370,
+    height: 58,
+    padding: 10,
+    backgroundColor: '#F4F4F4',
+    borderRadius: 15,
   },
   checkboxWrap: {
     flexDirection: 'row',
@@ -213,18 +220,11 @@ const styles = StyleSheet.create({
     marginTop: 1,
     marginLeft: 6,
   },
-  label: {
+  autoLoginLabel: {
     color: '#AEAEAE',
   },
   checkedLabel: {
     color: '#000',
-  },
-  autoLoginCheck: {
-    paddingStart: 0,
-    marginStart: 0,
-  },
-  autoLoginLabel: {
-    textAlign: 'left',
   },
   loginButton: {
     marginTop: 15,
@@ -239,49 +239,26 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   middle: {
+    flex: 0.25,
     //backgroundColor: 'beige',
   },
   bottom: {
-    //flex: 0.25,
+    flex: 0.2,
+    paddingTop: 50,
     //backgroundColor: 'pink',
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
   },
   separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
+    flex: 1, 
+    height: 1, 
+    backgroundColor: '#AEAEAE',
   },
-  snsButton: {
-    backgroundColor: '#B7B7B7',
-    padding: 0,
-  },
-  innerContainer: {
-    width: '100%',
-    marginHorizontal: 50,
-    borderRadius: 0,
-    ...Platform.select({
-      ios: {
-        shadowOpacity: 0,
-      },
-      android: {
-        elevation: 0,
-      }
-    })
-  },
-  homeScreenFilename: {
-    marginVertical: 7,
-  },
-  commonTextInput: {
-    marginTop: 5,
-    width: 370,
-    height: 58,
-    padding: 10,
-    backgroundColor: '#F4F4F4',
-    borderRadius: 15,
-  },
-  getStartedContainer: {
-    alignItems: 'center',
-    marginHorizontal: 50,
+  verticalBar: {
+    borderLeftWidth: 1, 
+    borderLeftColor: '#AEAEAE', 
+    height: 15, 
+    marginLeft: 8, 
+    marginRight: 8,
   },
 });
