@@ -1,86 +1,16 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, Pressable, Image } from "react-native";
 import { IconCheck, IconSnsApple, IconSnsFacebook, IconSnsKakao, IconSnsNaver } from '../../assets/icons';
-
-// navigate pages
-import JoinScreen from "./JoinScreen";
-
-interface InputProps {
-  placeholder?: string;
-  secureTextEntry?: boolean;
-}
-export const BasicInput = (props:InputProps) => {
-  const { placeholder, secureTextEntry } = props;
-  const [value, setValue] = useState('');
-
-  const onChangeText = (inputText:string) => {
-    setValue(inputText)
-  }
-
-  return (
-    <TextInput
-      style={styles.commonTextInput}
-      onChangeText={onChangeText}
-      value={value}
-      placeholder={placeholder ? placeholder : ''}
-      secureTextEntry={secureTextEntry}
-    />
-  )
-}
+import { commonStyles } from '../../styles/commonStyles';
+import BasicInput from '../../components/BasicInput';
+import BasicCheckbox from '../../components/BasicCheckbox';
 
 
-interface CheckboxProps {
-  isChecked: boolean;
-  disabled?: boolean;
-  onValueChangeHandler?: (checked: boolean) => void;
-  label?: React.ReactNode;
-  style?: StyleSheet;
-}
-
-export const BasicCheckbox = (props: CheckboxProps) => {
-  const { isChecked, disabled, onValueChangeHandler, label } = props;
-
-  const onPressHandeler = () => {
-    if (onValueChangeHandler) {
-      onValueChangeHandler(!isChecked);
-    }
-  }
-
-  return (
-    <Pressable 
-      style={styles.checkboxWrap}
-      disabled={disabled}
-      onPress={onPressHandeler}
-    >
-      <View
-        style={[
-          styles.basicCheckbox,
-          isChecked && styles.checked,
-          disabled && styles.disabled,
-        ]}
-      >
-        {isChecked && (
-          <IconCheck style={styles.checkboxIcon} />
-        )}
-      </View>
-      
-      {label && (
-        <Text style={[
-          styles.autoLoginLabel,
-          isChecked && styles.checkedLabel,
-        ]}>
-          {label}
-        </Text>
-      )}
-    </Pressable>
-  )
-}
-
-const LoginScreen = () => {
+const LoginScreen = ({ navigation }: any) => {
   const [isChecked, setChecked] = useState(false)
 
   return (
-    <View style={styles.container}>
+    <View style={commonStyles.container}>
       <View style={styles.top}>
         <View style={styles.loginInputWrap}>
           <BasicInput placeholder='이메일' />
@@ -100,14 +30,14 @@ const LoginScreen = () => {
       </View>
 
       <View style={styles.middle}>
-        <View style={styles.commonRowContainer}>
-          <View style={styles.separator} />
+        <View style={commonStyles.commonRowContainer}>
+          <View style={commonStyles.separator} />
           <View>
             <Text style={{textAlign: 'center', paddingHorizontal:8, color: '#AEAEAE' }}>SNS 간편 로그인</Text>
           </View>
-          <View style={styles.separator} />
+          <View style={commonStyles.separator} />
         </View>
-        <View style={styles.commonRowContainer}>
+        <View style={commonStyles.commonRowContainer}>
           <View style={{marginTop: 20, flexDirection: 'row', justifyContent: 'space-around', width: '70%'}}>
             <Pressable
               onPress={() => console.log('apple Pressed')}
@@ -133,7 +63,7 @@ const LoginScreen = () => {
         </View>
       </View>
       <View style={styles.bottom}>
-        <View style={styles.commonRowContainer}>
+        <View style={commonStyles.commonRowContainer}>
           <Pressable
             onPress={() => console.log('아이디찾기')}
           >
@@ -141,7 +71,7 @@ const LoginScreen = () => {
               style={{color: '#AEAEAE'}}
             >아이디찾기</Text>
           </Pressable>
-          <View style={styles.verticalBar}></View>
+          <View style={commonStyles.verticalBar}></View>
           <Pressable
             onPress={() => console.log('비밀번호 찾기')}
           >
@@ -149,9 +79,9 @@ const LoginScreen = () => {
               style={{color: '#AEAEAE'}}
             >비밀번호 찾기</Text>
           </Pressable>
-          <View style={styles.verticalBar}></View>
+          <View style={commonStyles.verticalBar}></View>
           <Pressable
-            onPress={() => console.log('회원가입')}
+            onPress={() => navigation.navigate('Join')}
           >
             <Text>회원가입</Text>
           </Pressable>
@@ -165,17 +95,6 @@ export default LoginScreen
 
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'space-between',
-    backgroundColor: '#fff',
-    padding: 20,
-  },
-  commonRowContainer: {
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    justifyContent: 'center',
-  },
   top: {
     flex: 0.55,
     paddingTop: 20,
@@ -185,40 +104,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 50,
   },
-  commonTextInput: {
-    marginTop: 8,
-    width: 370,
-    height: 58,
-    padding: 10,
-    backgroundColor: '#F4F4F4',
-    borderRadius: 15,
-  },
   checkboxWrap: {
     flexDirection: 'row',
     marginTop: 15,
-  },
-  basicCheckbox: {
-    borderColor: '#DBDBDB',
-    borderWidth: 1,
-    borderRadius: 10,
-    backgroundColor: '#fff',
-    width: 20,
-    height: 20,
-    marginRight: 5,
-    alignItems: 'center',
-  },
-  checked: {
-    borderColor: '#FB3F7E',
-    backgroundColor: '#FB3F7E',
-  },
-  disabled: {
-    backgroundColor: '#DBDBDB',
-  },
-  checkboxIcon: {
-    width: 14,
-    height: 10,
-    marginTop: 1,
-    marginLeft: 6,
   },
   autoLoginLabel: {
     color: '#AEAEAE',
@@ -248,17 +136,5 @@ const styles = StyleSheet.create({
     //backgroundColor: 'pink',
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
-  },
-  separator: {
-    flex: 1, 
-    height: 1, 
-    backgroundColor: '#AEAEAE',
-  },
-  verticalBar: {
-    borderLeftWidth: 1, 
-    borderLeftColor: '#AEAEAE', 
-    height: 15, 
-    marginLeft: 8, 
-    marginRight: 8,
   },
 });
