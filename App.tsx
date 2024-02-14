@@ -11,6 +11,7 @@ import HomeScreen from "./src/screens/home/HomeScreen";
 import AllTodoScreen from "./src/screens/todo";
 import LoginScreen from "./src/screens/auth/LoginScreen";
 import JoinScreen from "./src/screens/auth/JoinScreen";
+import RecordScreen from "./src/screens/record/RecordScreen";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -24,30 +25,36 @@ export default RootLayout;
 const Tabs = () => {
   return (
     <Tab.Navigator>
-      <Tab.Screen 
-        name="Home" 
-        component={HomeScreen} 
-        options={{ 
+      <Tab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{
           title: "홈",
           tabBarLabel: "홈",
-          tabBarIcon: () => (
-            <Text>🏠</Text>
-          )
-        }} 
+          tabBarIcon: () => <Text>🏠</Text>,
+        }}
       />
-      <Tab.Screen 
-        name="AllTodo" 
-        component={AllTodoScreen} 
-        options={{ 
+      <Tab.Screen
+        name="AllTodo"
+        component={AllTodoScreen}
+        options={{
           title: "모든할일",
           tabBarLabel: "모든할일",
-          tabBarIcon: () => (
-            <Text>📜</Text>
-          )
-        }} 
+          tabBarIcon: () => <Text>📜</Text>,
+        }}
+      />
+      <Tab.Screen
+        name="Record"
+        component={RecordScreen}
+        options={{
+          title: "일지",
+          tabBarLabel: "일지",
+		  headerShown: false,
+          tabBarIcon: () => <Text>📜</Text>,
+        }}
       />
     </Tab.Navigator>
-  )
+  );
 }
 
 const App = () => {
