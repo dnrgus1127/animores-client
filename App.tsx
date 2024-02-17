@@ -58,7 +58,6 @@ const Tabs = () => {
 }
 
 const App = () => {
-  
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
