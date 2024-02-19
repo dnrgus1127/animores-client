@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { FlatList, Pressable, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { CommentIcon, DogImage, More, UserImage } from "../../assets/svg";
+import BottomModal from "../../components/modal/BottomModal";
 import Title from "../../components/text/Title";
 import { RecordModel } from "../../model/RecordModel";
 import HeaderNavigation from "../../navigation/HeaderNavigation";
@@ -10,7 +11,9 @@ import { Colors } from "../../statics/styles/Colors";
 //TODO: backbutton???
 const RecordScreen = () => {
   const moreLength = 17;
+
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
+  const [isVisible, setIsVisible] = useState<boolean>(false);
 
   const data = [
     {
@@ -60,7 +63,13 @@ const RecordScreen = () => {
             <Title text={item.nickName} fontSize={16} fontWeight={"bold"} />
             <Title text={item.date} fontSize={14} color={Colors.AEAEAE} />
           </View>
-          <More style={styles.MoreIcon} />
+          <Pressable
+            onPress={() => {
+              setIsVisible(true);
+            }}
+          >
+            <More style={styles.MoreIcon} />
+          </Pressable>
         </View>
         <View style={styles.contentContainer}>
           {isExist ? (
@@ -110,6 +119,33 @@ const RecordScreen = () => {
     );
   };
 
+  //모달 footer
+  const footer = (): React.ReactNode => {
+    return (
+      <View style={styles.FooterContainer}>
+        <View style={styles.FooterTopLine} />
+        <View style={styles.Footer}>
+          <View style={[styles.ButtonContainer, { marginRight: 10 }]}>
+            <Title
+              text={"수정"}
+              fontSize={16}
+              color={Colors.White}
+              style={{ textAlign: "center" }}
+            />
+          </View>
+          <View style={styles.ButtonContainer}>
+            <Title
+              text={"삭제"}
+              fontSize={16}
+              color={Colors.White}
+              style={{ textAlign: "center" }}
+            />
+          </View>
+        </View>
+      </View>
+    );
+  };
+
   return (
     <SafeAreaView style={styles.Container}>
       <HeaderNavigation title="일지" hasBackButton={true} />
@@ -117,6 +153,14 @@ const RecordScreen = () => {
         keyExtractor={(item) => `record-${item.id}`}
         data={data}
         renderItem={renderItem}
+      />
+      <BottomModal
+        isVisible={isVisible}
+        onClose={() => {
+          setIsVisible(false);
+        }}
+        footer={footer}
+        style={{ justifyContent: "flex-end" }}
       />
     </SafeAreaView>
   );
@@ -159,5 +203,28 @@ const styles = StyleSheet.create({
   BottomLine: {
     borderBottomWidth: 8,
     borderBottomColor: Colors.F4F4F4,
+  },
+  FooterContainer: {
+    position: "absolute",
+    bottom: 34,
+    width: "100%",
+  },
+  Footer: {
+    flexDirection: "row",
+    paddingHorizontal: 20,
+  },
+  FooterTopLine: {
+    backgroundColor: Colors.Gray838383,
+    height: 1.5,
+    width: 50,
+    marginBottom: 33,
+    alignSelf: "center",
+  },
+  ButtonContainer: {
+    backgroundColor: Colors.FB3F7E,
+    flex: 1,
+    height: 50,
+    justifyContent: "center",
+    borderRadius: 10,
   },
 });
