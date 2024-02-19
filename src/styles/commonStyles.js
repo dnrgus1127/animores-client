@@ -12,14 +12,6 @@ export const commonStyles = StyleSheet.create({
     alignItems: 'center', 
     justifyContent: 'center',
   },
-  commonTextInput: {
-    marginTop: 8,
-    width: 370,
-    height: 58,
-    padding: 10,
-    backgroundColor: '#F4F4F4',
-    borderRadius: 15,
-  },
   basicCheckbox: {
     borderColor: '#DBDBDB',
     borderWidth: 1,
