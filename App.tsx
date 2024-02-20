@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
@@ -64,11 +64,50 @@ const App = () => {
         <NavigationContainer>
           <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Home">
             <Stack.Screen name="Tabs" component={Tabs} options={{ title: 'Tabs' }} />
-            <Stack.Screen name="Login" component={LoginScreen} options={{ title: '로그인' }} />
-            <Stack.Screen name="Join" component={JoinScreen} options={{ title: '회원가입' }} />
+            <Stack.Screen 
+              name="Login" 
+              component={LoginScreen} 
+              options={{ 
+                title: '로그인', 
+                headerShown: true,
+                header: () => (
+                  <View style={{flexDirection: 'row', padding: 20, backgroundColor: '#fff', height: 60, alignItems: 'center'}}>
+                    <View style={{flex: 1}}></View>
+                    <View style={{flex: 1, alignItems: 'center'}}>
+                      <Text style={styles.headerTitle}>로그인</Text>
+                    </View>
+                    <View style={{flex: 1}}></View>
+                  </View>
+                )
+              }} 
+            />
+            <Stack.Screen 
+              name="Join" 
+              component={JoinScreen} 
+              options={{ 
+                title: '회원가입', 
+                headerShown: true,
+                header: () => (
+                  <View style={{flexDirection: 'row', padding: 20, backgroundColor: '#fff', height: 60, alignItems: 'center'}}>
+                    <View style={{flex: 1}}><Text>&lt;</Text></View>
+                    <View style={{flex: 1, alignItems: 'center'}}>
+                      <Text style={styles.headerTitle}>회원가입</Text>
+                    </View>
+                    <View style={{flex: 1}}></View>
+                  </View>
+                )
+              }} 
+            />
           </Stack.Navigator>
         </NavigationContainer>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );
 };
+
+const styles = StyleSheet.create({
+  headerTitle: {
+    color: '#2D2D2D',
+    fontSize: 18,
+  }
+})

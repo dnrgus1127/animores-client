@@ -1,5 +1,15 @@
-import icon_check from "./check.svg"
+import IconCheck from "./check.svg"
+
+import IconSnsApple from "./sns_apple.png"
+import IconSnsFacebook from "./sns_facebook.png"
+import IconSnsKakao from "./sns_kakao.png"
+import IconSnsNaver from "./sns_naver.png"
 
 export {
-  icon_check
+  IconCheck,
+  
+  IconSnsApple,
+  IconSnsFacebook,
+  IconSnsKakao,
+  IconSnsNaver,
 }
