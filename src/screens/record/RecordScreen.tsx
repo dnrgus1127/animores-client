@@ -1,19 +1,21 @@
 import React, { useState } from "react";
 import { FlatList, Pressable, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { CommentIcon, DogImage, More, UserImage } from "../../assets/svg";
+import { CommentIcon, CreateRocordIcon, DogImage, More, UserImage } from "../../assets/svg";
 import BottomModal from "../../components/modal/BottomModal";
 import Title from "../../components/text/Title";
 import { RecordModel } from "../../model/RecordModel";
 import HeaderNavigation from "../../navigation/HeaderNavigation";
 import { Colors } from "../../statics/styles/Colors";
+import { useNavigation } from "@react-navigation/native";
 
-//TODO: backbutton???
 const RecordScreen = () => {
   const moreLength = 17;
 
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
   const [isVisible, setIsVisible] = useState<boolean>(false);
+
+  const navigation = useNavigation();
 
   const data = [
     {
@@ -148,12 +150,17 @@ const RecordScreen = () => {
 
   return (
     <SafeAreaView style={styles.Container}>
-      <HeaderNavigation title="일지" hasBackButton={true} />
+      <HeaderNavigation title="일지" hasBackButton={false} />
       <FlatList
         keyExtractor={(item) => `record-${item.id}`}
         data={data}
         renderItem={renderItem}
       />
+		<Pressable 
+			onPress={() => { navigation.navigate('CreateRecord') }}
+		>
+        <CreateRocordIcon style={styles.CreateRocordIcon} />
+      </Pressable>
       <BottomModal
         isVisible={isVisible}
         onClose={() => {
@@ -227,4 +234,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 10,
   },
+  CreateRocordIcon: {
+	position:"absolute",
+	bottom: 0,
+	right: 0,
+  }
 });

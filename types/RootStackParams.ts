@@ -4,4 +4,5 @@ export type RootStackParams = {
   Tabs: undefined;
   Login: undefined;
   Join: undefined;
+  CreateRecord: undefined;
 };

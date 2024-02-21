@@ -1,7 +1,7 @@
-import React = require("react");
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import Modal, { Direction } from "react-native-modal";
 import { Colors } from "../../statics/styles/Colors";
+import React from "react";
 
 interface IProps {
   isVisible: boolean;

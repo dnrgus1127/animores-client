@@ -12,6 +12,7 @@ import AllTodoScreen from "./src/screens/todo";
 import LoginScreen from "./src/screens/auth/LoginScreen";
 import JoinScreen from "./src/screens/auth/JoinScreen";
 import RecordScreen from "./src/screens/record/RecordScreen";
+import CreatRecord from "./src/screens/record/CreatRecord";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -62,42 +63,72 @@ const App = () => {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <NavigationContainer>
-          <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Home">
-            <Stack.Screen name="Tabs" component={Tabs} options={{ title: 'Tabs' }} />
-            <Stack.Screen 
-              name="Login" 
-              component={LoginScreen} 
-              options={{ 
-                title: '로그인', 
+          <Stack.Navigator
+            screenOptions={{ headerShown: false }}
+            initialRouteName="Home"
+          >
+            <Stack.Screen
+              name="Tabs"
+              component={Tabs}
+              options={{ title: "Tabs" }}
+            />
+            <Stack.Screen
+              name="Login"
+              component={LoginScreen}
+              options={{
+                title: "로그인",
                 headerShown: true,
                 header: () => (
-                  <View style={{flexDirection: 'row', padding: 20, backgroundColor: '#fff', height: 60, alignItems: 'center'}}>
-                    <View style={{flex: 1}}></View>
-                    <View style={{flex: 1, alignItems: 'center'}}>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      padding: 20,
+                      backgroundColor: "#fff",
+                      height: 60,
+                      alignItems: "center",
+                    }}
+                  >
+                    <View style={{ flex: 1 }}></View>
+                    <View style={{ flex: 1, alignItems: "center" }}>
                       <Text style={styles.headerTitle}>로그인</Text>
                     </View>
-                    <View style={{flex: 1}}></View>
+                    <View style={{ flex: 1 }}></View>
                   </View>
-                )
-              }} 
+                ),
+              }}
             />
-            <Stack.Screen 
-              name="Join" 
-              component={JoinScreen} 
-              options={{ 
-                title: '회원가입', 
+            <Stack.Screen
+              name="Join"
+              component={JoinScreen}
+              options={{
+                title: "회원가입",
                 headerShown: true,
                 header: () => (
-                  <View style={{flexDirection: 'row', padding: 20, backgroundColor: '#fff', height: 60, alignItems: 'center'}}>
-                    <View style={{flex: 1}}><Text>&lt;</Text></View>
-                    <View style={{flex: 1, alignItems: 'center'}}>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      padding: 20,
+                      backgroundColor: "#fff",
+                      height: 60,
+                      alignItems: "center",
+                    }}
+                  >
+                    <View style={{ flex: 1 }}>
+                      <Text>&lt;</Text>
+                    </View>
+                    <View style={{ flex: 1, alignItems: "center" }}>
                       <Text style={styles.headerTitle}>회원가입</Text>
                     </View>
-                    <View style={{flex: 1}}></View>
+                    <View style={{ flex: 1 }}></View>
                   </View>
-                )
-              }} 
+                ),
+              }}
             />
+            <Stack.Screen
+			 	name="CreateRecord"
+			 	component={CreatRecord}
+				options={{ headerShown: false }}
+			/>
           </Stack.Navigator>
         </NavigationContainer>
       </SafeAreaProvider>
