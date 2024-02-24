@@ -1,21 +1,24 @@
 import React, { useState } from "react";
 import { FlatList, Pressable, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { CommentIcon, CreateRocordIcon, DogImage, More, UserImage } from "../../assets/svg";
+import {
+  CommentIcon,
+  CreateRocordButton,
+  DogImage,
+  More,
+  UserImage,
+} from "../../assets/svg";
 import BottomModal from "../../components/modal/BottomModal";
 import Title from "../../components/text/Title";
 import { RecordModel } from "../../model/RecordModel";
 import HeaderNavigation from "../../navigation/HeaderNavigation";
 import { Colors } from "../../statics/styles/Colors";
-import { useNavigation } from "@react-navigation/native";
 
-const RecordScreen = () => {
+const RecordScreen = ({ navigation }: any) => {
   const moreLength = 17;
 
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
   const [isVisible, setIsVisible] = useState<boolean>(false);
-
-  const navigation = useNavigation();
 
   const data = [
     {
@@ -156,10 +159,11 @@ const RecordScreen = () => {
         data={data}
         renderItem={renderItem}
       />
-		<Pressable 
-			onPress={() => { navigation.navigate('CreateRecord') }}
-		>
-        <CreateRocordIcon style={styles.CreateRocordIcon} />
+      <Pressable
+        style={styles.CreateRocordIcon}
+        onPress={() => navigation.navigate("CreateRecord")}
+      >
+        <CreateRocordButton />
       </Pressable>
       <BottomModal
         isVisible={isVisible}
@@ -235,8 +239,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   CreateRocordIcon: {
-	position:"absolute",
-	bottom: 0,
-	right: 0,
-  }
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    zIndex: 1,
+  },
 });
