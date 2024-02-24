@@ -153,7 +153,7 @@ const RecordScreen = ({ navigation }: any) => {
 
   return (
     <SafeAreaView style={styles.Container}>
-      <HeaderNavigation title="일지" hasBackButton={false} />
+      <HeaderNavigation middletitle="일지" hasBackButton={false} />
       <FlatList
         keyExtractor={(item) => `record-${item.id}`}
         data={data}
