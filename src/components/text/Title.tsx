@@ -10,7 +10,7 @@ interface IProps {
 }
 
 const Title = (props: IProps) => {
-  const { text, fontSize, fontWeight, color = "#1E1E1E", style } = props;
+  const { text, fontSize = 14, fontWeight, color = "#1E1E1E", style } = props;
 
     return <Text style={[style, { fontSize, fontWeight, color }]}>{text}</Text>;
 };

@@ -66,7 +66,7 @@ const RecordScreen = ({ navigation }: any) => {
           <UserImage />
           <View style={styles.TitleContainer}>
             <Title text={item.nickName} fontSize={16} fontWeight={"bold"} />
-            <Title text={item.date} fontSize={14} color={Colors.AEAEAE} />
+            <Title text={item.date} color={Colors.AEAEAE} />
           </View>
           <Pressable
             onPress={() => {
@@ -78,16 +78,13 @@ const RecordScreen = ({ navigation }: any) => {
         </View>
         <View style={styles.contentContainer}>
           {isExist ? (
-            <Title text={item.contents} fontSize={14} />
+            <Title text={item.contents} />
           ) : (
             <>
               {item.contents.length < moreLength ? (
-                <Title text={item.contents} fontSize={14} />
+                <Title text={item.contents} />
               ) : (
-                <Title
-                  text={item.contents.slice(0, moreLength) + "..."}
-                  fontSize={14}
-                />
+                <Title text={item.contents.slice(0, moreLength) + "..."} />
               )}
             </>
           )}
@@ -99,7 +96,6 @@ const RecordScreen = ({ navigation }: any) => {
             >
               <Title
                 text={"더 보기"}
-                fontSize={14}
                 color={Colors.AEAEAE}
                 style={{ marginLeft: 6 }}
               />
@@ -112,12 +108,7 @@ const RecordScreen = ({ navigation }: any) => {
             <CommentIcon />
           </Pressable>
           {/* TODO:댓글 수 수정 */}
-          <Title
-            text={"3"}
-            fontSize={14}
-            color={Colors.AEAEAE}
-            style={{ marginLeft: 8 }}
-          />
+          <Title text={"3"} color={Colors.AEAEAE} style={{ marginLeft: 8 }} />
         </View>
         {data.length - 1 !== index && <View style={styles.BottomLine} />}
       </View>
