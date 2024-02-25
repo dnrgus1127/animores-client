@@ -4,13 +4,24 @@ export const commonStyles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'space-between',
-    backgroundColor: '#fff',
     padding: 20,
   },
   commonRowContainer: {
     flexDirection: 'row', 
     alignItems: 'center', 
     justifyContent: 'center',
+  },
+  headerTitleWrap: { 
+    flexDirection: "row",
+    padding: 15,
+    backgroundColor: "#fff",
+    height: 60,
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  headerTitle: {
+    color: '#2D2D2D',
+    fontSize: 18,
   },
   basicCheckbox: {
     borderColor: '#DBDBDB',
