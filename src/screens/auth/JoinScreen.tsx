@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, Pressable, Text, ScrollView } from "react-native";
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, Pressable, Text, ScrollView, BackHandler, Platform, Alert } from "react-native";
 import { commonStyles } from "../../styles/commonStyles";
 import BasicInput from "../../components/BasicInput"
 import BasicCheckbox from "../../components/BasicCheckbox";
@@ -8,13 +8,13 @@ import HeaderNavigation from "../../navigation/HeaderNavigation";
 import { Colors } from "../../statics/styles/Colors";
 
 
-const JoinScreen = () => {
+const JoinScreen = ({ navigation }: any) => {
   const [isChecked, setChecked] = useState(false)
 
   return (
     <SafeAreaView style={styles.Container}>
       <ScrollView>
-        <HeaderNavigation title="회원가입" hasBackButton={true} />
+        <HeaderNavigation title="회원가입" hasBackButton={true} onPressBackButton={() => navigation.goBack()} />
         <View style={commonStyles.container}>
           <View style={styles.joinInputWrap}>
             <BasicInput title='이메일' placeholder='이메일을 입력해주세요' />
