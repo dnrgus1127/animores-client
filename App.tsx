@@ -1,10 +1,11 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView, initialWindowMetrics, useSafeAreaInsets } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
 
 // navigate pages
 import HomeScreen from "./src/screens/home/HomeScreen";
@@ -75,54 +76,12 @@ const App = () => {
             <Stack.Screen
               name="Login"
               component={LoginScreen}
-              options={{
-                title: "로그인",
-                headerShown: true,
-                header: () => (
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      padding: 20,
-                      backgroundColor: "#fff",
-                      height: 60,
-                      alignItems: "center",
-                    }}
-                  >
-                    <View style={{ flex: 1 }}></View>
-                    <View style={{ flex: 1, alignItems: "center" }}>
-                      <Text style={styles.headerTitle}>로그인</Text>
-                    </View>
-                    <View style={{ flex: 1 }}></View>
-                  </View>
-                ),
-              }}
+              options={{ headerShown: false }}
             />
             <Stack.Screen
               name="Join"
               component={JoinScreen}
-              options={{
-                title: "회원가입",
-                headerShown: true,
-                header: () => (
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      padding: 20,
-                      backgroundColor: "#fff",
-                      height: 60,
-                      alignItems: "center",
-                    }}
-                  >
-                    <View style={{ flex: 1 }}>
-                      <Text>&lt;</Text>
-                    </View>
-                    <View style={{ flex: 1, alignItems: "center" }}>
-                      <Text style={styles.headerTitle}>회원가입</Text>
-                    </View>
-                    <View style={{ flex: 1 }}></View>
-                  </View>
-                ),
-              }}
+              options={{ headerShown: false }}
             />
             <Stack.Screen
               name="CreateRecord"
