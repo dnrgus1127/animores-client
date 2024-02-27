@@ -13,7 +13,7 @@ import AllTodoScreen from "./src/screens/todo";
 import LoginScreen from "./src/screens/auth/LoginScreen";
 import JoinScreen from "./src/screens/auth/JoinScreen";
 import RecordScreen from "./src/screens/record/RecordScreen";
-import CreatRecord from "./src/screens/record/CreatRecord";
+import CreateRecord from "./src/screens/record/CreateRecord";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -85,7 +85,7 @@ const App = () => {
             />
             <Stack.Screen
               name="CreateRecord"
-              component={CreatRecord}
+              component={CreateRecord}
               options={{ headerShown: false }}
             />
           </Stack.Navigator>
