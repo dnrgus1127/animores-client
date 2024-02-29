@@ -3,17 +3,15 @@ import { View, Text, StyleSheet, Pressable, Image, ScrollView, Dimensions } from
 import { IconSnsApple, IconSnsFacebook, IconSnsKakao, IconSnsNaver } from '../../assets/icons';
 import { commonStyles } from '../../styles/commonStyles';
 import FilledInput from '../../components/FilledInput';
-import BasicCheckbox from '../../components/BasicCheckbox';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import HeaderNavigation from "../../navigation/HeaderNavigation";
 import { Colors } from "../../statics/styles/Colors";
 
-
-
 const LoginScreen = ({ navigation }: any) => {
-  const [isChecked, setChecked] = useState(false)
   const [diviceHeight, setDiviceHeight] = useState(375)
-  const currentHeight = Dimensions.get("window");
+  const currentHeight = Dimensions.get("window")
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
   useEffect(() => {
     setDiviceHeight(currentHeight.height)
@@ -23,18 +21,13 @@ const LoginScreen = ({ navigation }: any) => {
   return (
     <SafeAreaView style={styles.Container}>
       <ScrollView>
-        <HeaderNavigation title="로그인" hasBackButton={false} />
+        <HeaderNavigation middletitle="로그인" hasBackButton={false} />
         <View style={[commonStyles.container, {height: diviceHeight}]}>
           <View style={styles.top}>
             <View style={styles.loginInputWrap}>
               <FilledInput placeholder='이메일' />
               <FilledInput placeholder='비밀번호' secureTextEntry={true} />
             </View>
-            <BasicCheckbox 
-              isChecked={isChecked}
-              onValueChangeHandler={() => setChecked(!isChecked)}
-              label='자동 로그인'
-            />
             <Pressable
               onPress={() => console.log('Pressed')}
               style={styles.loginButton}

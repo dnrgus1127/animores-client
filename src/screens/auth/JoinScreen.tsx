@@ -10,11 +10,19 @@ import { Colors } from "../../statics/styles/Colors";
 
 const JoinScreen = ({ navigation }: any) => {
   const [isChecked, setChecked] = useState(false)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [checkPassword, setCheckPassword] = useState('')
+  const [nickname, setNickname] = useState('')
+  const [secureText, setScureText] = useState(null)
+  const [touchEye, setTouchEye] = useState(true)
+  const [warningText, setWarningText] = useState('')
+
 
   return (
     <SafeAreaView style={styles.Container}>
       <ScrollView>
-        <HeaderNavigation title="회원가입" hasBackButton={true} onPressBackButton={() => navigation.goBack()} />
+        <HeaderNavigation middletitle="회원가입" hasBackButton={true} onPressBackButton={() => navigation.goBack()} />
         <View style={commonStyles.container}>
           <View style={styles.joinInputWrap}>
             <BasicInput title='이메일' placeholder='이메일을 입력해주세요' />
