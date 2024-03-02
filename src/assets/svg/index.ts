@@ -5,6 +5,7 @@ import CommentIcon from './Icon.svg';
 import DogImage from './image618.svg';  //TODO:삭제 예정
 import CreateRocordButton from './Frame811.svg';
 import AddImage from './Frame1409.svg';
+import CancleIcon from './cancleIcon.svg';
 
 export {
 	BackButton,
@@ -14,4 +15,5 @@ export {
 	DogImage,
 	CreateRocordButton,
 	AddImage,
+	CancleIcon,
 }
