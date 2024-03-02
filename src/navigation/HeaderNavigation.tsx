@@ -78,6 +78,7 @@ const styles = StyleSheet.create({
   },
   TouchOpacityBackButton: {
     paddingLeft: 20,
+	zIndex: 1
   },
   TitleContainer: {
     width: "100%",
