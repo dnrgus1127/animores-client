@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { View, StyleSheet, Pressable, Text, ScrollView, BackHandler, Platform, Alert } from "react-native";
 import { commonStyles } from "../../styles/commonStyles";
 import BasicInput from "../../components/BasicInput"
@@ -6,18 +6,58 @@ import BasicCheckbox from "../../components/BasicCheckbox";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import HeaderNavigation from "../../navigation/HeaderNavigation";
 import { Colors } from "../../statics/styles/Colors";
+import { emailRegex, nicknameRegex, pwRegex, SCREEN_WIDTH, SCREEN_HEIGHT } from '../../js/util';
 
 
 const JoinScreen = ({ navigation }: any) => {
   const [isChecked, setChecked] = useState(false)
   const [email, setEmail] = useState('')
+  const [nickname, setNickname] = useState('')
   const [password, setPassword] = useState('')
   const [checkPassword, setCheckPassword] = useState('')
-  const [nickname, setNickname] = useState('')
   const [secureText, setScureText] = useState(null)
   const [touchEye, setTouchEye] = useState(true)
-  const [warningText, setWarningText] = useState('')
 
+  const [emailWarningText, setEmailWarningText] = useState('')
+  const [nicknameWarningText, setNicknameWarningText] = useState('')
+  const [pwWarningText, setPwWarningText] = useState('')
+  const [checkPwWarningText, setcheckPwWarningText] = useState('')
+
+  const handleOnChangeEmail = (inputText:string) => {
+    setEmail(inputText)
+    
+    const matchEmail = inputText.match(emailRegex)
+
+    if (matchEmail === null) {
+      setEmailWarningText('이메일 형식에 맞게 입력해주세요.')
+    } else {
+      setEmailWarningText('')
+    }
+  }
+
+  const handleOnChangeNickname = (inputText:string) => {
+    setNickname(inputText)
+    
+    const matchNickname = inputText.match(nicknameRegex)
+
+    if (matchNickname === null) {
+      setNicknameWarningText('사용하실 수 없는 닉네임입니다.')
+    } else {
+      setNicknameWarningText('')
+    }
+  }
+
+  const handleOnChangePassword = (inputText:string) => {
+    setPassword(inputText)
+    
+    const matchPassword = inputText.match(pwRegex)
+
+    if (matchPassword === null) {
+      setPwWarningText('영문 대문자와 소문자, 숫자, 특수문자를 조합하여 8~30자로 입력해주세요.')
+    } else {
+      setPwWarningText('')
+    }
+  }
 
   return (
     <SafeAreaView style={styles.Container}>
@@ -25,20 +65,40 @@ const JoinScreen = ({ navigation }: any) => {
         <HeaderNavigation middletitle="회원가입" hasBackButton={true} onPressBackButton={() => navigation.goBack()} />
         <View style={commonStyles.container}>
           <View style={styles.joinInputWrap}>
-            <BasicInput title='이메일' placeholder='이메일을 입력해주세요' />
+            <BasicInput title='이메일' placeholder='이메일을 입력해주세요' value={email} onChangeText={handleOnChangeEmail} />
             <Pressable style={styles.inputButton}>
               <Text>중복확인</Text>
             </Pressable>
           </View>
+          {!email ? null : (
+            <View>
+              <Text>{emailWarningText}</Text>
+            </View>
+          )}
           <View style={styles.joinInputWrap}>
-            <BasicInput title='닉네임' placeholder='닉네임을 입력해주세요' />
+            <BasicInput title='닉네임' placeholder='닉네임을 입력해주세요' value={nickname} onChangeText={handleOnChangeNickname} />
           </View>
+          {!nickname ? null : (
+            <View>
+              <Text>{nicknameWarningText}</Text>
+            </View>
+          )}
           <View style={styles.joinInputWrap}>
-            <BasicInput title='비밀번호' placeholder='8~30자리 영대・소문자, 숫자, 특수문자 조합' secureTextEntry={true} />
+            <BasicInput title='비밀번호' placeholder='8~30자리 영대・소문자, 숫자, 특수문자 조합' secureTextEntry={true} value={password} onChangeText={handleOnChangePassword} />
           </View>
+          {!password ? null : (
+            <View>
+              <Text>{pwWarningText}</Text>
+            </View>
+          )}
           <View style={styles.joinInputWrap}>
             <BasicInput title='비밀번호 확인' placeholder='' secureTextEntry={true} />
           </View>
+          {!checkPassword ? null : (
+            <View>
+              <Text>{checkPwWarningText}</Text>
+            </View>
+          )}
           <View style={styles.joinInputWrap}>
             <BasicInput title='휴대 전화 번호 인증' placeholder='휴대 전화 번호를 입력해주세요' />
             <Pressable style={styles.inputButton}>

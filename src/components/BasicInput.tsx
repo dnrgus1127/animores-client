@@ -7,14 +7,16 @@ interface InputProps {
   placeholder?: string;
   secureTextEntry?: boolean;
   marginTop?: number;
+  onChangeText?: (inputText:string) => void;
+  value?: string
 }
 
 const BasicInput = (props:InputProps) => {
-  const { title, placeholder, secureTextEntry, marginTop } = props;
-  const [value, setValue] = useState('');
+  const { title, placeholder, secureTextEntry, marginTop, onChangeText, value } = props;
+  const [initialValue, setinitialValue] = useState('');
 
-  const onChangeText = (inputText:string) => {
-    setValue(inputText)
+  const initialOnChangeText = (inputText:string) => {
+    setinitialValue(inputText)
   }
 
   return (
@@ -22,8 +24,8 @@ const BasicInput = (props:InputProps) => {
       <Text>{title}</Text>
       <TextInput
         style={styles.inputBox}
-        onChangeText={onChangeText}
-        value={value}
+        onChangeText={onChangeText ? onChangeText : initialOnChangeText}
+        value={value ? value : initialValue}
         placeholder={placeholder ? placeholder : ''}
         secureTextEntry={secureTextEntry}
       />
