@@ -4,4 +4,5 @@ export enum ScreenName {
 	Login = 'Login',
 	Join = 'Join',
 	CreateRecord = 'CreateRecord',
+	AddTodo = 'AddTodo',
 }

@@ -2,17 +2,20 @@ import React, { useState } from "react";
 import { FlatList, Pressable, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
+  AddIcon,
   CancleIcon,
   CommentIcon,
   CreateRocordButton,
   DogImage,
   More,
   UserImage,
+  WriteIcon,
 } from "../../assets/svg";
 import BottomModal from "../../components/modal/BottomModal";
 import Title from "../../components/text/Title";
 import { RecordModel } from "../../model/RecordModel";
 import HeaderNavigation from "../../navigation/HeaderNavigation";
+import { ScreenName } from "../../statics/constants/ScreenName";
 import { Colors } from "../../statics/styles/Colors";
 
 const RecordScreen = ({ navigation }: any) => {
@@ -143,7 +146,7 @@ const RecordScreen = ({ navigation }: any) => {
       </View>
     );
   };
-  
+
   return (
     <>
       <SafeAreaView>
@@ -154,6 +157,7 @@ const RecordScreen = ({ navigation }: any) => {
           renderItem={renderItem}
         />
       </SafeAreaView>
+      {/* 플로팅 버튼 */}
       <SafeAreaView
         style={[
           styles.Container,
@@ -174,25 +178,46 @@ const RecordScreen = ({ navigation }: any) => {
           style={styles.CreateRocordIcon}
           onPress={() => {
             setIsVisibleMenu(!isVisibleMenu);
+            startButtonAnimation();
           }}
         >
           {isVisibleMenu ? (
             <View style={styles.PinkButtonContainer}>
-              <Pressable style={styles.PinkButton}>
+              <Pressable
+                onPress={() => {
+                  navigation.navigate(ScreenName.AddTodo);
+                }}
+                style={styles.PinkButton}
+              >
                 <Title
                   text={"일정 추가"}
                   fontSize={16}
                   color={Colors.White}
-                  style={{ textAlign: "center" }}
+                  style={{
+                    textAlign: "center",
+                    marginRight: 12,
+                    paddingBottom: 3,
+                  }}
                 />
+                <AddIcon />
               </Pressable>
-              <Pressable style={[styles.PinkButton, { marginTop: 16 }]}>
+              <Pressable
+                onPress={() => {
+                  navigation.navigate(ScreenName.CreateRecord);
+                }}
+                style={[styles.PinkButton, { marginTop: 16 }]}
+              >
                 <Title
                   text={"일지 쓰기"}
                   fontSize={16}
                   color={Colors.White}
-                  style={{ textAlign: "center" }}
+                  style={{
+                    textAlign: "center",
+                    marginRight: 12,
+                    paddingBottom: 3,
+                  }}
                 />
+                <WriteIcon />
               </Pressable>
               <Pressable
                 onPress={() => {
@@ -297,6 +322,7 @@ const styles = StyleSheet.create({
   CancleIconContainer: {
     marginTop: 27,
     alignItems: "flex-end",
+    marginRight: 12,
   },
   PinkButtonContainer: {
     marginRight: 20,
@@ -304,7 +330,9 @@ const styles = StyleSheet.create({
   PinkButton: {
     backgroundColor: Colors.FB3F7E,
     paddingHorizontal: 20,
-    paddingVertical: 20,
+    paddingVertical: 15,
     borderRadius: 99,
+    flexDirection: "row",
+    alignItems: "center",
   },
 });
