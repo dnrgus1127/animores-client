@@ -13,7 +13,6 @@ import { AddImage } from "../../assets/svg";
 import Title from "../../components/text/Title";
 import HeaderNavigation from "../../navigation/HeaderNavigation";
 import { Colors } from "../../statics/styles/Colors";
-import { Controller, RegisterOptions, useFormContext } from 'react-hook-form';
 
 const CreatRecord = ({ navigation }: any) => {
   const [imageUrls, setImageUrls] = useState<string[]>([]);
