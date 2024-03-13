@@ -25,7 +25,7 @@ const RecordScreen = ({ navigation }: any) => {
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [isVisibleMenu, setIsVisibleMenu] = useState<boolean>(false);
 
-  const data = [
+  const data: RecordModel.IRecordModel[] = [
     {
       id: 1,
       nickName: "산책이 귀찮은 아빠",
@@ -155,6 +155,7 @@ const RecordScreen = ({ navigation }: any) => {
           keyExtractor={(item) => `record-${item.id}`}
           data={data}
           renderItem={renderItem}
+          contentContainerStyle={{ paddingBottom: 80 }}
         />
       </SafeAreaView>
       {/* 플로팅 버튼 */}
@@ -178,7 +179,6 @@ const RecordScreen = ({ navigation }: any) => {
           style={styles.CreateRocordIcon}
           onPress={() => {
             setIsVisibleMenu(!isVisibleMenu);
-            startButtonAnimation();
           }}
         >
           {isVisibleMenu ? (
