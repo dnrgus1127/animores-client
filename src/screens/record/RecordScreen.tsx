@@ -2,28 +2,27 @@ import React, { useState } from "react";
 import { FlatList, Pressable, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
-  AddIcon,
-  CancleIcon,
-  CommentIcon,
-  CreateRocordButton,
-  DogImage,
-  More,
-  UserImage,
-  WriteIcon,
+	CommentIcon,
+	DogImage,
+	More,
+	UserImage
 } from "../../assets/svg";
+import FloatingButton from "../../components/button/FloatingButton";
 import BottomModal from "../../components/modal/BottomModal";
+import CommentBottomModal from "../../components/modal/CommentBottomModal";
 import Title from "../../components/text/Title";
 import { RecordModel } from "../../model/RecordModel";
 import HeaderNavigation from "../../navigation/HeaderNavigation";
 import { ScreenName } from "../../statics/constants/ScreenName";
-import { Colors } from "../../statics/styles/Colors";
+import { Colors } from "../../styles/Colors";
 
 const RecordScreen = ({ navigation }: any) => {
   const moreLength = 17;
 
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
-  const [isVisible, setIsVisible] = useState<boolean>(false);
-  const [isVisibleMenu, setIsVisibleMenu] = useState<boolean>(false);
+  const [isVisibleMore, setIsVisibleMore] = useState<boolean>(false); //더보기
+  const [isVisibleMenu, setIsVisibleMenu] = useState<boolean>(false); //플로팅버튼
+  const [isVisibleComment, setIsVisibleComment] = useState<boolean>(false); //댓글
 
   const data: RecordModel.IRecordModel[] = [
     {
@@ -75,7 +74,7 @@ const RecordScreen = ({ navigation }: any) => {
           </View>
           <Pressable
             onPress={() => {
-              setIsVisible(true);
+              setIsVisibleMore(true);
             }}
           >
             <More style={styles.MoreIcon} />
@@ -108,24 +107,27 @@ const RecordScreen = ({ navigation }: any) => {
           )}
         </View>
         {item.image && <View style={{ marginTop: 22 }}>{item.image}</View>}
-        <View style={styles.CommentIconContainer}>
-          <Pressable>
-            <CommentIcon />
-          </Pressable>
+        <Pressable
+          onPress={() => {
+            setIsVisibleComment(true);
+          }}
+          style={styles.CommentIconContainer}
+        >
+          <CommentIcon />
           {/* TODO:댓글 수 수정 */}
           <Title text={"3"} color={Colors.AEAEAE} style={{ marginLeft: 8 }} />
-        </View>
+        </Pressable>
         {data.length - 1 !== index && <View style={styles.BottomLine} />}
       </View>
     );
   };
 
-  //모달 footer
-  const footer = (): React.ReactNode => {
+  //더보기 모달 footer
+  const footerMore = (): React.ReactNode => {
     return (
-      <View style={styles.FooterContainer}>
+      <View style={styles.BottomModalContainer}>
         <View style={styles.FooterTopLine} />
-        <View style={styles.Footer}>
+        <View style={[styles.Footer, { marginTop: 33 }]}>
           <View style={[styles.ButtonContainer, { marginRight: 10 }]}>
             <Title
               text={"수정"}
@@ -147,6 +149,21 @@ const RecordScreen = ({ navigation }: any) => {
     );
   };
 
+  //댓글 모달 footer
+  const footerComment = (): React.ReactNode => {
+    return (
+      <View style={styles.BottomModalContainer}>
+        <View style={styles.FooterTopLine} />
+        <Title
+          text={"댓글"}
+          fontSize={16}
+          color={"black"}
+          style={{ textAlign: "center", marginTop: 10 }}
+        />
+      </View>
+    );
+  };
+console.log("isVisibleMenu", isVisibleMenu);
   return (
     <>
       <SafeAreaView>
@@ -175,76 +192,25 @@ const RecordScreen = ({ navigation }: any) => {
           },
         ]}
       >
-        <Pressable
-          style={styles.CreateRocordIcon}
-          onPress={() => {
-            setIsVisibleMenu(!isVisibleMenu);
-          }}
-        >
-          {isVisibleMenu ? (
-            <View style={styles.PinkButtonContainer}>
-              <Pressable
-                onPress={() => {
-                  navigation.navigate(ScreenName.AddTodo);
-                }}
-                style={styles.PinkButton}
-              >
-                <Title
-                  text={"일정 추가"}
-                  fontSize={16}
-                  color={Colors.White}
-                  style={{
-                    textAlign: "center",
-                    marginRight: 12,
-                    paddingBottom: 3,
-                  }}
-                />
-                <AddIcon />
-              </Pressable>
-              <Pressable
-                onPress={() => {
-                  navigation.navigate(ScreenName.CreateRecord);
-                }}
-                style={[styles.PinkButton, { marginTop: 16 }]}
-              >
-                <Title
-                  text={"일지 쓰기"}
-                  fontSize={16}
-                  color={Colors.White}
-                  style={{
-                    textAlign: "center",
-                    marginRight: 12,
-                    paddingBottom: 3,
-                  }}
-                />
-                <WriteIcon />
-              </Pressable>
-              <Pressable
-                onPress={() => {
-                  setIsVisibleMenu(false);
-                }}
-                style={styles.CancleIconContainer}
-              >
-                <CancleIcon />
-              </Pressable>
-            </View>
-          ) : (
-            <Pressable
-              style={styles.CreateRocordIcon}
-              onPress={() => {
-                setIsVisibleMenu(!isVisibleMenu);
-              }}
-            >
-              <CreateRocordButton />
-            </Pressable>
-          )}
-        </Pressable>
+        <FloatingButton
+          isVisible={isVisibleMenu}
+          onPress={() => setIsVisibleMenu(!isVisibleMenu)}
+          onPressCancel={() => setIsVisibleMenu(false)}
+        />
         <BottomModal
-          isVisible={isVisible}
+          isVisible={isVisibleMore}
           onClose={() => {
-            setIsVisible(false);
+            setIsVisibleMore(false);
           }}
-          footer={footer}
+          footer={footerMore}
+          style={{ justifyContent: "flex-end" }}
+        />
+        <CommentBottomModal
+          isVisible={isVisibleComment}
+          onClose={() => {
+            setIsVisibleComment(false);
+          }}
+          footer={footerComment}
           style={{ justifyContent: "flex-end" }}
         />
       </SafeAreaView>
@@ -290,10 +256,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 8,
     borderBottomColor: Colors.F4F4F4,
   },
-  FooterContainer: {
-    position: "absolute",
-    bottom: 34,
-    width: "100%",
+  BottomModalContainer: {
+	marginTop: 15,
   },
   Footer: {
     flexDirection: "row",
@@ -303,7 +267,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.Gray838383,
     height: 1.5,
     width: 50,
-    marginBottom: 33,
     alignSelf: "center",
   },
   ButtonContainer: {

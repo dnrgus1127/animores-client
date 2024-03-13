@@ -9,7 +9,6 @@ const AddTodo = ({ navigation }: any) => {
     <SafeAreaView style={styles.Container}>
       <HeaderNavigation
         middletitle="일정 추가"
-        rightTitle={"완료"}
         hasBackButton={true}
         onPressBackButton={() => {
           navigation.goBack();
