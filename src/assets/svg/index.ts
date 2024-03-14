@@ -8,6 +8,7 @@ import AddImage from './Frame1409.svg';
 import CancleIcon from './cancleIcon.svg';
 import AddIcon from './addIcon.svg';
 import WriteIcon from './Frame1295.svg';
+import User from './image581.svg';   //TODO:삭제 예정
 
 export {
 	BackButton,
@@ -19,5 +20,6 @@ export {
 	AddImage,
 	CancleIcon,
 	AddIcon,
-	WriteIcon
+	WriteIcon,
+	User,
 }

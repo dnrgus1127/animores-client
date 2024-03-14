@@ -1,12 +1,7 @@
 import React, { useState } from "react";
 import { FlatList, Pressable, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import {
-	CommentIcon,
-	DogImage,
-	More,
-	UserImage
-} from "../../assets/svg";
+import { CommentIcon, DogImage, More, User, UserImage } from "../../assets/svg";
 import FloatingButton from "../../components/button/FloatingButton";
 import BottomModal from "../../components/modal/BottomModal";
 import CommentBottomModal from "../../components/modal/CommentBottomModal";
@@ -156,9 +151,33 @@ const RecordScreen = () => {
         <Title
           text={"댓글"}
           fontSize={16}
-          color={"black"}
           style={{ textAlign: "center", marginTop: 10 }}
         />
+        <View style={styles.CommentContainer}>
+          <User />
+          <View style={styles.Comment}>
+            <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
+              <Title text={"사랑꾼 엄마"} fontWeight="bold" fontSize={16} />
+              <Title
+                text={"3분 전"}
+                fontSize={12}
+                color={Colors.AEAEAE}
+                style={{ marginLeft: 12 }}
+              />
+            </View>
+            <Title
+              text={"아이고 이뻐라~ ❤️"}
+              fontSize={14}
+              style={{ marginTop: 8 }}
+            />
+          </View>
+          <Title
+            text={"답글 달기"}
+            fontSize={14}
+            color={Colors.AEAEAE}
+            style={{ marginLeft: 12, alignSelf:"flex-end" }}
+          />
+        </View>
       </View>
     );
   };
@@ -183,10 +202,6 @@ const RecordScreen = () => {
               ? "rgba(0, 0, 0, 0.5)"
               : Colors.White,
             position: isVisibleMenu ? "absolute" : "relative",
-            top: 0,
-            bottom: 0,
-            left: 0,
-            right: 0,
             zIndex: isVisibleMenu ? 10 : 0,
           },
         ]}
@@ -223,6 +238,10 @@ const styles = StyleSheet.create({
   Container: {
     flex: 1,
     backgroundColor: Colors.White,
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
   RenderItemContainer: {
     marginTop: 20,
@@ -256,7 +275,7 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.F4F4F4,
   },
   BottomModalContainer: {
-	marginTop: 15,
+    marginTop: 15,
   },
   Footer: {
     flexDirection: "row",
@@ -267,6 +286,18 @@ const styles = StyleSheet.create({
     height: 1.5,
     width: 50,
     alignSelf: "center",
+  },
+  CommentContainer: {
+    marginHorizontal: 20,
+    flexDirection: "row",
+    marginTop: 20,
+  },
+  Comment: {
+    backgroundColor: Colors.F4F4F4,
+    marginLeft: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    borderRadius: 10,
   },
   ButtonContainer: {
     backgroundColor: Colors.FB3F7E,
