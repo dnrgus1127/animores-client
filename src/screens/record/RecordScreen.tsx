@@ -2,16 +2,20 @@ import React, { useState } from "react";
 import { FlatList, Pressable, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
+  AddIcon,
+  CancleIcon,
   CommentIcon,
   CreateRocordButton,
   DogImage,
   More,
   UserImage,
+  WriteIcon,
 } from "../../assets/svg";
 import BottomModal from "../../components/modal/BottomModal";
 import Title from "../../components/text/Title";
 import { RecordModel } from "../../model/RecordModel";
 import HeaderNavigation from "../../navigation/HeaderNavigation";
+import { ScreenName } from "../../statics/constants/ScreenName";
 import { Colors } from "../../statics/styles/Colors";
 
 const RecordScreen = ({ navigation }: any) => {
@@ -19,8 +23,9 @@ const RecordScreen = ({ navigation }: any) => {
 
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
   const [isVisible, setIsVisible] = useState<boolean>(false);
+  const [isVisibleMenu, setIsVisibleMenu] = useState<boolean>(false);
 
-  const data = [
+  const data: RecordModel.IRecordModel[] = [
     {
       id: 1,
       nickName: "산책이 귀찮은 아빠",
@@ -143,28 +148,107 @@ const RecordScreen = ({ navigation }: any) => {
   };
 
   return (
-    <SafeAreaView style={styles.Container}>
-      <HeaderNavigation middletitle="일지" hasBackButton={false} />
-      <FlatList
-        keyExtractor={(item) => `record-${item.id}`}
-        data={data}
-        renderItem={renderItem}
-      />
-      <Pressable
-        style={styles.CreateRocordIcon}
-        onPress={() => navigation.navigate("CreateRecord")}
+    <>
+      <SafeAreaView>
+        <HeaderNavigation middletitle="일지" hasBackButton={false} />
+        <FlatList
+          keyExtractor={(item) => `record-${item.id}`}
+          data={data}
+          renderItem={renderItem}
+          contentContainerStyle={{ paddingBottom: 80 }}
+        />
+      </SafeAreaView>
+      {/* 플로팅 버튼 */}
+      <SafeAreaView
+        style={[
+          styles.Container,
+          {
+            backgroundColor: isVisibleMenu
+              ? "rgba(0, 0, 0, 0.5)"
+              : Colors.White,
+            position: isVisibleMenu ? "absolute" : "relative",
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 0,
+            zIndex: isVisibleMenu ? 10 : 0,
+          },
+        ]}
       >
-        <CreateRocordButton />
-      </Pressable>
-      <BottomModal
-        isVisible={isVisible}
-        onClose={() => {
-          setIsVisible(false);
-        }}
-        footer={footer}
-        style={{ justifyContent: "flex-end" }}
-      />
-    </SafeAreaView>
+        <Pressable
+          style={styles.CreateRocordIcon}
+          onPress={() => {
+            setIsVisibleMenu(!isVisibleMenu);
+          }}
+        >
+          {isVisibleMenu ? (
+            <View style={styles.PinkButtonContainer}>
+              <Pressable
+                onPress={() => {
+                  navigation.navigate(ScreenName.AddTodo);
+                }}
+                style={styles.PinkButton}
+              >
+                <Title
+                  text={"일정 추가"}
+                  fontSize={16}
+                  color={Colors.White}
+                  style={{
+                    textAlign: "center",
+                    marginRight: 12,
+                    paddingBottom: 3,
+                  }}
+                />
+                <AddIcon />
+              </Pressable>
+              <Pressable
+                onPress={() => {
+                  navigation.navigate(ScreenName.CreateRecord);
+                }}
+                style={[styles.PinkButton, { marginTop: 16 }]}
+              >
+                <Title
+                  text={"일지 쓰기"}
+                  fontSize={16}
+                  color={Colors.White}
+                  style={{
+                    textAlign: "center",
+                    marginRight: 12,
+                    paddingBottom: 3,
+                  }}
+                />
+                <WriteIcon />
+              </Pressable>
+              <Pressable
+                onPress={() => {
+                  setIsVisibleMenu(false);
+                }}
+                style={styles.CancleIconContainer}
+              >
+                <CancleIcon />
+              </Pressable>
+            </View>
+          ) : (
+            <Pressable
+              style={styles.CreateRocordIcon}
+              onPress={() => {
+                setIsVisibleMenu(!isVisibleMenu);
+              }}
+            >
+              <CreateRocordButton />
+            </Pressable>
+          )}
+        </Pressable>
+        <BottomModal
+          isVisible={isVisible}
+          onClose={() => {
+            setIsVisible(false);
+          }}
+          footer={footer}
+          style={{ justifyContent: "flex-end" }}
+        />
+      </SafeAreaView>
+    </>
   );
 };
 
@@ -231,8 +315,24 @@ const styles = StyleSheet.create({
   },
   CreateRocordIcon: {
     position: "absolute",
-    bottom: 0,
+    bottom: 68,
     right: 0,
     zIndex: 1,
+  },
+  CancleIconContainer: {
+    marginTop: 27,
+    alignItems: "flex-end",
+    marginRight: 12,
+  },
+  PinkButtonContainer: {
+    marginRight: 20,
+  },
+  PinkButton: {
+    backgroundColor: Colors.FB3F7E,
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    borderRadius: 99,
+    flexDirection: "row",
+    alignItems: "center",
   },
 });
