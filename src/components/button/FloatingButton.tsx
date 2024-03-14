@@ -1,6 +1,5 @@
 import React from "react";
 import { Pressable, StyleSheet, View } from "react-native";
-import { Colors } from "react-native/Libraries/NewAppScreen";
 import {
   AddIcon,
   CancleIcon,
@@ -8,29 +7,36 @@ import {
   WriteIcon,
 } from "../../assets/svg";
 import Title from "../text/Title";
+import { Colors } from "../../styles/Colors";
+import { useNavigation } from "@react-navigation/native";
 import { ScreenName } from "../../statics/constants/ScreenName";
 
 interface FloatingButtonProps {
-  isVisible: boolean;
+  isVisibleMenu: boolean;
   onPressCancel: () => void;
-  onPress: () => void;
+  onPressFloating: () => void;
 }
 
-const FloatingButton: React.FC<FloatingButtonProps> = (
-  { navigation }: any,
-  { isVisible, onPressCancel, onPress }
-) => {
+const FloatingButton: React.FC<FloatingButtonProps> = ({
+  isVisibleMenu,
+  onPressCancel,
+  onPressFloating,
+}) => {
+  const navigation = useNavigation();
+
   return (
     <Pressable
       style={styles.CreateRocordIcon}
       onPress={() => {
-        onPress();
+        onPressFloating();
       }}
     >
-      {isVisible ? (
+      {isVisibleMenu ? (
         <View style={styles.PinkButtonContainer}>
           <Pressable
-            onPress={() => navigation.navigate(ScreenName.AddTodo)}
+            onPress={() => {
+                navigation.navigate(ScreenName.AddTodo);
+            }}
             style={styles.PinkButton}
           >
             <Title
@@ -46,7 +52,9 @@ const FloatingButton: React.FC<FloatingButtonProps> = (
             <AddIcon />
           </Pressable>
           <Pressable
-            onPress={() => navigation.navigate(ScreenName.CreateRecord)}
+            onPress={() => {
+                navigation.navigate(ScreenName.CreateRecord);
+            }}
             style={[styles.PinkButton, { marginTop: 16 }]}
           >
             <Title
@@ -74,7 +82,7 @@ const FloatingButton: React.FC<FloatingButtonProps> = (
         <Pressable
           style={styles.CreateRocordIcon}
           onPress={() => {
-            onPress();
+            onPressFloating();
           }}
         >
           <CreateRocordButton />

@@ -13,10 +13,9 @@ import CommentBottomModal from "../../components/modal/CommentBottomModal";
 import Title from "../../components/text/Title";
 import { RecordModel } from "../../model/RecordModel";
 import HeaderNavigation from "../../navigation/HeaderNavigation";
-import { ScreenName } from "../../statics/constants/ScreenName";
 import { Colors } from "../../styles/Colors";
 
-const RecordScreen = ({ navigation }: any) => {
+const RecordScreen = () => {
   const moreLength = 17;
 
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
@@ -163,7 +162,7 @@ const RecordScreen = ({ navigation }: any) => {
       </View>
     );
   };
-console.log("isVisibleMenu", isVisibleMenu);
+
   return (
     <>
       <SafeAreaView>
@@ -193,9 +192,9 @@ console.log("isVisibleMenu", isVisibleMenu);
         ]}
       >
         <FloatingButton
-          isVisible={isVisibleMenu}
-          onPress={() => setIsVisibleMenu(!isVisibleMenu)}
+          isVisibleMenu={isVisibleMenu}
           onPressCancel={() => setIsVisibleMenu(false)}
+          onPressFloating={() => setIsVisibleMenu(!isVisibleMenu)}
         />
         <BottomModal
           isVisible={isVisibleMore}
