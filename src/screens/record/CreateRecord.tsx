@@ -12,7 +12,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { AddImage } from "../../assets/svg";
 import Title from "../../components/text/Title";
 import HeaderNavigation from "../../navigation/HeaderNavigation";
-import { Colors } from "../../statics/styles/Colors";
+import { Colors } from "../../styles/Colors";
 
 const CreatRecord = ({ navigation }: any) => {
   const [imageUrls, setImageUrls] = useState<string[]>([]);

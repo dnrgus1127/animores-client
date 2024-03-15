@@ -14,7 +14,7 @@ interface IProps {
   footer?: () => React.ReactNode;
 }
 
-const BottomModal: React.FunctionComponent<IProps> = (props: IProps) => {
+const CommentBottomModal: React.FunctionComponent<IProps> = (props: IProps) => {
   const {
     isVisible,
     propagateSwipe = true,
@@ -39,20 +39,18 @@ const BottomModal: React.FunctionComponent<IProps> = (props: IProps) => {
       backdropOpacity={0.6}
       style={[style, { width: "100%", margin: "auto" }]}
     >
-      <View style={styles.ModalContainer}>
-        {footer && footer()}
-      </View>
+      <View style={styles.ModalContainer}>{footer && footer()}</View>
     </Modal>
   );
 };
 
-export default BottomModal;
+export default CommentBottomModal;
 
 const styles = StyleSheet.create({
   ModalContainer: {
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     backgroundColor: Colors.White,
-    height: 132,
+    height: 354,
   },
 });

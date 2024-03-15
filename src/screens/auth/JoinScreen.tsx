@@ -5,7 +5,7 @@ import BasicInput from "../../components/BasicInput"
 import BasicCheckbox from "../../components/BasicCheckbox";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import HeaderNavigation from "../../navigation/HeaderNavigation";
-import { Colors } from "../../statics/styles/Colors";
+import { Colors } from "../../styles/Colors";
 import { emailRegex, nicknameRegex, pwRegex, phoneNumberRegex } from '../../js/util';
 
 
