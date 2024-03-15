@@ -36,6 +36,16 @@ const JoinScreen = ({ navigation }: any) => {
   // 임시 인증코드
   const [sampleCode, setSampleCode] = useState('')
 
+  // 필수정보 입력 확인
+  const [validation, setValidation] = useState({
+    email: false,
+    nickname: false,
+    password: false,
+    checkPassword: false,
+    phoneNumber: false,
+    verificationCode: false
+  })
+
   const mobileCarrireData: MobileCarrierModel.IMobileCarrierModel[] = [
     {
       label: 'SKT',
@@ -145,6 +155,7 @@ const JoinScreen = ({ navigation }: any) => {
       setVerificationCodeWarningText('인증번호가 일치하지 않습니다.')
     } else {
       setVerificationCodeWarningText('인증번호가 일치합니다.')
+      setValidation({...validation, verificationCode: true})
     }
   }
 
@@ -253,22 +264,27 @@ const JoinScreen = ({ navigation }: any) => {
             </View>
           )}
           {sampleCode !== '' ? (
-            <View style={styles.joinInputWrap}>
-              <BasicInput 
-                placeholder='인증번호를 입력해주세요' 
-                marginTop={20} 
-                keyboardType="numeric" 
-                value={verificationCode} 
-                onChangeText={(value) => setVerificationCode(value)} 
-                returnKeyType="done"
-              />
-              <Pressable style={styles.inputButton} onPress={() => handleOnChangeVerificationCode(verificationCode)}>
-                <Text>확인</Text>
+          <View style={styles.joinInputWrap}>
+            <BasicInput 
+              placeholder='인증번호를 입력해주세요' 
+              marginTop={20} 
+              keyboardType="numeric" 
+              value={verificationCode} 
+              onChangeText={(value) => setVerificationCode(value)} 
+              returnKeyType="done"
+              disabled={validation.verificationCode ? true : false}
+            />
+              <Pressable 
+                style={styles.inputButton} 
+                onPress={() => handleOnChangeVerificationCode(verificationCode)}
+                disabled={validation.verificationCode && true}
+              >
+                {validation.verificationCode ? (
+                  <Text style={{color: '#AEAEAE'}}>인증완료</Text>
+                ):(
+                  <Text>확인</Text>
+                )}
               </Pressable>
-              {/* 인증번호 입력 시
-              <Pressable style={[styles.inputButton disabled>
-                <Text style={{color: '#AEAEAE'}}>인증완료</Text>
-              </Pressable> */}
             </View>
           ) : null}
           {!verificationCode ? null : (

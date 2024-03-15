@@ -11,10 +11,11 @@ interface InputProps {
   value?: string;
   keyboardType?: KeyboardTypeOptions | undefined;
   returnKeyType?: ReturnKeyTypeOptions | undefined;
+  disabled?: boolean;
 }
 
 const BasicInput = (props:InputProps) => {
-  const { title, placeholder, secureTextEntry, marginTop, onChangeText, value, keyboardType, returnKeyType } = props;
+  const { title, placeholder, secureTextEntry, marginTop, onChangeText, value, keyboardType, returnKeyType, disabled } = props;
   const [initialValue, setinitialValue] = useState('');
 
   const initialOnChangeText = (inputText:string) => {
@@ -34,6 +35,8 @@ const BasicInput = (props:InputProps) => {
         secureTextEntry={secureTextEntry}
         keyboardType={keyboardType ? keyboardType : 'default'}
         returnKeyType={returnKeyType ? returnKeyType : 'done'}
+        editable={disabled ? false : true}
+        selectTextOnFocus={disabled ? false : true}
       />
     </View>
   )
