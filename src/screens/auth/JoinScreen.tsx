@@ -7,6 +7,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import HeaderNavigation from "../../navigation/HeaderNavigation";
 import { Colors } from "../../statics/styles/Colors";
 import { emailRegex, nicknameRegex, pwRegex, phoneNumberRegex } from '../../js/util';
+import { Picker } from '@react-native-picker/picker';
+import { MobileCarrierModel } from "../../model/MobileCarrierModel";
 
 
 const JoinScreen = ({ navigation }: any) => {
@@ -28,9 +30,38 @@ const JoinScreen = ({ navigation }: any) => {
   const [checkPwWarningText, setCheckPwWarningText] = useState('')
   const [phoneNumberWarningText, setPhoneNumberWarningText] = useState('')
   const [verificationCodeWarningText, setVerificationCodeWarningText] = useState('')
+
+  const [selected, setSelected] = useState('')
   
   // 임시 인증코드
   const [sampleCode, setSampleCode] = useState('')
+
+  const mobileCarrireData: MobileCarrierModel.IMobileCarrierModel[] = [
+    {
+      label: 'SKT',
+      value: 'SKT'
+    },
+    {
+      label: 'KT',
+      value: 'KT'
+    },
+    {
+      label: 'LGU+',
+      value: 'LGU+'
+    },
+    {
+      label: 'SKT 알뜰폰',
+      value: 'SKT 알뜰폰'
+    },
+    {
+      label: 'KT 알뜰폰',
+      value: 'KT 알뜰폰'
+    },
+    {
+      label: 'LGU+ 알뜰폰',
+      value: 'LGU+ 알뜰폰'
+    },
+  ];
 
   const handleOnChangeEmail = (inputText:string) => {
     setEmail(inputText)
@@ -128,6 +159,7 @@ const JoinScreen = ({ navigation }: any) => {
               placeholder='이메일을 입력해주세요' 
               value={email} 
               onChangeText={handleOnChangeEmail} 
+              returnKeyType="done"
             />
             <Pressable style={styles.inputButton}>
               <Text>중복확인</Text>
@@ -144,7 +176,11 @@ const JoinScreen = ({ navigation }: any) => {
               placeholder='닉네임을 입력해주세요' 
               value={nickname} 
               onChangeText={handleOnChangeNickname} 
+              returnKeyType="done"
             />
+            <Pressable style={styles.inputButton}>
+              <Text>중복확인</Text>
+            </Pressable>
           </View>
           {!nickname ? null : (
             <View>
@@ -158,6 +194,7 @@ const JoinScreen = ({ navigation }: any) => {
               secureTextEntry={true} 
               value={password} 
               onChangeText={handleOnChangePassword} 
+              returnKeyType="done"
             />
           </View>
           {!password ? null : (
@@ -172,6 +209,7 @@ const JoinScreen = ({ navigation }: any) => {
               secureTextEntry={true} 
               value={checkPassword} 
               onChangeText={handleOnChangeCheckPassword} 
+              returnKeyType="done"
             />
           </View>
           {!checkPassword ? null : (
@@ -179,19 +217,35 @@ const JoinScreen = ({ navigation }: any) => {
               <Text>{checkPwWarningText}</Text>
             </View>
           )}
-          <View style={styles.joinInputWrap}>
-            <BasicInput 
-              title='휴대 전화 번호 인증' 
-              placeholder='휴대 전화 번호를 입력해주세요' 
-              keyboardType="numeric" 
-              value={phoneNumber} 
-              onChangeText={handleOnChangePhoneNumber} 
-            />
-            {
-              phoneNumber.match(phoneNumberRegex) === null ? getButton('inactive') 
-              : sampleCode !== '' ? getButton('resend') 
-              : getButton('active')
-            }
+          <View style={{marginTop: 40}}>
+            <Text>휴대 전화 번호 인증</Text>
+            <View style={{ marginTop: 10, borderWidth: 1, borderColor: '#C1C1C1', borderStyle: 'solid' }}>
+              <Picker
+                selectedValue={selected}
+                onValueChange={(itemValue, itemIndex) => setSelected(itemValue)}
+                style={{ color: '#000' }}
+              >
+                <Picker.Item label='통신사 선택' value='' style={{ fontSize: 16 }} />
+                {mobileCarrireData.map((item) => (
+                  <Picker.Item label={item.label} value={item.value} style={{ fontSize: 16 }} />
+                ))}
+              </Picker>
+            </View>
+            <View style={styles.joinInputWrap}>
+              <BasicInput 
+                placeholder='휴대 전화 번호를 입력해주세요'
+                marginTop={20} 
+                keyboardType="numeric" 
+                value={phoneNumber} 
+                onChangeText={handleOnChangePhoneNumber} 
+                returnKeyType="done"
+              />
+              {
+                phoneNumber.match(phoneNumberRegex) === null ? getButton('inactive') 
+                : sampleCode !== '' ? getButton('resend') 
+                : getButton('active')
+              }
+            </View>
           </View>
           {!phoneNumber ? null : (
             <View>
@@ -202,10 +256,11 @@ const JoinScreen = ({ navigation }: any) => {
             <View style={styles.joinInputWrap}>
               <BasicInput 
                 placeholder='인증번호를 입력해주세요' 
-                marginTop={10} 
+                marginTop={20} 
                 keyboardType="numeric" 
                 value={verificationCode} 
                 onChangeText={(value) => setVerificationCode(value)} 
+                returnKeyType="done"
               />
               <Pressable style={styles.inputButton} onPress={() => handleOnChangeVerificationCode(verificationCode)}>
                 <Text>확인</Text>
@@ -221,35 +276,33 @@ const JoinScreen = ({ navigation }: any) => {
               <Text>{verificationCodeWarningText}</Text>
             </View>
           )}
-          <View>
-            <View>
-              <Text style={{marginTop: 40}}>약관 동의</Text>
-              <BasicCheckbox 
-                isChecked={isChecked}
-                onValueChangeHandler={() => setChecked(!isChecked)}
-                label='전체 동의합니다.'
-              />
-              
-              <View style={commonStyles.commonRowContainer}>
-                <View style={[commonStyles.separator, {marginTop: 15}]} />
-              </View>
-
-              <BasicCheckbox 
-                isChecked={isChecked}
-                onValueChangeHandler={() => setChecked(!isChecked)}
-                label='광고 수신동의(선택)'
-              />
-              <BasicCheckbox 
-                isChecked={isChecked}
-                onValueChangeHandler={() => setChecked(!isChecked)}
-                label='이용 약관에 동의합니다.(필수)'
-              />
-              <BasicCheckbox 
-                isChecked={isChecked}
-                onValueChangeHandler={() => setChecked(!isChecked)}
-                label='개인정보 수집 이용에 동의합니다.(필수)'
-              />
+          <View style={{marginTop: 40}}>
+            <Text>약관 동의</Text>
+            <BasicCheckbox 
+              isChecked={isChecked}
+              onValueChangeHandler={() => setChecked(!isChecked)}
+              label='전체 동의합니다.'
+            />
+            
+            <View style={commonStyles.commonRowContainer}>
+              <View style={[commonStyles.separator, {marginTop: 15}]} />
             </View>
+
+            <BasicCheckbox 
+              isChecked={isChecked}
+              onValueChangeHandler={() => setChecked(!isChecked)}
+              label='광고 수신동의(선택)'
+            />
+            <BasicCheckbox 
+              isChecked={isChecked}
+              onValueChangeHandler={() => setChecked(!isChecked)}
+              label='이용 약관에 동의합니다.(필수)'
+            />
+            <BasicCheckbox 
+              isChecked={isChecked}
+              onValueChangeHandler={() => setChecked(!isChecked)}
+              label='개인정보 수집 이용에 동의합니다.(필수)'
+            />
           </View>
           <Pressable
             onPress={() => console.log('Pressed')}

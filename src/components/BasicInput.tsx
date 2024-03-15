@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, TextInput, View, Text, KeyboardTypeOptions } from "react-native";
+import { StyleSheet, TextInput, View, Text, KeyboardTypeOptions, ReturnKeyTypeOptions } from "react-native";
 import { commonStyles } from '../styles/commonStyles';
 
 interface InputProps {
@@ -10,10 +10,11 @@ interface InputProps {
   onChangeText?: (inputText:string) => void;
   value?: string;
   keyboardType?: KeyboardTypeOptions | undefined;
+  returnKeyType?: ReturnKeyTypeOptions | undefined;
 }
 
 const BasicInput = (props:InputProps) => {
-  const { title, placeholder, secureTextEntry, marginTop, onChangeText, value, keyboardType } = props;
+  const { title, placeholder, secureTextEntry, marginTop, onChangeText, value, keyboardType, returnKeyType } = props;
   const [initialValue, setinitialValue] = useState('');
 
   const initialOnChangeText = (inputText:string) => {
@@ -22,7 +23,9 @@ const BasicInput = (props:InputProps) => {
 
   return (
     <View style={[styles.inputWrap, marginTop ? { marginTop: marginTop} : null ]}>
-      <Text>{title}</Text>
+      {title ? (
+        <Text>{title}</Text>
+      ) : null}
       <TextInput
         style={styles.inputBox}
         onChangeText={onChangeText ? onChangeText : initialOnChangeText}
@@ -30,6 +33,7 @@ const BasicInput = (props:InputProps) => {
         placeholder={placeholder ? placeholder : ''}
         secureTextEntry={secureTextEntry}
         keyboardType={keyboardType ? keyboardType : 'default'}
+        returnKeyType={returnKeyType ? returnKeyType : 'done'}
       />
     </View>
   )
