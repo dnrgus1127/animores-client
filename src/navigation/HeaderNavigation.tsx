@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { BackButton } from "../assets/svg";
 import Title from "../components/text/Title";
-import { Colors } from "../statics/styles/Colors";
+import { Colors } from "../styles/Colors";
 
 interface IProps {
   middletitle: string;

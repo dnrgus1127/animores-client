@@ -5,7 +5,7 @@ import { commonStyles } from '../../styles/commonStyles';
 import FilledInput from '../../components/FilledInput';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import HeaderNavigation from "../../navigation/HeaderNavigation";
-import { Colors } from "../../statics/styles/Colors";
+import { Colors } from "../../styles/Colors";
 
 const LoginScreen = ({ navigation }: any) => {
   const [diviceHeight, setDiviceHeight] = useState(375)

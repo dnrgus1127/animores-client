@@ -9,6 +9,7 @@ import CancleIcon from './cancleIcon.svg';
 import AddIcon from './addIcon.svg';
 import WriteIcon from './Frame1295.svg';
 import SecureEyeIcon from './secureEyeIcon.svg';
+import User from './image581.svg';   //TODO:삭제 예정
 
 export {
 	BackButton,
@@ -21,5 +22,6 @@ export {
 	CancleIcon,
 	AddIcon,
 	WriteIcon,
-	SecureEyeIcon
+	SecureEyeIcon,
+	User,
 }
