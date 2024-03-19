@@ -8,6 +8,7 @@ import AddImage from './Frame1409.svg';
 import CancleIcon from './cancleIcon.svg';
 import AddIcon from './addIcon.svg';
 import WriteIcon from './Frame1295.svg';
+import SecureEyeIcon from './secureEyeIcon.svg';
 
 export {
 	BackButton,
@@ -19,5 +20,6 @@ export {
 	AddImage,
 	CancleIcon,
 	AddIcon,
-	WriteIcon
+	WriteIcon,
+	SecureEyeIcon
 }

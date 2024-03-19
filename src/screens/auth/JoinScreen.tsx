@@ -9,6 +9,7 @@ import { Colors } from "../../statics/styles/Colors";
 import { emailRegex, nicknameRegex, pwRegex, phoneNumberRegex } from '../../js/util';
 import { Picker } from '@react-native-picker/picker';
 import { MobileCarrierModel } from "../../model/MobileCarrierModel";
+import { SecureEyeIcon } from "../../assets/svg";
 
 
 const JoinScreen = ({ navigation }: any) => {
@@ -20,8 +21,12 @@ const JoinScreen = ({ navigation }: any) => {
   const [checkPassword, setCheckPassword] = useState('')
   const [phoneNumber, setPhoneNumber] = useState('')
   const [verificationCode, setVerificationCode] = useState('')
-  const [secureText, setScureText] = useState(null) // 패스워드 보이기/가리기 상태
-  const [touchEye, setTouchEye] = useState(true) // 패스워드 보이기 버튼 상태(켬/끔)
+  
+  // 패스워드 보이기/가리기 상태
+  const [secureText, setScureText] = useState({
+    pw: true,
+    checkPw: true
+  })
 
   // errorText와 successText로 분리할 것.
   const [emailWarningText, setEmailWarningText] = useState('')
@@ -103,8 +108,10 @@ const JoinScreen = ({ navigation }: any) => {
     const matchPassword = inputText.match(pwRegex)
 
     if (matchPassword === null) {
+      setValidation({ ...validation, password: false })
       setPwWarningText('영문 대문자와 소문자, 숫자, 특수문자를 조합하여 8~30자로 입력해주세요.')
     } else {
+      setValidation({ ...validation, password: true })
       setPwWarningText('')
     }
   }
@@ -113,9 +120,11 @@ const JoinScreen = ({ navigation }: any) => {
     setCheckPassword(inputText)
 
     if (inputText !== password) {
+      setValidation({ ...validation, checkPassword: false })
       setCheckPwWarningText('비밀번호가 일치하지 않습니다.')
     } else {
-      setCheckPwWarningText('')
+      setValidation({ ...validation, checkPassword: true })
+      setCheckPwWarningText('비밀번호가 일치합니다.')
     }
   }
 
@@ -202,11 +211,17 @@ const JoinScreen = ({ navigation }: any) => {
             <BasicInput 
               title='비밀번호' 
               placeholder='8~30자리 영대・소문자, 숫자, 특수문자 조합' 
-              secureTextEntry={true} 
+              secureTextEntry={secureText.pw} 
               value={password} 
               onChangeText={handleOnChangePassword} 
-              returnKeyType="done"
+              returnKeyType='done'
             />
+            <Pressable 
+              style={styles.secureEyeButton} 
+              onPress={() => setScureText({...secureText, pw: !secureText.pw })}
+            >
+              <SecureEyeIcon color={secureText.pw ? '#1E1E1E' : '#AFAFAF'} />
+            </Pressable>
           </View>
           {!password ? null : (
             <View>
@@ -216,12 +231,18 @@ const JoinScreen = ({ navigation }: any) => {
           <View style={styles.joinInputWrap}>
             <BasicInput 
               title='비밀번호 확인' 
-              placeholder='' 
-              secureTextEntry={true} 
+              placeholder='8~30자리 영대・소문자, 숫자, 특수문자 조합' 
+              secureTextEntry={secureText.checkPw} 
               value={checkPassword} 
               onChangeText={handleOnChangeCheckPassword} 
-              returnKeyType="done"
+              returnKeyType='done'
             />
+            <Pressable 
+              style={styles.secureEyeButton} 
+              onPress={() => setScureText({...secureText, checkPw: !secureText.checkPw })}
+            >
+            <SecureEyeIcon color={secureText.checkPw ? '#1E1E1E' : '#AFAFAF'} />
+            </Pressable>
           </View>
           {!checkPassword ? null : (
             <View>
@@ -366,4 +387,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#fff',
   },
+  secureEyeButton: {
+    position: 'absolute',
+    right: 0,
+    bottom: 15
+  }
 });
