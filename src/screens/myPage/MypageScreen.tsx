@@ -3,37 +3,64 @@ import { Pressable, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { SvgProps } from "react-native-svg";
 import {
-	AlertIcon,
-	CustomerServiceIcon,
-	InformationIcon,
-	LogoutIcon,
-	NoticeIcon,
-	PetIcon,
-	ProfileIcon,
-	VersionIcon,
-	WithdrawIcon,
+  AlertIcon,
+  CustomerServiceIcon,
+  InformationIcon,
+  LogoutIcon,
+  NoticeIcon,
+  PetIcon,
+  ProfileIcon,
+  VersionIcon,
+  WithdrawIcon,
 } from "../../assets/svg";
 import Title from "../../components/text/Title";
 import HeaderNavigation from "../../navigation/HeaderNavigation";
+import { ScreenName } from "../../statics/constants/ScreenName";
 import { Colors } from "../../styles/Colors";
 
 interface IMypageList {
   id: number;
   name: string;
   image: React.FC<SvgProps>;
+  screen?: any;
 }
+
 const MypageScreen = ({ navigation }: any) => {
   const myPageTopList: IMypageList[] = [
-    { id: 1, name: "프로필 및 계정 관리", image: ProfileIcon },
-    { id: 2, name: "펫 관리", image: PetIcon },
-    { id: 3, name: "알림 설정", image: AlertIcon },
+    {
+      id: 1,
+      name: "프로필 및 계정 관리",
+      image: ProfileIcon,
+      screen: ScreenName.Profile,
+    },
+    {
+      id: 2,
+      name: "펫 관리",
+      image: PetIcon,
+      screen: ScreenName.PatManagement,
+    },
+    {
+      id: 3,
+      name: "알림 설정",
+      image: AlertIcon,
+      screen: ScreenName.AlertSetting,
+    },
   ];
 
   const myPageBottomList: IMypageList[] = [
-    { id: 4, name: "공지 사항", image: NoticeIcon },
-    { id: 5, name: "고객 센터", image: CustomerServiceIcon },
-    { id: 6, name: "이용 안내", image: InformationIcon },
-    { id: 7, name: "버전 정보", image: VersionIcon },
+    { id: 4, name: "공지 사항", image: NoticeIcon, screen: ScreenName.Notice },
+    {
+      id: 5,
+      name: "고객 센터",
+      image: CustomerServiceIcon,
+      screen: ScreenName.CustomerService,
+    },
+    {
+      id: 6,
+      name: "이용 안내",
+      image: InformationIcon,
+      screen: ScreenName.Information,
+    },
   ];
 
   return (
@@ -51,6 +78,7 @@ const MypageScreen = ({ navigation }: any) => {
             return (
               <Pressable
                 key={m.id}
+                onPress={() => navigation.navigate(m.screen)}
                 style={[
                   styles.MyPageContainer,
                   { paddingTop: index === 0 ? 30 : 0 },
@@ -69,6 +97,7 @@ const MypageScreen = ({ navigation }: any) => {
             return (
               <Pressable
                 key={m.id}
+                onPress={() => navigation.navigate(m.screen)}
                 style={[
                   styles.MyPageContainer,
                   { paddingTop: index === 0 ? 30 : 0 },
@@ -79,14 +108,15 @@ const MypageScreen = ({ navigation }: any) => {
               </Pressable>
             );
           })}
+          <View style={styles.VersionInformationContainer}>
+            <View style={{ flexDirection: "row" }}>
+              <VersionIcon />
+              <Title text={"버전 정보"} style={{ marginLeft: 10 }} />
+            </View>
+            <Title text={"최신 버전 입니다"} color={Colors.AEAEAE} />
+          </View>
         </View>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "center",
-            marginTop: 50,
-          }}
-        >
+        <View style={styles.LogoutContainer}>
           <Pressable style={styles.RowView}>
             <LogoutIcon />
             <Title
@@ -150,5 +180,16 @@ const styles = StyleSheet.create({
   },
   RowView: {
     flexDirection: "row",
+  },
+  LogoutContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 50,
+  },
+  VersionInformationContainer: {
+    flexDirection: "row",
+    paddingHorizontal: 20,
+    paddingBottom: 30,
+    justifyContent: "space-between",
   },
 });

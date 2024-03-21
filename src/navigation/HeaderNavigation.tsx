@@ -18,6 +18,7 @@ interface IProps {
   hasBackButton?: boolean;
   textStyle?: StyleProp<TextStyle>;
   onPressRightButton?: () => void;
+  isBlack?: boolean;
 }
 
 const HeaderNavigation = (props: IProps) => {
@@ -28,6 +29,7 @@ const HeaderNavigation = (props: IProps) => {
     hasBackButton = true,
     textStyle,
     onPressRightButton,
+    isBlack = false,
   } = props;
 
   const HIT_SLOP = { top: 10, left: 10, right: 10, bottom: 10 };
@@ -57,7 +59,7 @@ const HeaderNavigation = (props: IProps) => {
             <Title
               text={rightTitle}
               fontSize={18}
-              color={Colors.DBDBDB}
+              color={isBlack ? Colors.Black : Colors.DBDBDB}
               style={[styles.RightTitle, textStyle]}
             />
           </Pressable>

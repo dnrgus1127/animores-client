@@ -19,6 +19,7 @@ import InformationIcon from './Icon(5).svg';
 import VersionIcon from './Icon(6).svg';
 import LogoutIcon from './logoutIcon.svg';
 import WithdrawIcon from './withdrawIcon.svg';
+import TestUser from './user2.svg';   //TODO:삭제 예정
 
 export {
 	BackButton,
@@ -41,5 +42,6 @@ export {
 	InformationIcon,
 	VersionIcon,
 	LogoutIcon,
-	WithdrawIcon
+	WithdrawIcon,
+	TestUser,
 }

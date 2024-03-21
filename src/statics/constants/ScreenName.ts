@@ -5,4 +5,12 @@ export enum ScreenName {
 	Join = 'Join',
 	CreateRecord = 'CreateRecord',
 	AddTodo = 'AddTodo',
+	AlertSetting = 'AlertSetting',
+	CustomerService = 'CustomerService',
+	Information = 'Information',
+	Mypage = 'Mypage',
+	Notice = 'Notice',
+	PatManagement = 'PatManagement',
+	Profile = 'Profile',
+	VersionInformation = 'VersionInformation',
 }
