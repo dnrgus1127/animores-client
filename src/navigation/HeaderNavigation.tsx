@@ -75,6 +75,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     height: 64,
     alignItems: "center",
+    backgroundColor: Colors.White
   },
   TouchOpacityBackButton: {
     paddingLeft: 20,

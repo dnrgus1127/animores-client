@@ -1,5 +1,5 @@
 export enum ScreenName {
-	BottomTabNavigator = 'BottomTabNavigator',
+	BottomTab = 'BottomTab',
 	Home = 'Home',
 	Login = 'Login',
 	Join = 'Join',

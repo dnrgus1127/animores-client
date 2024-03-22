@@ -1,3 +1,4 @@
+import { useNavigation } from "@react-navigation/native";
 import React from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import {
@@ -6,10 +7,9 @@ import {
   CreateRocordButton,
   WriteIcon,
 } from "../../assets/svg";
-import Title from "../text/Title";
-import { Colors } from "../../styles/Colors";
-import { useNavigation } from "@react-navigation/native";
 import { ScreenName } from "../../statics/constants/ScreenName";
+import { Colors } from "../../styles/Colors";
+import Title from "../text/Title";
 
 interface FloatingButtonProps {
   isVisibleMenu: boolean;
@@ -26,16 +26,17 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({
 
   return (
     <Pressable
-      style={styles.CreateRocordIcon}
+      style={styles.CreateDetailRocordIcon}
       onPress={() => {
         onPressFloating();
       }}
     >
+      {/* TODO: never수정 */}
       {isVisibleMenu ? (
         <View style={styles.PinkButtonContainer}>
           <Pressable
             onPress={() => {
-                navigation.navigate(ScreenName.AddTodo);
+                navigation.navigate(ScreenName.AddTodo as never);
             }}
             style={styles.PinkButton}
           >
@@ -53,7 +54,7 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({
           </Pressable>
           <Pressable
             onPress={() => {
-                navigation.navigate(ScreenName.CreateRecord);
+                navigation.navigate(ScreenName.CreateRecord as never);
             }}
             style={[styles.PinkButton, { marginTop: 16 }]}
           >
@@ -95,66 +96,16 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({
 export default FloatingButton;
 
 const styles = StyleSheet.create({
-  Container: {
-    flex: 1,
-    backgroundColor: Colors.White,
-  },
-  RenderItemContainer: {
-    marginTop: 20,
-  },
-  Top: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginHorizontal: 20,
-  },
-  TitleContainer: {
-    flex: 1,
-    marginLeft: 12,
-  },
-  MoreIcon: {
-    alignSelf: "flex-end",
-  },
-  contentContainer: {
-    flexDirection: "row",
-    marginTop: 22,
-    marginHorizontal: 20,
-  },
-  CommentIconContainer: {
-    flexDirection: "row",
-    marginTop: 18,
-    marginBottom: 20,
-    marginLeft: 20,
-    alignItems: "center",
-  },
-  BottomLine: {
-    borderBottomWidth: 8,
-    borderBottomColor: Colors.F4F4F4,
-  },
-  FooterContainer: {
-    position: "absolute",
-    bottom: 34,
-    width: "100%",
-  },
-  Footer: {
-    flexDirection: "row",
-    paddingHorizontal: 20,
-  },
-  FooterTopLine: {
-    backgroundColor: Colors.Gray838383,
-    height: 1.5,
-    width: 50,
-    alignSelf: "center",
-  },
-  ButtonContainer: {
-    backgroundColor: Colors.FB3F7E,
-    flex: 1,
-    height: 50,
-    justifyContent: "center",
-    borderRadius: 10,
-  },
-  CreateRocordIcon: {
+  CreateDetailRocordIcon: {
     position: "absolute",
     bottom: 68,
+    right: 0,
+    zIndex: 1,
+  },
+  // TODO: bottom 수정
+  CreateRocordIcon: {
+    position: "absolute",
+    bottom: -68,
     right: 0,
     zIndex: 1,
   },
