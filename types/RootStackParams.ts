@@ -1,7 +1,7 @@
 export type RootStackParams = {
-  Home: undefined;
-  AllTodo: undefined;
-  Tabs: undefined;
+  BottomTab: undefined;
   Login: undefined;
   Join: undefined;
+  CreateRecord: undefined;
+  AddTodo: undefined;
 };
