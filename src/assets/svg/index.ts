@@ -10,6 +10,16 @@ import AddIcon from './addIcon.svg';
 import WriteIcon from './Frame1295.svg';
 import SecureEyeIcon from './secureEyeIcon.svg';
 import User from './image581.svg';   //TODO:삭제 예정
+import ProfileIcon from './Icon(7).svg'; 
+import PetIcon from './Icon(1).svg'; 
+import AlertIcon from './Icon(2).svg'; 
+import NoticeIcon from './Icon(3).svg'; 
+import CustomerServiceIcon from './Icon(4).svg'; 
+import InformationIcon from './Icon(5).svg'; 
+import VersionIcon from './Icon(6).svg';
+import LogoutIcon from './logoutIcon.svg';
+import WithdrawIcon from './withdrawIcon.svg';
+import TestUser from './user2.svg';   //TODO:삭제 예정
 
 export {
 	BackButton,
@@ -24,4 +34,14 @@ export {
 	WriteIcon,
 	SecureEyeIcon,
 	User,
+	ProfileIcon,
+	PetIcon,
+	AlertIcon,
+	NoticeIcon,
+	CustomerServiceIcon,
+	InformationIcon,
+	VersionIcon,
+	LogoutIcon,
+	WithdrawIcon,
+	TestUser,
 }

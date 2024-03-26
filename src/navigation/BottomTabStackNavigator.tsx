@@ -1,39 +1,36 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import React from 'react';
 import { Text } from "react-native";
-import { BottomTabStackParamList } from "../../types/BottomTabStackParamList";
 import HomeScreen from '../screens/home/HomeScreen';
 import RecordScreen from '../screens/record/RecordScreen';
 import AllTodoScreen from '../screens/todo';
-import { ScreenName } from "../statics/constants/ScreenName";
+import MypageScreen from "../screens/myPage/MypageScreen";
 
-const BottomTabStack = createBottomTabNavigator<BottomTabStackParamList>();
+const Tab = createBottomTabNavigator();
 
-const BottomTabStackNavigator = () => {
+const BottomTabNavigator = () => {
 	return (
-    <BottomTabStack.Navigator>
-      <BottomTabStack.Screen
-        name={ScreenName.Home}
+    <Tab.Navigator>
+      <Tab.Screen
+        name="Home"
         component={HomeScreen}
         options={{
           title: "홈",
           tabBarLabel: "홈",
           tabBarIcon: () => <Text>🏠</Text>,
-          headerShown: false
         }}
       />
-      <BottomTabStack.Screen
-        name={ScreenName.AllTodo}
+      <Tab.Screen
+        name="AllTodo"
         component={AllTodoScreen}
         options={{
           title: "모든할일",
           tabBarLabel: "모든할일",
           tabBarIcon: () => <Text>📜</Text>,
-          headerShown: false
         }}
       />
-      <BottomTabStack.Screen
-        name={ScreenName.Record}
+      <Tab.Screen
+        name="Record"
         component={RecordScreen}
         options={{
           title: "일지",
@@ -42,8 +39,18 @@ const BottomTabStackNavigator = () => {
           tabBarIcon: () => <Text>📜</Text>,
         }}
       />
-    </BottomTabStack.Navigator>
+      <Tab.Screen
+        name="Mypage"
+        component={MypageScreen}
+        options={{
+          title: "마이페이지",
+          tabBarLabel: "마이페이지",
+          headerShown: false,
+          tabBarIcon: () => <Text>📜</Text>,
+        }}
+      />
+    </Tab.Navigator>
   );
 };
 
-export default BottomTabStackNavigator;
+export default BottomTabNavigator;

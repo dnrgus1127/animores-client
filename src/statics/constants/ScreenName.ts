@@ -7,4 +7,12 @@ export enum ScreenName {
 	CreateRecord = 'CreateRecord',
 	Record = 'Record',
 	AddTodo = 'AddTodo',
+	AlertSetting = 'AlertSetting',
+	CustomerService = 'CustomerService',
+	Information = 'Information',
+	Mypage = 'Mypage',
+	Notice = 'Notice',
+	PatManagement = 'PatManagement',
+	Profile = 'Profile',
+	VersionInformation = 'VersionInformation',
 }
