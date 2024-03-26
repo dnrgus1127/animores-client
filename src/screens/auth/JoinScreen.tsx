@@ -8,19 +8,21 @@ import HeaderNavigation from "../../navigation/HeaderNavigation";
 import { Colors } from "../../styles/Colors";
 import { emailRegex, nicknameRegex, pwRegex, phoneNumberRegex } from "../../js/util";
 import { Picker } from "@react-native-picker/picker";
-import { MobileCarrierModel } from "../../model/MobileCarrierModel";
+import { AuthModel } from "../../model/AuthModel";
 import { SecureEyeIcon } from "../../assets/svg";
 
-
 const JoinScreen = ({ navigation }: any) => {
-  // state합치기, 컴포넌트 분리 필요.
-  const [isChecked, setChecked] = useState(false)
-  const [email, setEmail] = useState('')
-  const [nickname, setNickname] = useState('')
-  const [password, setPassword] = useState('')
-  const [checkPassword, setCheckPassword] = useState('')
-  const [phoneNumber, setPhoneNumber] = useState('')
-  const [verificationCode, setVerificationCode] = useState('')
+  const [userInput, setUserInput] = useState({
+    isChecked: false,
+    email: '',
+    nickname: '',
+    password: '',
+    checkPassword: '',
+    phoneNumber: '',
+    verificationCode: ''
+  })
+
+  const {isChecked, email, nickname, password, checkPassword, phoneNumber, verificationCode} = userInput
   
   // 패스워드 보이기/가리기 상태
   const [secureText, setScureText] = useState({
@@ -28,12 +30,14 @@ const JoinScreen = ({ navigation }: any) => {
     checkPw: true
   })
 
-  const [emailWarningText, setEmailWarningText] = useState('')
-  const [nicknameWarningText, setNicknameWarningText] = useState('')
-  const [pwWarningText, setPwWarningText] = useState('')
-  const [checkPwWarningText, setCheckPwWarningText] = useState('')
-  const [phoneNumberWarningText, setPhoneNumberWarningText] = useState('')
-  const [verificationCodeWarningText, setVerificationCodeWarningText] = useState('')
+  const [warningText, setWarningText] = useState({
+    email: '',
+    nickname: '',
+    password: '',
+    checkPassword: '',
+    phoneNumber: '',
+    verificationCode: ''
+  })
 
   // 통신사 선택
   const [mobileCarrier, setMobileCarrier] = useState('')
@@ -41,148 +45,174 @@ const JoinScreen = ({ navigation }: any) => {
   // 임시 인증코드
   const [sampleCode, setSampleCode] = useState('')
 
+  // Email 인증 상태
+  const [verificationState, setVerificationState] = useState<AuthModel.IVerificationModel['state']>('none')
+
+  // Nickname 중복 확인
+  const [availableNickname, setAvailableNickname] = useState(false)
+
   // 필수정보 입력 확인
   const [validation, setValidation] = useState({
     email: false,
+    verificationCode: false,
     nickname: false,
+    availableNickname: false,
     password: false,
     checkPassword: false,
     phoneNumber: false,
-    verificationCode: false
   })
 
-  const mobileCarrireData: MobileCarrierModel.IMobileCarrierModel[] = [
+  const mobileCarrireData: AuthModel.IMobileCarrierModel[] = [
     {
       label: 'SKT',
-      value: 'SKT'
+      value: 'skt'
     },
     {
       label: 'KT',
-      value: 'KT'
+      value: 'kt'
     },
     {
       label: 'LGU+',
-      value: 'LGU+'
+      value: 'lguplus'
     },
     {
       label: 'SKT 알뜰폰',
-      value: 'SKT 알뜰폰'
+      value: 'skt_save'
     },
     {
       label: 'KT 알뜰폰',
-      value: 'KT 알뜰폰'
+      value: 'kt_save'
     },
     {
       label: 'LGU+ 알뜰폰',
-      value: 'LGU+ 알뜰폰'
+      value: 'lguplus_save'
     },
   ];
 
+  
+  // 중복 이벤트 합치기
+
   const handleOnChangeEmail = (inputText:string) => {
-    setEmail(inputText)
+    // 이메일 재입력 시 인증번호 무효화
+    setSampleCode('')
+    setUserInput({...userInput, verificationCode: '', email: inputText})
     
     const matchEmail = inputText.match(emailRegex)
 
     if (matchEmail === null) {
-      setValidation({ ...validation, email: false })
-      setEmailWarningText('이메일 형식에 맞게 입력해주세요.')
-    } else {
-      setValidation({ ...validation, email: true })
-      setEmailWarningText('')
+      setValidation({...validation, email: false})
+      setWarningText({...warningText, email: '이메일 형식에 맞게 입력해주세요.'})
+    } else {   
+      setValidation({...validation, email: true})
+      setWarningText({...warningText, email: ''})
     }
-    // 중복확인 클릭 시 중복이면 '이미 사용중인 이메일입니다.'
-    // 아니면 '사용하실 수 있는 이메일입니다.'
   }
 
   const handleOnChangeNickname = (inputText:string) => {
-    setNickname(inputText)
+    setUserInput({...userInput, nickname: inputText})
+    setAvailableNickname(false)
     
     const matchNickname = inputText.match(nicknameRegex)
 
     if (matchNickname === null) {
-      setValidation({ ...validation, nickname: false })
-      setNicknameWarningText('영문, 한글, 숫자만 가능하며 3~20자로 입력해주세요.')
+      setValidation({...validation, nickname: false})
+      setWarningText({...warningText, nickname: '영문, 한글, 숫자만 가능하며 3~20자로 입력해주세요.'})
     } else {
-      setValidation({ ...validation, nickname: true })
-      setNicknameWarningText('')
+      setValidation({...validation, nickname: true})
+      setWarningText({...warningText, nickname: ''})
     }
-    // 중복확인 클릭 시 중복이면 '이미 사용중인 닉네임입니다.'
-    // 아니면 '사용하실 수 있는 닉네임입니다.'
   }
 
   const handleOnChangePassword = (inputText:string) => {
-    setPassword(inputText)
+    // 패스워드 재입력 시 패스워드 확인 입력 필드 초기화
+    setUserInput({...userInput, password: inputText, checkPassword: ''})
     
     const matchPassword = inputText.match(pwRegex)
 
     if (matchPassword === null) {
-      setValidation({ ...validation, password: false })
-      setPwWarningText('영문 대문자와 소문자, 숫자, 특수문자를 조합하여 8~30자로 입력해주세요.')
+      setValidation({...validation, password: false})
+      setWarningText({...warningText, password: '영문 대문자와 소문자, 숫자, 특수문자를 조합하여 8~30자로 입력해주세요.'})
     } else {
-      setValidation({ ...validation, password: true })
-      setPwWarningText('')
+      setValidation({...validation, password: true})
+      setWarningText({...warningText, password: '사용하실 수 있는 비밀번호 입니다.'})
     }
   }
 
   const handleOnChangeCheckPassword = (inputText:string) => {
-    setCheckPassword(inputText)
+    setUserInput({...userInput, checkPassword: inputText})
 
     if (inputText !== password) {
-      setValidation({ ...validation, checkPassword: false })
-      setCheckPwWarningText('비밀번호가 일치하지 않습니다.')
+      setValidation({...validation, checkPassword: false})
+      setWarningText({...warningText, checkPassword: '비밀번호가 일치하지 않습니다.'})
     } else {
-      setValidation({ ...validation, checkPassword: true })
-      setCheckPwWarningText('비밀번호가 일치합니다.')
+      setValidation({...validation, checkPassword: true})
+      setWarningText({...warningText, checkPassword: '비밀번호가 일치합니다.'})
     }
   }
 
   const handleOnChangePhoneNumber = (inputText:string) => {
-    setPhoneNumber(inputText)
+    setUserInput({...userInput, phoneNumber: inputText})
 
     const matchPhoneNumber = inputText.match(phoneNumberRegex)
 
     if (matchPhoneNumber === null) {
-      setValidation({ ...validation, phoneNumber: false })
-      setPhoneNumberWarningText('휴대 전화 번호 형식에 맞게 입력해주세요.')
+      setValidation({...validation, phoneNumber: false})
+      setWarningText({...warningText, phoneNumber: '휴대 전화 번호 형식에 맞게 입력해주세요.'})
     } else {
-      setValidation({ ...validation, phoneNumber: true })
-      setPhoneNumberWarningText('')
+      setValidation({...validation, phoneNumber: true})
+      setWarningText({...warningText, phoneNumber: ''})
     }
   }
 
+  // Email - 인증번호 전송 클릭 시
+  const sendVerificationCode = () => {
+    // 이메일 중복 검사
+
+    // 중복일 경우
+    // setWarningText({...warningText, email: '이미 사용중인 이메일입니다.'}) 또는
+    // setWarningText({...warningText, email: '사용하실 수 없는 이메일입니다.'})
+
+    // 중복이 아니면 인증번호 전송
+    setSampleCode('1234')
+
+    // 카운트 시작 3:00
+  }
+
+  // Email - 재전송 클릭 시
   const refreshVerificationCode = () => {
-    setVerificationCode('')
-    setVerificationCodeWarningText('')
-    setValidation({...validation, verificationCode: false})
-  }
-  
-  const getButton = (id:string) => {
-    if (id === 'inactive') { 
-      return (
-      <Pressable style={styles.inputButton} disabled>
-        <Text style={styles.disabled}>인증받기</Text>
-      </Pressable>
-    )} else if (id === 'active'){
-      return (
-      <Pressable style={styles.inputButton} onPress={() => setSampleCode('1234')}>
-        <Text>인증받기</Text>
-      </Pressable>
-    )} else {
-      return (
-      <Pressable style={styles.inputButton} onPress={() => refreshVerificationCode()}>
-        <Text>재발송</Text>
-      </Pressable>
-    )}
+    // 입력필드, 에러 텍스트 초기화
+    setUserInput({...userInput, verificationCode: ''})
+    setWarningText({...warningText, verificationCode: ''})
+
+    // 새 인증번호 전송
+    setSampleCode('4567')
   }
 
+  // Email - 인증하기 클릭 시 
   const handleOnChangeVerificationCode = (inputText:string) => {
+    // 인증 실패 : 인증시간 초과 시
+    // setWarningText({...warningText, verificationCode: '인증시간이 초과되었습니다.'})
+
+    // 인증 실패 : 인증번호 불일치 시
     if (inputText !== sampleCode) {
-      setValidation({...validation, verificationCode: false})
-      setVerificationCodeWarningText('인증번호가 일치하지 않습니다.')
+      setVerificationState('dismatch')
+      setWarningText({...warningText, verificationCode: '인증번호가 일치하지 않습니다.'})
     } else {
+      // 인증 완료
       setValidation({...validation, verificationCode: true})
-      setVerificationCodeWarningText('인증번호가 일치합니다.')
+      setVerificationState('success')
+      setWarningText({...warningText, email: '인증이 완료되었습니다.'})
     }
+  }
+
+  // Nickname - 중복확인 클릭 시
+  const checkNickname = () => {
+    // 중복이면 
+    // setWarningText({...warningText, nickname: '이미 사용중인 닉네임입니다.'})
+    
+    // 확인 완료
+    setAvailableNickname(true)
+    setWarningText({...warningText, nickname: '사용하실 수 있는 닉네임입니다.'})
   }
 
   return (
@@ -198,20 +228,78 @@ const JoinScreen = ({ navigation }: any) => {
               onChangeText={handleOnChangeEmail} 
               returnKeyType='done'
               error={email !== '' && !validation.email}
+              disabled={verificationState === 'success'}
             />
-            <Pressable style={styles.inputButton}>
-              <Text>중복확인</Text>
-            </Pressable>
+            {
+              verificationState === 'success' ?
+              <Pressable style={[styles.inputButton, { paddingLeft: 5, paddingRight: 5 }]} disabled>
+                <Text style={styles.disabled}>인증완료</Text>
+              </Pressable>
+              : (verificationState === 'fail' ?
+                <Pressable style={[styles.inputButton, { paddingLeft: 5, paddingRight: 5 }]} disabled>
+                  <Text style={styles.disabled}>인증실패</Text>
+                </Pressable>
+                : (sampleCode === '' ? 
+                  <Pressable 
+                    style={[styles.inputButton, { paddingLeft: 5, paddingRight: 5 }]} 
+                    disabled={!validation.email} 
+                    onPress={() => sendVerificationCode()}
+                  >
+                    <Text style={!validation.email && styles.disabled}>인증번호 전송</Text>
+                  </Pressable>
+                  : 
+                  <Pressable style={[styles.inputButton, { paddingLeft: 5, paddingRight: 5 }]} disabled>
+                    <Text style={styles.disabled}>전송완료</Text>
+                  </Pressable>
+                )
+              )
+            }
           </View>
           {!email ? null : (
             <View>
               <Text 
                 style={validation.email ? styles.successText : styles.errorText}
               >
-                {emailWarningText}
+                {warningText.email}
               </Text>
             </View>
           )}
+          {sampleCode !== '' && verificationState !== 'success' ? (
+            <View>
+              <View style={styles.joinInputWrap}>
+                <BasicInput 
+                  placeholder='인증번호를 입력해주세요' 
+                  marginTop={20} 
+                  keyboardType='numeric' 
+                  value={verificationCode} 
+                  onChangeText={(value) => setUserInput({...userInput, verificationCode: value})} 
+                  returnKeyType='done'
+                  disabled={validation.verificationCode ? true : false}
+                />
+                <Pressable 
+                  style={styles.inputButton} 
+                  onPress={() => refreshVerificationCode()}
+                >
+                  <Text>재전송</Text>
+                </Pressable>
+              </View>
+              {verificationState === 'dismatch' && (
+                <View>
+                  <Text style={styles.errorText}>
+                    {warningText.verificationCode}
+                  </Text>
+                </View>
+              )}
+              <View>
+                <Pressable 
+                  style={[styles.primaryButton, { marginTop: 20, marginLeft: 0, width: '100%' }]} 
+                  onPress={() => handleOnChangeVerificationCode(verificationCode)}
+                >
+                  <Text style={styles.primaryButtonText}>인증 하기</Text>
+                </Pressable>
+              </View>
+            </View>
+          ) : null}
           <View style={styles.joinInputWrap}>
             <BasicInput 
               title='닉네임' 
@@ -221,8 +309,12 @@ const JoinScreen = ({ navigation }: any) => {
               returnKeyType='done'
               error={nickname !== '' && !validation.nickname}
             />
-            <Pressable style={styles.inputButton}>
-              <Text>중복확인</Text>
+            <Pressable 
+              style={styles.inputButton} 
+              onPress={() => checkNickname()} 
+              disabled={!validation.nickname}
+            >
+              <Text style={!validation.nickname && styles.disabled}>중복확인</Text>
             </Pressable>
           </View>
           {!nickname ? null : (
@@ -230,10 +322,11 @@ const JoinScreen = ({ navigation }: any) => {
               <Text 
                 style={validation.nickname ? styles.successText : styles.errorText}
               >
-                {nicknameWarningText}
+                {warningText.nickname}
               </Text>
             </View>
           )}
+          <Text>중복 확인 {availableNickname ? '완료' : '필요'}</Text>
           <View style={styles.joinInputWrap}>
             <BasicInput 
               title='비밀번호' 
@@ -256,7 +349,7 @@ const JoinScreen = ({ navigation }: any) => {
               <Text 
                 style={validation.password ? styles.successText : styles.errorText}
               >
-                {pwWarningText}
+                {warningText.password}
               </Text>
             </View>
           )}
@@ -282,7 +375,7 @@ const JoinScreen = ({ navigation }: any) => {
               <Text 
                 style={validation.checkPassword ? styles.successText : styles.errorText}
               >
-                {checkPwWarningText}
+                {warningText.checkPassword}
               </Text>
             </View>
           )}
@@ -307,9 +400,9 @@ const JoinScreen = ({ navigation }: any) => {
                   onValueChange={(itemValue, itemIndex) => setMobileCarrier(itemValue)}
                   style={{ color: '#000' }}
                 >
-                  <Picker.Item label='통신사 선택' value='' style={{ fontSize: 14 }} />
+                  <Picker.Item label='통신사 선택' key='select' value='' style={{ fontSize: 14 }} />
                   {mobileCarrireData.map((item) => (
-                    <Picker.Item label={item.label} value={item.value} style={{ fontSize: 14 }} />
+                    <Picker.Item label={item.label} key={item.value} value={item.value} style={{ fontSize: 14 }} />
                   ))}
                 </Picker>
               </View>
@@ -324,11 +417,6 @@ const JoinScreen = ({ navigation }: any) => {
                   error={phoneNumber !== '' && !validation.phoneNumber}
                 />
               </View>
-              {
-                phoneNumber.match(phoneNumberRegex) === null ? getButton('inactive') 
-                : sampleCode === '1234' ? getButton('resend') 
-                : getButton('active')
-              }
             </View>
           </View>
           {!phoneNumber ? null : (
@@ -336,40 +424,7 @@ const JoinScreen = ({ navigation }: any) => {
               <Text
                 style={validation.phoneNumber ? styles.successText : styles.errorText}
               >
-                {phoneNumberWarningText}
-              </Text>
-            </View>
-          )}
-          {sampleCode !== '' ? (
-          <View style={styles.joinInputWrap}>
-            <BasicInput 
-              placeholder='인증번호를 입력해주세요' 
-              marginTop={20} 
-              keyboardType='numeric' 
-              value={verificationCode} 
-              onChangeText={(value) => setVerificationCode(value)} 
-              returnKeyType='done'
-              disabled={validation.verificationCode ? true : false}
-            />
-              <Pressable 
-                style={styles.inputButton} 
-                onPress={() => handleOnChangeVerificationCode(verificationCode)}
-                disabled={validation.verificationCode && true}
-              >
-                {validation.verificationCode ? (
-                  <Text style={{color: '#AEAEAE'}}>인증완료</Text>
-                ):(
-                  <Text>확인</Text>
-                )}
-              </Pressable>
-            </View>
-          ) : null}
-          {!verificationCode ? null : (
-            <View>
-              <Text
-                style={validation.verificationCode ? styles.successText : styles.errorText}
-              >
-                {verificationCodeWarningText}
+                {warningText.phoneNumber}
               </Text>
             </View>
           )}
@@ -377,7 +432,7 @@ const JoinScreen = ({ navigation }: any) => {
             <Text style={styles.label}>약관 동의</Text>
             <BasicCheckbox 
               isChecked={isChecked}
-              onValueChangeHandler={() => setChecked(!isChecked)}
+              onValueChangeHandler={() => setUserInput({...userInput, isChecked: !isChecked})}
               label='전체 동의합니다.'
             />
             
@@ -387,24 +442,24 @@ const JoinScreen = ({ navigation }: any) => {
 
             <BasicCheckbox 
               isChecked={isChecked}
-              onValueChangeHandler={() => setChecked(!isChecked)}
+              onValueChangeHandler={() => setUserInput({...userInput, isChecked: !isChecked})}
               label='광고 수신동의(선택)'
             />
             <BasicCheckbox 
               isChecked={isChecked}
-              onValueChangeHandler={() => setChecked(!isChecked)}
+              onValueChangeHandler={() => setUserInput({...userInput, isChecked: !isChecked})}
               label='이용 약관에 동의합니다.(필수)'
             />
             <BasicCheckbox 
               isChecked={isChecked}
-              onValueChangeHandler={() => setChecked(!isChecked)}
+              onValueChangeHandler={() => setUserInput({...userInput, isChecked: !isChecked})}
               label='개인정보 수집 이용에 동의합니다.(필수)'
             />
           </View>
           <Pressable
             onPress={() => console.log('Pressed')}
-            style={styles.joinButton}
-            children={<Text style={styles.joinButtonText}>회원가입</Text>}
+            style={styles.primaryLargeButton}
+            children={<Text style={styles.primaryButtonText}>회원가입</Text>}
           >
           </Pressable>
         </View>
@@ -439,15 +494,23 @@ const styles = StyleSheet.create({
   disabled: {
     color: '#AEAEAE',
   },
-  joinButton: {
+  primaryButton: {
     marginTop: 64,
-    height: 58,
+    height: 50,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 15,
+    borderRadius: 5,
     backgroundColor: '#FB3F7E',
   },
-  joinButtonText: {
+  primaryLargeButton: {
+    marginTop: 64,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 20,
+    backgroundColor: '#FB3F7E',
+  },
+  primaryButtonText: {
     fontSize: 16,
     color: '#fff',
   },
@@ -460,6 +523,6 @@ const styles = StyleSheet.create({
     color: '#FF4040',
   },
   successText: {
-    color: '#A0A0A0',
+    color: '#00B01C',
   }
 });
