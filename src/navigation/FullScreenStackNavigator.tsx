@@ -5,16 +5,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { RootStackParams } from "../../types/RootStackParams";
 import JoinScreen from "../screens/auth/JoinScreen";
 import LoginScreen from "../screens/auth/LoginScreen";
-import AlertSettingScreen from "../screens/myPage/AlertSettingScreen";
-import CustomerServiceScreen from "../screens/myPage/CustomerServiceScreen";
-import InformationScreen from "../screens/myPage/InformationScreen";
-import NoticeScreen from "../screens/myPage/NoticeScreen";
-import PatManagementScreen from "../screens/myPage/PatManagementScreen";
-import ProfileScreen from "../screens/myPage/ProfileScreen";;
 import CreateRecord from "../screens/record/CreateRecord";
 import AddTodo from "../screens/todo/AddTodo";
 import { ScreenName } from "../statics/constants/ScreenName";
 import BottomTabStackNavigator from "./BottomTabStackNavigator";
+;
 
 const RootStack = createNativeStackNavigator<RootStackParams>();
 
