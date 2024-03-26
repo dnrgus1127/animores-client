@@ -1,35 +1,39 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import React from 'react';
 import { Text } from "react-native";
+import { BottomTabStackParamList } from "../../types/BottomTabStackParamList";
 import HomeScreen from '../screens/home/HomeScreen';
 import RecordScreen from '../screens/record/RecordScreen';
 import AllTodoScreen from '../screens/todo';
+import { ScreenName } from "../statics/constants/ScreenName";
 
-const Tab = createBottomTabNavigator();
+const BottomTabStack = createBottomTabNavigator<BottomTabStackParamList>();
 
-const BottomTabNavigator = () => {
+const BottomTabStackNavigator = () => {
 	return (
-    <Tab.Navigator>
-      <Tab.Screen
-        name="Home"
+    <BottomTabStack.Navigator>
+      <BottomTabStack.Screen
+        name={ScreenName.Home}
         component={HomeScreen}
         options={{
           title: "홈",
           tabBarLabel: "홈",
           tabBarIcon: () => <Text>🏠</Text>,
+          headerShown: false
         }}
       />
-      <Tab.Screen
-        name="AllTodo"
+      <BottomTabStack.Screen
+        name={ScreenName.AllTodo}
         component={AllTodoScreen}
         options={{
           title: "모든할일",
           tabBarLabel: "모든할일",
           tabBarIcon: () => <Text>📜</Text>,
+          headerShown: false
         }}
       />
-      <Tab.Screen
-        name="Record"
+      <BottomTabStack.Screen
+        name={ScreenName.Record}
         component={RecordScreen}
         options={{
           title: "일지",
@@ -38,8 +42,8 @@ const BottomTabNavigator = () => {
           tabBarIcon: () => <Text>📜</Text>,
         }}
       />
-    </Tab.Navigator>
+    </BottomTabStack.Navigator>
   );
 };
 
-export default BottomTabNavigator;
+export default BottomTabStackNavigator;
