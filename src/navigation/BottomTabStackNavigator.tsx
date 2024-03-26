@@ -4,7 +4,6 @@ import { Text } from "react-native";
 import HomeScreen from '../screens/home/HomeScreen';
 import RecordScreen from '../screens/record/RecordScreen';
 import AllTodoScreen from '../screens/todo';
-import MypageScreen from "../screens/myPage/MypageScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -35,16 +34,6 @@ const BottomTabNavigator = () => {
         options={{
           title: "일지",
           tabBarLabel: "일지",
-          headerShown: false,
-          tabBarIcon: () => <Text>📜</Text>,
-        }}
-      />
-      <Tab.Screen
-        name="Mypage"
-        component={MypageScreen}
-        options={{
-          title: "마이페이지",
-          tabBarLabel: "마이페이지",
           headerShown: false,
           tabBarIcon: () => <Text>📜</Text>,
         }}

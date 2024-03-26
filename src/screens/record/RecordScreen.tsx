@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { FlatList, Pressable, StyleSheet, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { CommentIcon, DogImage, More, User, UserImage } from "../../assets/svg";
 import FloatingButton from "../../components/button/FloatingButton";
 import BottomModal from "../../components/modal/BottomModal";
@@ -100,7 +99,10 @@ const RecordScreen = () => {
             </Pressable>
           )}
         </View>
-        {item.image && <View style={{ marginTop: 22 }}>{item.image}</View>}
+        {item.image &&
+          <View style={{ marginTop: 22 }}>
+            {item.image}
+          </View>}
         <Pressable
           onPress={() => {
             setIsVisibleComment(true);
@@ -175,7 +177,7 @@ const RecordScreen = () => {
             text={"답글 달기"}
             fontSize={14}
             color={Colors.AEAEAE}
-            style={{ marginLeft: 12, alignSelf:"flex-end" }}
+            style={{ marginLeft: 12, alignSelf: "flex-end" }}
           />
         </View>
       </View>
@@ -184,33 +186,29 @@ const RecordScreen = () => {
 
   return (
     <>
-      <SafeAreaView>
-        <HeaderNavigation middletitle="일지" hasBackButton={false} />
+      <HeaderNavigation middletitle="일지" hasBackButton={false} />
+      <View style={{ flex: 1 }}>
         <FlatList
           keyExtractor={(item) => `record-${item.id}`}
           data={data}
           renderItem={renderItem}
-          contentContainerStyle={{ paddingBottom: 80 }}
+          contentContainerStyle={{ paddingBottom: 24 }}
         />
-      </SafeAreaView>
+      </View>
       {/* 플로팅 버튼 */}
-      <SafeAreaView
-        style={[
-          styles.Container,
-          {
-            backgroundColor: isVisibleMenu
-              ? "rgba(0, 0, 0, 0.5)"
-              : Colors.White,
-            position: isVisibleMenu ? "absolute" : "relative",
-            zIndex: isVisibleMenu ? 10 : 0,
-          },
-        ]}
-      >
+      <View
+        style={[styles.FloatingButtonContainer,
+        {
+          backgroundColor: isVisibleMenu ? "rgba(0, 0, 0, 0.5)" : "transparent",
+          zIndex: isVisibleMenu ? 1 : 0,
+          top: isVisibleMenu ? 0 : null,
+        }]}>
         <FloatingButton
           isVisibleMenu={isVisibleMenu}
           onPressCancel={() => setIsVisibleMenu(false)}
           onPressFloating={() => setIsVisibleMenu(!isVisibleMenu)}
         />
+        {/* 모달 */}
         <BottomModal
           isVisible={isVisibleMore}
           onClose={() => {
@@ -227,7 +225,7 @@ const RecordScreen = () => {
           footer={footerComment}
           style={{ justifyContent: "flex-end" }}
         />
-      </SafeAreaView>
+      </View>
     </>
   );
 };
@@ -235,15 +233,8 @@ const RecordScreen = () => {
 export default RecordScreen;
 
 const styles = StyleSheet.create({
-  Container: {
-    flex: 1,
-    backgroundColor: Colors.White,
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-  },
   RenderItemContainer: {
+    flex: 1,
     marginTop: 20,
   },
   Top: {
@@ -328,4 +319,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
+  FloatingButtonContainer: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    left: 0,
+  }
 });

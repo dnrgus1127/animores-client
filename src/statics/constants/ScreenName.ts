@@ -1,9 +1,11 @@
 export enum ScreenName {
-	BottomTabNavigator = 'BottomTabNavigator',
+	BottomTab = 'BottomTab',
 	Home = 'Home',
+	AllTodo = 'AllTodo',
 	Login = 'Login',
 	Join = 'Join',
 	CreateRecord = 'CreateRecord',
+	Record = 'Record',
 	AddTodo = 'AddTodo',
 	AlertSetting = 'AlertSetting',
 	CustomerService = 'CustomerService',
