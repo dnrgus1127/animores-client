@@ -25,71 +25,71 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({
   const navigation = useNavigation();
 
   return (
-    <Pressable
-      style={styles.CreateDetailRocordIcon}
-      onPress={() => {
-        onPressFloating();
-      }}
-    >
-      {/* TODO: never수정 */}
-      {isVisibleMenu ? (
-        <View style={styles.PinkButtonContainer}>
-          <Pressable
-            onPress={() => {
+      <Pressable
+        style={styles.CreateDetailRocordIcon}
+        onPress={() => {
+          onPressFloating();
+        }}
+      >
+        {/* TODO: never수정 */}
+        {isVisibleMenu ? (
+          <View style={styles.PinkButtonContainer}>
+            <Pressable
+              onPress={() => {
                 navigation.navigate(ScreenName.AddTodo as never);
-            }}
-            style={styles.PinkButton}
-          >
-            <Title
-              text={"일정 추가"}
-              fontSize={16}
-              color={Colors.White}
-              style={{
-                textAlign: "center",
-                marginRight: 12,
-                paddingBottom: 3,
               }}
-            />
-            <AddIcon />
-          </Pressable>
-          <Pressable
-            onPress={() => {
+              style={styles.PinkButton}
+            >
+              <Title
+                text={"일정 추가"}
+                fontSize={16}
+                color={Colors.White}
+                style={{
+                  textAlign: "center",
+                  marginRight: 12,
+                  paddingBottom: 3,
+                }}
+              />
+              <AddIcon />
+            </Pressable>
+            <Pressable
+              onPress={() => {
                 navigation.navigate(ScreenName.CreateRecord as never);
-            }}
-            style={[styles.PinkButton, { marginTop: 16 }]}
-          >
-            <Title
-              text={"일지 쓰기"}
-              fontSize={16}
-              color={Colors.White}
-              style={{
-                textAlign: "center",
-                marginRight: 12,
-                paddingBottom: 3,
               }}
-            />
-            <WriteIcon />
-          </Pressable>
+              style={[styles.PinkButton, { marginTop: 16 }]}
+            >
+              <Title
+                text={"일지 쓰기"}
+                fontSize={16}
+                color={Colors.White}
+                style={{
+                  textAlign: "center",
+                  marginRight: 12,
+                  paddingBottom: 3,
+                }}
+              />
+              <WriteIcon />
+            </Pressable>
+            <Pressable
+              onPress={() => {
+                onPressCancel();
+              }}
+              style={styles.CancleIconContainer}
+            >
+              <CancleIcon />
+            </Pressable>
+          </View>
+        ) : (
           <Pressable
+            style={styles.CreateRocordIcon}
             onPress={() => {
-              onPressCancel();
+              onPressFloating();
             }}
-            style={styles.CancleIconContainer}
           >
-            <CancleIcon />
+            <CreateRocordButton />
           </Pressable>
-        </View>
-      ) : (
-        <Pressable
-          style={styles.CreateRocordIcon}
-          onPress={() => {
-            onPressFloating();
-          }}
-        >
-          <CreateRocordButton />
-        </Pressable>
-      )}
-    </Pressable>
+        )}
+      </Pressable>
   );
 };
 
@@ -98,16 +98,13 @@ export default FloatingButton;
 const styles = StyleSheet.create({
   CreateDetailRocordIcon: {
     position: "absolute",
-    bottom: 68,
+    bottom: 32,
     right: 0,
-    zIndex: 1,
   },
-  // TODO: bottom 수정
   CreateRocordIcon: {
     position: "absolute",
-    bottom: -68,
+    bottom: 0,
     right: 0,
-    zIndex: 1,
   },
   CancleIconContainer: {
     marginTop: 27,

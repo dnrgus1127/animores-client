@@ -5,6 +5,7 @@ import { BottomTabStackParamList } from "../../types/BottomTabStackParamList";
 import HomeScreen from '../screens/home/HomeScreen';
 import RecordScreen from '../screens/record/RecordScreen';
 import AllTodoScreen from '../screens/todo';
+import { ScreenName } from "../statics/constants/ScreenName";
 
 const BottomTabStack = createBottomTabNavigator<BottomTabStackParamList>();
 
@@ -12,7 +13,7 @@ const BottomTabStackNavigator = () => {
 	return (
     <BottomTabStack.Navigator>
       <BottomTabStack.Screen
-        name="Home"
+        name={ScreenName.Home}
         component={HomeScreen}
         options={{
           title: "홈",
@@ -22,7 +23,7 @@ const BottomTabStackNavigator = () => {
         }}
       />
       <BottomTabStack.Screen
-        name="AllTodo"
+        name={ScreenName.AllTodo}
         component={AllTodoScreen}
         options={{
           title: "모든할일",
@@ -32,7 +33,7 @@ const BottomTabStackNavigator = () => {
         }}
       />
       <BottomTabStack.Screen
-        name="Record"
+        name={ScreenName.Record}
         component={RecordScreen}
         options={{
           title: "일지",

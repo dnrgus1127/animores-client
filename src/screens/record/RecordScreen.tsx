@@ -187,30 +187,27 @@ const RecordScreen = () => {
   return (
     <>
       <HeaderNavigation middletitle="일지" hasBackButton={false} />
-      <FlatList
-        keyExtractor={(item) => `record-${item.id}`}
-        data={data}
-        renderItem={renderItem}
-        contentContainerStyle={{ paddingBottom: 24 }}
-      />
+      <View style={{ flex: 1 }}>
+        <FlatList
+          keyExtractor={(item) => `record-${item.id}`}
+          data={data}
+          renderItem={renderItem}
+          contentContainerStyle={{ paddingBottom: 24 }}
+        />
+      </View>
       {/* 플로팅 버튼 */}
       <View
-        style={[
-          {
-            backgroundColor: isVisibleMenu
-              ? "rgba(0, 0, 0, 0.5)"
-              : Colors.White,
-            position: isVisibleMenu ? "absolute" : "relative",
-            zIndex: isVisibleMenu ? 10 : 0,
-          },
-        ]}
-      >
+        style={[styles.FloatingButtonContainer,
+        {
+          backgroundColor: isVisibleMenu ? "rgba(0, 0, 0, 0.5)" : "transparent",
+          zIndex: isVisibleMenu ? 1 : 0,
+          top: isVisibleMenu ? 0 : null,
+        }]}>
         <FloatingButton
           isVisibleMenu={isVisibleMenu}
           onPressCancel={() => setIsVisibleMenu(false)}
           onPressFloating={() => setIsVisibleMenu(!isVisibleMenu)}
         />
-
         {/* 모달 */}
         <BottomModal
           isVisible={isVisibleMore}
@@ -228,7 +225,6 @@ const RecordScreen = () => {
           footer={footerComment}
           style={{ justifyContent: "flex-end" }}
         />
-        
       </View>
     </>
   );
@@ -238,6 +234,7 @@ export default RecordScreen;
 
 const styles = StyleSheet.create({
   RenderItemContainer: {
+    flex: 1,
     marginTop: 20,
   },
   Top: {
@@ -322,4 +319,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
+  FloatingButtonContainer: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    left: 0,
+  }
 });
