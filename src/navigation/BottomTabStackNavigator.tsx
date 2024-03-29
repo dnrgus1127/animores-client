@@ -1,52 +1,51 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import React from 'react';
-import { Text } from "react-native";
+import CalendarScreen from "../screens/celendar/CalendarScreen";
 import HomeScreen from '../screens/home/HomeScreen';
+import MypageScreen from "../screens/myPage/MypageScreen";
 import RecordScreen from '../screens/record/RecordScreen';
 import AllTodoScreen from '../screens/todo';
-import MypageScreen from "../screens/myPage/MypageScreen";
+import { ScreenName } from "../statics/constants/ScreenName";
+import TabBar from "./TabBar";
 
 const Tab = createBottomTabNavigator();
 
 const BottomTabNavigator = () => {
-	return (
-    <Tab.Navigator>
+  return (
+    <Tab.Navigator initialRouteName="Home" tabBar={props => <TabBar {...props} />}>
       <Tab.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{
-          title: "홈",
-          tabBarLabel: "홈",
-          tabBarIcon: () => <Text>🏠</Text>,
-        }}
-      />
-      <Tab.Screen
-        name="AllTodo"
+        name={ScreenName.AllTodo}
         component={AllTodoScreen}
         options={{
-          title: "모든할일",
-          tabBarLabel: "모든할일",
-          tabBarIcon: () => <Text>📜</Text>,
+          headerShown: false,
         }}
       />
       <Tab.Screen
-        name="Record"
+        name={ScreenName.Calendar}
+        component={CalendarScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Tab.Screen
+        name={ScreenName.Home}
+        component={HomeScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Tab.Screen
+        name={ScreenName.Record}
         component={RecordScreen}
         options={{
-          title: "일지",
-          tabBarLabel: "일지",
           headerShown: false,
-          tabBarIcon: () => <Text>📜</Text>,
         }}
       />
       <Tab.Screen
-        name="Mypage"
+        name={ScreenName.Mypage}
         component={MypageScreen}
         options={{
-          title: "마이페이지",
-          tabBarLabel: "마이페이지",
           headerShown: false,
-          tabBarIcon: () => <Text>📜</Text>,
         }}
       />
     </Tab.Navigator>
