@@ -1,6 +1,7 @@
 export enum ScreenName {
 	BottomTab = 'BottomTab',
 	Home = 'Home',
+	Calendar = 'Calendar',
 	AllTodo = 'AllTodo',
 	Login = 'Login',
 	Join = 'Join',
