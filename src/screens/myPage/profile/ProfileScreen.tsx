@@ -1,10 +1,10 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { TestUser } from "../../assets/svg";
-import Title from "../../components/text/Title";
-import HeaderNavigation from "../../navigation/HeaderNavigation";
-import { Colors } from "../../styles/Colors";
+import { TestUser } from "../../../assets/svg";
+import Title from "../../../components/text/Title";
+import HeaderNavigation from "../../../navigation/HeaderNavigation";
+import { Colors } from "../../../styles/Colors";
 
 const ProfileScreen = ({ navigation }: any) => {
   return (

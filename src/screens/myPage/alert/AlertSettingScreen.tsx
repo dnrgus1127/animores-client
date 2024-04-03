@@ -1,14 +1,14 @@
 import React from "react";
 import { StyleSheet } from "react-native";
-import HeaderNavigation from "../../navigation/HeaderNavigation";
+import HeaderNavigation from "../../../navigation/HeaderNavigation";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const PatManagementScreen = ({navigation} : any) => {
+const AlertSettingScreen = ({navigation} : any) => {
   return (
     <SafeAreaView style={styles.Container}>
       <HeaderNavigation
-        middletitle="펫 관리"
+        middletitle="알림 설정"
         hasBackButton={true}
         onPressBackButton={() => {
           navigation.goBack();
@@ -18,7 +18,7 @@ const PatManagementScreen = ({navigation} : any) => {
   );
 };
 
-export default PatManagementScreen;
+export default AlertSettingScreen;
 
 const styles = StyleSheet.create({
   Container: {
