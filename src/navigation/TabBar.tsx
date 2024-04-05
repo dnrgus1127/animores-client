@@ -33,7 +33,7 @@ const TabBar = ({ navigation, state }: ITabBarProps) => {
             case ScreenName.Calendar: return '캘린더';
             case ScreenName.Home: return '홈';
             case ScreenName.Record: return '일지';
-            case ScreenName.Mypage: return '마이페이지';
+            case ScreenName.Mypage: return 'MY';
             default: return '';
         }
     }

@@ -21,7 +21,8 @@ const PngImage = {
 		homeBottomTabActive,
 		recordBottomTabActive,
 		mypageBottomTabActive,
-	}
+	},
+	petAdd: require('./petAdd.png')
 }
 
 export default PngImage;
