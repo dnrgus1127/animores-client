@@ -5,6 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import asset from "../../../assets/png";
 import Title from "../../../components/text/Title";
 import { Colors } from "../../../styles/Colors";
+import { ScreenName } from "../../../statics/constants/ScreenName";
 
 const PatManagementScreen = ({ navigation }: any) => {
 
@@ -19,7 +20,7 @@ const PatManagementScreen = ({ navigation }: any) => {
         rightTitle="편집"
         isBlack={true}
       />
-      <Pressable style={styles.PetAdd}>
+      <Pressable onPress={() => navigation.navigate(ScreenName.AddPet)} style={styles.PetAdd}>
         <Image source={asset.petAdd} />
         <Title
           text={"펫 추가하기"}

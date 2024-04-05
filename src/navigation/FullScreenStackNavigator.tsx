@@ -10,11 +10,13 @@ import CustomerServiceScreen from "../screens/myPage/customerService/CustomerSer
 import InformationScreen from "../screens/myPage/information/InformationScreen";
 import NoticeScreen from "../screens/myPage/notice/NoticeScreen";
 import PatManagementScreen from "../screens/myPage/petManagement/PatManagementScreen";
-import ProfileScreen from "../screens/myPage/profile/ProfileScreen";;
+import ProfileScreen from "../screens/myPage/profile/ProfileScreen";
 import CreateRecord from "../screens/record/CreateRecord";
 import AddTodo from "../screens/todo/AddTodo";
 import { ScreenName } from "../statics/constants/ScreenName";
 import BottomTabStackNavigator from "./BottomTabStackNavigator";
+import AddPet from "../screens/myPage/petManagement/AddPet";
+;
 
 const RootStack = createNativeStackNavigator<RootStackParams>();
 
@@ -78,6 +80,11 @@ const FullScreenStackNavigator = () => {
         <RootStack.Screen
           name={ScreenName.Profile}
           component={ProfileScreen}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
+          name={ScreenName.AddPet}
+          component={AddPet}
           options={{ headerShown: false }}
         />
       </RootStack.Navigator>
