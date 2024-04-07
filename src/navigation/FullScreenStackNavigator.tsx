@@ -5,16 +5,18 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { RootStackParams } from "../../types/RootStackParams";
 import JoinScreen from "../screens/auth/JoinScreen";
 import LoginScreen from "../screens/auth/LoginScreen";
-import AlertSettingScreen from "../screens/myPage/AlertSettingScreen";
-import CustomerServiceScreen from "../screens/myPage/CustomerServiceScreen";
-import InformationScreen from "../screens/myPage/InformationScreen";
-import NoticeScreen from "../screens/myPage/NoticeScreen";
-import PatManagementScreen from "../screens/myPage/PatManagementScreen";
-import ProfileScreen from "../screens/myPage/ProfileScreen";;
+import AlertSettingScreen from "../screens/myPage/alert/AlertSettingScreen";
+import CustomerServiceScreen from "../screens/myPage/customerService/CustomerServiceScreen";
+import InformationScreen from "../screens/myPage/information/InformationScreen";
+import NoticeScreen from "../screens/myPage/notice/NoticeScreen";
+import PatManagementScreen from "../screens/myPage/petManagement/PatManagementScreen";
+import ProfileScreen from "../screens/myPage/profile/ProfileScreen";
 import CreateRecord from "../screens/record/CreateRecord";
 import AddTodo from "../screens/todo/AddTodo";
 import { ScreenName } from "../statics/constants/ScreenName";
 import BottomTabStackNavigator from "./BottomTabStackNavigator";
+import AddPet from "../screens/myPage/petManagement/AddPet";
+;
 
 const RootStack = createNativeStackNavigator<RootStackParams>();
 
@@ -78,6 +80,11 @@ const FullScreenStackNavigator = () => {
         <RootStack.Screen
           name={ScreenName.Profile}
           component={ProfileScreen}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
+          name={ScreenName.AddPet}
+          component={AddPet}
           options={{ headerShown: false }}
         />
       </RootStack.Navigator>

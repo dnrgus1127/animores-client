@@ -1,10 +1,10 @@
 import React from "react";
 import { StyleSheet } from "react-native";
-import HeaderNavigation from "../../navigation/HeaderNavigation";
+import HeaderNavigation from "../../../navigation/HeaderNavigation";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const NoticeScreen = ({navigation} : any) => {
+const InformationScreen = ({navigation} : any) => {
   return (
     <SafeAreaView style={styles.Container}>
       <HeaderNavigation
@@ -18,7 +18,7 @@ const NoticeScreen = ({navigation} : any) => {
   );
 };
 
-export default NoticeScreen;
+export default InformationScreen;
 
 const styles = StyleSheet.create({
   Container: {
