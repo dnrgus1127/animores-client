@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { TestUser } from "../../../assets/svg";
 import Title from "../../../components/text/Title";
@@ -100,10 +100,26 @@ const styles = StyleSheet.create({
   },
   ProfileTitle: {
     width: 238,
-    borderWidth: 4,
+    borderWidth: 1,
     borderColor: Colors.F9F9FB,
     borderRadius: 99,
     alignItems: "center",
     paddingVertical: 14,
+
+    ...Platform.select({
+      ios: {
+        shadowColor: Colors.Black,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 6,
+      },
+      android: {
+        backgroundColor: Colors.F9F9FB,
+        elevation: 4,
+        shadowColor: "gray",
+        shadowOpacity: 0.3,
+        shadowRadius: 6,
+      },
+    }),
   },
 });
