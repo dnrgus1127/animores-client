@@ -8,6 +8,11 @@ import calendarBottomTabActive from './tabActive2.png';
 import homeBottomTabActive from './tabActive3.png'; 
 import recordBottomTabActive from './tabActive4.png'; 
 import mypageBottomTabActive from './tabActive5.png'; 
+import dog from './dog.png'; 
+import bird from './chick.png'; 
+import cat from './cat.png'; 
+import fish from './fish.png'; 
+import rabbit from './rabbit.png'; 
 
 const PngImage = {
 	BottomTab: {
@@ -22,7 +27,14 @@ const PngImage = {
 		recordBottomTabActive,
 		mypageBottomTabActive,
 	},
-	petAdd: require('./petAdd.png')
+	petAdd: require('./petAdd.png'),
+	petType: {
+		dog,
+		bird,
+		cat,
+		fish,
+		rabbit
+	}
 }
 
 export default PngImage;
