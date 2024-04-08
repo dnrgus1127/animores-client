@@ -1,28 +1,32 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Pressable, Text, ScrollView } from "react-native";
 import { commonStyles } from "../../styles/commonStyles";
 import BasicInput from "../../components/BasicInput";
-import BasicCheckbox from "../../components/BasicCheckbox";
 import { SafeAreaView } from "react-native-safe-area-context";
 import HeaderNavigation from "../../navigation/HeaderNavigation";
 import { Colors } from "../../styles/Colors";
-import { emailRegex, nicknameRegex, pwRegex, phoneNumberRegex } from "../../js/util";
-import { Picker } from "@react-native-picker/picker";
+import { emailRegex, nicknameRegex, pwRegex } from "../../js/util";
 import { AuthModel } from "../../model/AuthModel";
 import { SecureEyeIcon } from "../../assets/svg";
+import AgreementOnTerms from "./AgreementOnTerms";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from "../../navigation/type";
+import { ScreenName } from "../../statics/constants/ScreenName";
 
-const JoinScreen = ({ navigation }: any) => {
+const JoinScreen = () => {
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList, ScreenName.Join>>();
+
   const [userInput, setUserInput] = useState({
-    isChecked: false,
     email: '',
     nickname: '',
     password: '',
     checkPassword: '',
     phoneNumber: '',
-    verificationCode: ''
+    verificationCode: '',
   })
-
-  const {isChecked, email, nickname, password, checkPassword, phoneNumber, verificationCode} = userInput
+  
+  const {email, nickname, password, checkPassword, verificationCode} = userInput
   
   // 패스워드 보이기/가리기 상태
   const [secureText, setScureText] = useState({
@@ -38,9 +42,6 @@ const JoinScreen = ({ navigation }: any) => {
     phoneNumber: '',
     verificationCode: ''
   })
-
-  // 통신사 선택
-  const [mobileCarrier, setMobileCarrier] = useState('')
   
   // 임시 인증코드
   const [sampleCode, setSampleCode] = useState('')
@@ -51,43 +52,30 @@ const JoinScreen = ({ navigation }: any) => {
   // Nickname 중복 확인
   const [availableNickname, setAvailableNickname] = useState(false)
 
+  // 약관동의
+  const [agreements, setAgreements] = useState<string[]>([])
+
   // 필수정보 입력 확인
   const [validation, setValidation] = useState({
     email: false,
     verificationCode: false,
     nickname: false,
-    availableNickname: false,
+    nicknameConfirm: false,
     password: false,
     checkPassword: false,
-    phoneNumber: false,
+    agreements: false,
   })
 
-  const mobileCarrireData: AuthModel.IMobileCarrierModel[] = [
-    {
-      label: 'SKT',
-      value: 'skt'
-    },
-    {
-      label: 'KT',
-      value: 'kt'
-    },
-    {
-      label: 'LGU+',
-      value: 'lguplus'
-    },
-    {
-      label: 'SKT 알뜰폰',
-      value: 'skt_save'
-    },
-    {
-      label: 'KT 알뜰폰',
-      value: 'kt_save'
-    },
-    {
-      label: 'LGU+ 알뜰폰',
-      value: 'lguplus_save'
-    },
-  ];
+  useEffect(() => {
+    console.log({...validation})
+    
+  }, [validation])
+
+  // 약관동의
+  const checkedAgreements = (value:string[], valid:boolean) => {
+    setAgreements(value)
+    setValidation({...validation, agreements: valid})
+  }
 
   
   // 중복 이벤트 합치기
@@ -111,6 +99,7 @@ const JoinScreen = ({ navigation }: any) => {
   const handleOnChangeNickname = (inputText:string) => {
     setUserInput({...userInput, nickname: inputText})
     setAvailableNickname(false)
+    setValidation({...validation, nicknameConfirm: false})
     
     const matchNickname = inputText.match(nicknameRegex)
 
@@ -147,20 +136,6 @@ const JoinScreen = ({ navigation }: any) => {
     } else {
       setValidation({...validation, checkPassword: true})
       setWarningText({...warningText, checkPassword: '비밀번호가 일치합니다.'})
-    }
-  }
-
-  const handleOnChangePhoneNumber = (inputText:string) => {
-    setUserInput({...userInput, phoneNumber: inputText})
-
-    const matchPhoneNumber = inputText.match(phoneNumberRegex)
-
-    if (matchPhoneNumber === null) {
-      setValidation({...validation, phoneNumber: false})
-      setWarningText({...warningText, phoneNumber: '휴대 전화 번호 형식에 맞게 입력해주세요.'})
-    } else {
-      setValidation({...validation, phoneNumber: true})
-      setWarningText({...warningText, phoneNumber: ''})
     }
   }
 
@@ -213,6 +188,7 @@ const JoinScreen = ({ navigation }: any) => {
     // 확인 완료
     setAvailableNickname(true)
     setWarningText({...warningText, nickname: '사용하실 수 있는 닉네임입니다.'})
+    setValidation({...validation, nicknameConfirm: true})
   }
 
   return (
@@ -233,11 +209,11 @@ const JoinScreen = ({ navigation }: any) => {
             {
               verificationState === 'success' ?
               <Pressable style={[styles.inputButton, { paddingLeft: 5, paddingRight: 5 }]} disabled>
-                <Text style={styles.disabled}>인증완료</Text>
+                <Text style={styles.textDisabled}>인증완료</Text>
               </Pressable>
               : (verificationState === 'fail' ?
                 <Pressable style={[styles.inputButton, { paddingLeft: 5, paddingRight: 5 }]} disabled>
-                  <Text style={styles.disabled}>인증실패</Text>
+                  <Text style={styles.textDisabled}>인증실패</Text>
                 </Pressable>
                 : (sampleCode === '' ? 
                   <Pressable 
@@ -245,11 +221,11 @@ const JoinScreen = ({ navigation }: any) => {
                     disabled={!validation.email} 
                     onPress={() => sendVerificationCode()}
                   >
-                    <Text style={!validation.email && styles.disabled}>인증번호 전송</Text>
+                    <Text style={!validation.email && styles.textDisabled}>인증번호 전송</Text>
                   </Pressable>
                   : 
                   <Pressable style={[styles.inputButton, { paddingLeft: 5, paddingRight: 5 }]} disabled>
-                    <Text style={styles.disabled}>전송완료</Text>
+                    <Text style={styles.textDisabled}>전송완료</Text>
                   </Pressable>
                 )
               )
@@ -314,7 +290,7 @@ const JoinScreen = ({ navigation }: any) => {
               onPress={() => checkNickname()} 
               disabled={!validation.nickname}
             >
-              <Text style={!validation.nickname && styles.disabled}>중복확인</Text>
+              <Text style={!validation.nickname && styles.textDisabled}>중복확인</Text>
             </Pressable>
           </View>
           {!nickname ? null : (
@@ -379,89 +355,24 @@ const JoinScreen = ({ navigation }: any) => {
               </Text>
             </View>
           )}
-          <View style={{marginTop: 40}}>
-            <Text 
-              style={[styles.label, phoneNumber !== '' && !validation.phoneNumber ? styles.errorText : null]}
-            >
-              휴대 전화 번호 인증
-            </Text>
-            <View style={styles.joinInputWrap}>
-              <View 
-                style={{ 
-                  flex: 1.5, 
-                  marginTop: 10, 
-                  borderBottomWidth: 1, 
-                  borderColor: phoneNumber !== '' && !validation.phoneNumber ? '#FF4040' : '#C1C1C1', 
-                  borderStyle: 'solid' 
-                }}
-              >
-                <Picker
-                  selectedValue={mobileCarrier}
-                  onValueChange={(itemValue, itemIndex) => setMobileCarrier(itemValue)}
-                  style={{ color: '#000' }}
-                >
-                  <Picker.Item label='통신사 선택' key='select' value='' style={{ fontSize: 14 }} />
-                  {mobileCarrireData.map((item) => (
-                    <Picker.Item label={item.label} key={item.value} value={item.value} style={{ fontSize: 14 }} />
-                  ))}
-                </Picker>
-              </View>
-              <View style={{ flex: 2.5, marginStart: 10 }}>
-                <BasicInput 
-                  placeholder='휴대 전화 번호를 입력해주세요'
-                  marginTop={20} 
-                  keyboardType='numeric' 
-                  value={phoneNumber} 
-                  onChangeText={handleOnChangePhoneNumber} 
-                  returnKeyType='done'
-                  error={phoneNumber !== '' && !validation.phoneNumber}
-                />
-              </View>
-            </View>
-          </View>
-          {!phoneNumber ? null : (
-            <View>
-              <Text
-                style={validation.phoneNumber ? styles.successText : styles.errorText}
-              >
-                {warningText.phoneNumber}
-              </Text>
-            </View>
-          )}
-          <View style={{marginTop: 40}}>
-            <Text style={styles.label}>약관 동의</Text>
-            <BasicCheckbox 
-              isChecked={isChecked}
-              onValueChangeHandler={() => setUserInput({...userInput, isChecked: !isChecked})}
-              label='전체 동의합니다.'
-            />
-            
-            <View style={commonStyles.commonRowContainer}>
-              <View style={[commonStyles.separator, {marginTop: 15}]} />
-            </View>
 
-            <BasicCheckbox 
-              isChecked={isChecked}
-              onValueChangeHandler={() => setUserInput({...userInput, isChecked: !isChecked})}
-              label='광고 수신동의(선택)'
-            />
-            <BasicCheckbox 
-              isChecked={isChecked}
-              onValueChangeHandler={() => setUserInput({...userInput, isChecked: !isChecked})}
-              label='이용 약관에 동의합니다.(필수)'
-            />
-            <BasicCheckbox 
-              isChecked={isChecked}
-              onValueChangeHandler={() => setUserInput({...userInput, isChecked: !isChecked})}
-              label='개인정보 수집 이용에 동의합니다.(필수)'
-            />
-          </View>
-          <Pressable
-            onPress={() => console.log('Pressed')}
-            style={styles.primaryLargeButton}
-            children={<Text style={styles.primaryButtonText}>회원가입</Text>}
-          >
-          </Pressable>
+          <AgreementOnTerms checkedAgreements={checkedAgreements} />
+          
+          {Object.values(validation).every(item => item === true) ? (
+            <Pressable
+              onPress={() => console.log('Pressed')}
+              style={[styles.primaryLargeButton]}
+              children={<Text style={[styles.primaryButtonText]}>회원가입</Text>}
+            >
+            </Pressable>
+          ) : (
+            <Pressable
+              onPress={() => console.log('Pressed')}
+              style={[styles.primaryLargeButton, styles.buttonDisabled]}
+              children={<Text style={[styles.primaryButtonText, styles.textDisabled]}>회원가입</Text>}
+            >
+            </Pressable>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -491,7 +402,7 @@ const styles = StyleSheet.create({
     width: 104, 
     alignItems: 'center',
   },
-  disabled: {
+  textDisabled: {
     color: '#AEAEAE',
   },
   primaryButton: {
@@ -513,6 +424,9 @@ const styles = StyleSheet.create({
   primaryButtonText: {
     fontSize: 16,
     color: '#fff',
+  },
+  buttonDisabled: {
+    backgroundColor: '#F2F2F2',
   },
   secureEyeButton: {
     position: 'absolute',
