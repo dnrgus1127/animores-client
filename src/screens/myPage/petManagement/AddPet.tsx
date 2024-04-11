@@ -1,7 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import React from "react";
-import { Image, ImageProps, Pressable, View, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import { Image, ImageProps, Pressable, View, StyleSheet, Platform } from "react-native";
 import PngImage from "../../../assets/png";
 import Title from "../../../components/text/Title";
 import HeaderNavigation from "../../../navigation/HeaderNavigation";
@@ -9,6 +9,7 @@ import { RootStackParamList } from "../../../navigation/type";
 import { ScreenName } from "../../../statics/constants/ScreenName";
 import { Colors } from "../../../styles/Colors";
 import { ScrollView } from "react-native-gesture-handler";
+import SingleButton from "../../../components/button/SingleButton";
 
 interface IType {
   id: number;
@@ -19,6 +20,8 @@ interface IType {
 const AddPet = () => {
   const navigation =
     useNavigation<StackNavigationProp<RootStackParamList, ScreenName.AddPet>>();
+
+  const [petType, setPetType] = useState<string>('');
 
   const type: IType[] = [
     { id: 1, name: "강아지", image: PngImage.petType.dog },
@@ -46,7 +49,13 @@ const AddPet = () => {
         />
         {type.map((t: IType) => {
           return (
-            <Pressable key={t.id} style={styles.PressableType}>
+            <Pressable
+              key={t.id}
+              onPress={() => { setPetType(t.name) }}
+              style={[
+                styles.PressableType,
+                petType === t.name ? styles.selectedType : styles.unselectedType
+              ]}>
               <Image source={t.image} />
               <Title
                 text={t.name}
@@ -63,14 +72,7 @@ const AddPet = () => {
             style={{ paddingVertical: 28, paddingLeft: 16 }}
           />
         </View>
-        <View style={styles.nextButtonContainer}>
-          <Title
-            text={"다음"}
-            fontSize={16}
-            color={Colors.White}
-            style={{ paddingVertical: 24, textAlign: "center" }}
-          />
-        </View>
+        <SingleButton title="다음" disabled={!petType} />
       </View>
     </ScrollView>
   );
@@ -97,10 +99,25 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderStyle: "dashed",
   },
-  nextButtonContainer: {
-    backgroundColor: Colors.FB3F7E,
-	borderRadius: 20,
-	marginTop: 70,
-	marginBottom: 30,
+  selectedType: {
+    borderWidth: 1,
+    borderColor: Colors.F9F9FB,
+    ...Platform.select({
+      ios: {
+        shadowColor: Colors.Black,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 6,
+      },
+      android: {
+        elevation: 4,
+        shadowColor: "gray",
+        shadowOpacity: 0.3,
+        shadowRadius: 6,
+      },
+    }),
+  },
+  unselectedType: {
+    opacity: 0.4,
   },
 });
