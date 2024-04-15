@@ -2,17 +2,16 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useState } from "react";
 import {
-	StyleSheet,
-	View
+  StyleSheet,
+  View
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
-import SingleButton from "../../../components/button/SingleButton";
 import HeaderNavigation from "../../../navigation/HeaderNavigation";
 import { RootStackParamList } from "../../../navigation/type";
 import { ScreenName } from "../../../statics/constants/ScreenName";
 import { Colors } from "../../../styles/Colors";
-import BasicPetType from "./BasicPetType";
 import AddAnotherAnimal from "./AddAnotherAnimal";
+import BasicPetType from "./BasicPetType";
 
 const AddPet = () => {
   const navigation =

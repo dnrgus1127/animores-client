@@ -6,10 +6,10 @@ import {
   Platform,
   Pressable,
 } from "react-native";
-import { Colors } from "react-native/Libraries/NewAppScreen";
 import Title from "../../../components/text/Title";
 import PngImage from "../../../assets/png";
 import SingleButton from "../../../components/button/SingleButton";
+import { Colors } from "../../../styles/Colors";
 
 interface IProps {
   isAnotherAnimal: () => void;
@@ -61,6 +61,7 @@ const BasicPetType = (props: IProps) => {
             <Image source={t.image} />
             <Title
               text={t.name}
+              fontWeight={petType ? 'bold' : 'normal'}
               style={{ marginLeft: 16, alignSelf: "center" }}
             />
           </Pressable>
@@ -101,16 +102,16 @@ const styles = StyleSheet.create({
     borderColor: Colors.F9F9FB,
     ...Platform.select({
       ios: {
-        shadowColor: Colors.Black,
-        shadowOffset: { width: 0, height: 4 },
+        shadowColor: "gray",
+        shadowOffset: { width: 0, height: 10 },
         shadowOpacity: 0.3,
-        shadowRadius: 6,
+        shadowRadius: 10,
       },
       android: {
-        elevation: 4,
+        elevation: 10,
         shadowColor: "gray",
         shadowOpacity: 0.3,
-        shadowRadius: 6,
+        shadowRadius: 10,
       },
     }),
   },
