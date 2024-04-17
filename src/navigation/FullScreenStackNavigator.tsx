@@ -15,7 +15,8 @@ import CreateRecord from "../screens/record/CreateRecord";
 import AddTodo from "../screens/todo/AddTodo";
 import { ScreenName } from "../statics/constants/ScreenName";
 import BottomTabStackNavigator from "./BottomTabStackNavigator";
-import AddPet from "../screens/myPage/petManagement/AddPet";
+import AddPetScreen from "../screens/myPage/petManagement/AddPetScreen";
+import BreedType from "../screens/myPage/petManagement/BreedType";
 ;
 
 const RootStack = createNativeStackNavigator<RootStackParams>();
@@ -83,8 +84,13 @@ const FullScreenStackNavigator = () => {
           options={{ headerShown: false }}
         />
         <RootStack.Screen
-          name={ScreenName.AddPet}
-          component={AddPet}
+          name={ScreenName.AddPetScreen}
+          component={AddPetScreen}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
+          name={ScreenName.BreedType}
+          component={BreedType}
           options={{ headerShown: false }}
         />
       </RootStack.Navigator>

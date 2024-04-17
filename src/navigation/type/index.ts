@@ -12,5 +12,6 @@ export type RootStackParamList = {
     [ScreenName.CreateRecord]: undefined;
     [ScreenName.AddTodo]: undefined;
 	[ScreenName.PatManagement]: undefined;
-	[ScreenName.AddPet]: undefined;
+	[ScreenName.AddPetScreen]: undefined;
+	[ScreenName.BreedType]: undefined;
 }

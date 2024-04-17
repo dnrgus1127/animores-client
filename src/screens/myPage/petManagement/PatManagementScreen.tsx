@@ -34,7 +34,7 @@ const PatManagementScreen = () => {
             style={{ marginLeft: 12 }}
           />
         </View>
-        <Pressable onPress={() => navigation.navigate(ScreenName.AddPet)}>
+        <Pressable onPress={() => navigation.navigate(ScreenName.AddPetScreen)}>
           <Image source={asset.petAdd} />
           <Title
             text={"펫 추가하기"}
