@@ -1,42 +1,79 @@
 import React from 'react';
-import { Pressable, TextInput, View } from 'react-native';
-import { useForm, Controller } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form';
+import { ColorValue, Pressable, StyleProp, StyleSheet, TextInput, View, ViewStyle } from 'react-native';
+import { ReviseIcon } from '../../assets/svg';
 import { Colors } from '../../styles/Colors';
+import Title from '../text/Title';
 
 interface IProps {
+    title: string;
     name: string;
     defaultValue?: string;
-    onPress?: () => void,
-    placeholder: string;
+    placeholder?: string;
+    editable?: boolean;
+    children?: React.ReactNode;
+    onPress?: () => void;
+    isRevised?: boolean;
+    placeholderTextColor?: ColorValue;
+    style?: StyleProp<ViewStyle>;
 }
 
 const Input = (props: IProps) => {
-    const { name, defaultValue, onPress, placeholder } = props;
-
-    const { control, handleSubmit, formState: { errors } } = useForm();
+    const { title, name, defaultValue, placeholder, editable = true, children, onPress, isRevised, placeholderTextColor, style } = props;
+    const { control, setValue } = useForm();
 
     return (
-        <View>
-            <Controller
-                control={control}
-                render={({ field: { onChange, onBlur, value } }) => (
-                    <Pressable onPress={onPress}>
+        <Controller
+            control={control}
+            render={({ field: { onChange, onBlur, value } }) => (
+                <View style={[{ marginTop: 40 }, style]}>
+                    <Title text={title} fontWeight='bold' />
+                    <View style={styles.InputContainer}>
                         <TextInput
-                        placeholder={placeholder}
-                        onBlur={onBlur}
-                        onChangeText={onChange}
-                        value={value}
-                        style={{
-                            borderWidth: 1,
-                        }}
-                    />
-                    </Pressable>
-                )}
-                name={name}
-                defaultValue={defaultValue || ''}
-            />
-        </View>
+                            placeholder={placeholder}
+                            placeholderTextColor={placeholderTextColor}
+                            onBlur={onBlur}
+                            onChangeText={onChange}
+                            value={value}
+                            editable={editable}
+                            style={{
+                                flex: 1,
+                            }}
+                        />
+                        {/* 취소 버튼, 그 외 */}
+                        <Pressable
+                            onPress={
+                                isRevised
+                                    ? () => setValue(name, '')
+                                    : onPress
+                            }
+                            style={styles.ChildrenContainer}>
+                            {value && isRevised
+                                ? <ReviseIcon />
+                                : children
+                            }
+                        </Pressable>
+                    </View>
+                </View>
+            )}
+            name={name}
+            defaultValue={defaultValue || ''}
+        />
     );
 };
 
 export default Input;
+
+const styles = StyleSheet.create({
+    InputContainer: {
+        flexDirection: "row",
+        borderBottomWidth: 1,
+        borderBottomColor: Colors.C1C1C1,
+        paddingVertical: 12,
+    },
+    ChildrenContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center"
+    }
+})

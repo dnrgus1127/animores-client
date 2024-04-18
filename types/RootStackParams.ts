@@ -10,6 +10,7 @@ export type RootStackParams = {
   Notice: undefined;
   PatManagement: undefined;
   Profile: undefined;
-  AddPetScreen: undefined;
+  PetType: undefined;
   BreedType: undefined;
+  AddPet: undefined;
 };

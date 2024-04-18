@@ -9,14 +9,15 @@ import AlertSettingScreen from "../screens/myPage/alert/AlertSettingScreen";
 import CustomerServiceScreen from "../screens/myPage/customerService/CustomerServiceScreen";
 import InformationScreen from "../screens/myPage/information/InformationScreen";
 import NoticeScreen from "../screens/myPage/notice/NoticeScreen";
+import AddPet from "../screens/myPage/petManagement/AddPet";
+import BreedType from "../screens/myPage/petManagement/BreedType";
 import PatManagementScreen from "../screens/myPage/petManagement/PatManagementScreen";
+import PetType from "../screens/myPage/petManagement/PetType";
 import ProfileScreen from "../screens/myPage/profile/ProfileScreen";
 import CreateRecord from "../screens/record/CreateRecord";
 import AddTodo from "../screens/todo/AddTodo";
 import { ScreenName } from "../statics/constants/ScreenName";
 import BottomTabStackNavigator from "./BottomTabStackNavigator";
-import AddPetScreen from "../screens/myPage/petManagement/AddPetScreen";
-import BreedType from "../screens/myPage/petManagement/BreedType";
 ;
 
 const RootStack = createNativeStackNavigator<RootStackParams>();
@@ -84,13 +85,18 @@ const FullScreenStackNavigator = () => {
           options={{ headerShown: false }}
         />
         <RootStack.Screen
-          name={ScreenName.AddPetScreen}
-          component={AddPetScreen}
+          name={ScreenName.PetType}
+          component={PetType}
           options={{ headerShown: false }}
         />
         <RootStack.Screen
           name={ScreenName.BreedType}
           component={BreedType}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
+          name={ScreenName.AddPet}
+          component={AddPet}
           options={{ headerShown: false }}
         />
       </RootStack.Navigator>

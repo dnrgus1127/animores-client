@@ -16,6 +16,7 @@ export enum ScreenName {
 	PatManagement = 'PatManagement',
 	Profile = 'Profile',
 	VersionInformation = 'VersionInformation',
-	AddPetScreen = 'AddPetScreen',
+	PetType = 'PetType',
 	BreedType = 'BreedType',
+	AddPet = 'AddPet',
 }
