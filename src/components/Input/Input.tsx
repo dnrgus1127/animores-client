@@ -14,12 +14,11 @@ interface IProps {
     children?: React.ReactNode;
     onPress?: () => void;
     isRevised?: boolean;
-    placeholderTextColor?: ColorValue;
     style?: StyleProp<ViewStyle>;
 }
 
 const Input = (props: IProps) => {
-    const { title, name, defaultValue, placeholder, editable = true, children, onPress, isRevised, placeholderTextColor, style } = props;
+    const { title, name, defaultValue, placeholder, editable = true, children, onPress, isRevised, style } = props;
     const { control, setValue } = useForm();
 
     return (
@@ -31,13 +30,14 @@ const Input = (props: IProps) => {
                     <View style={styles.InputContainer}>
                         <TextInput
                             placeholder={placeholder}
-                            placeholderTextColor={placeholderTextColor}
+                            placeholderTextColor={Colors.DBDBDB}
                             onBlur={onBlur}
                             onChangeText={onChange}
                             value={value}
                             editable={editable}
                             style={{
                                 flex: 1,
+                                color: Colors.Black
                             }}
                         />
                         {/* 취소 버튼, 그 외 */}

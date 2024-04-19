@@ -3,7 +3,6 @@ import { FlatList, Pressable, StyleSheet, View } from "react-native";
 import { CommentIcon, DogImage, More, User, UserImage } from "../../assets/svg";
 import FloatingButton from "../../components/button/FloatingButton";
 import BottomModal from "../../components/modal/BottomModal";
-import CommentBottomModal from "../../components/modal/CommentBottomModal";
 import Title from "../../components/text/Title";
 import { RecordModel } from "../../model/RecordModel";
 import HeaderNavigation from "../../navigation/HeaderNavigation";
@@ -215,15 +214,13 @@ const RecordScreen = () => {
             setIsVisibleMore(false);
           }}
           footer={footerMore}
-          style={{ justifyContent: "flex-end" }}
         />
-        <CommentBottomModal
+        <BottomModal
           isVisible={isVisibleComment}
           onClose={() => {
             setIsVisibleComment(false);
           }}
           footer={footerComment}
-          style={{ justifyContent: "flex-end" }}
         />
       </View>
     </>

@@ -1,28 +1,94 @@
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import React, { useState } from 'react';
+import * as ImagePicker from 'expo-image-picker';
+import React, { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { IGenderType } from '../../../../types/GenderType';
 import asset from "../../../assets/png";
-import { CalanderIcon } from '../../../assets/svg';
+import { CalanderIcon, CameraIcon, ImagePickerIcon } from '../../../assets/svg';
 import Input from '../../../components/Input/Input';
 import SingleButton from '../../../components/button/SingleButton';
 import Title from '../../../components/text/Title';
 import { genderType } from '../../../data/GenderTypes';
 import HeaderNavigation from '../../../navigation/HeaderNavigation';
 import { RootStackParamList } from '../../../navigation/type';
+import { GenderType } from '../../../statics/constants/GenderType';
 import { ScreenName } from '../../../statics/constants/ScreenName';
 import { Colors } from '../../../styles/Colors';
+import BottomModal from '../../../components/modal/BottomModal';
 
 const AddPet = () => {
     const navigation =
         useNavigation<StackNavigationProp<RootStackParamList, ScreenName.AddPet>>();
 
     const form = useForm({ mode: 'onChange' });
+    const { control, handleSubmit, formState: { errors, isValid }, } = useForm();
 
-    const [gender, setGender] = useState<string>('');
+    const [gender, setGender] = useState<string>(GenderType.남아);
+    const [isVisible, setIsVisible] = useState<boolean>(false);
+
+    //앨범 선택
+    const handleOpenImagePicker = async () => {
+        //접근 권한 요청
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+            alert('이미지를 등록하시려면 사진첩 권한이 필요합니다.');
+        }
+
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+    }
+
+    const handleOpenCamera = async () => {
+        const { status } = await ImagePicker.requestCameraPermissionsAsync();
+        if (status !== 'granted') {
+            alert('카메라를 사용하려면 카메라 권한이 필요합니다.');
+        }
+
+        let result = await ImagePicker.launchCameraAsync({
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+    }
+
+    const footerPicture = () => {
+        return (
+            <View style={styles.BottomModalContainer}>
+                <View style={styles.FooterTopLine} />
+                <View style={[styles.Footer, { marginTop: 48 }]}>
+                    <Pressable
+                        onPress={handleOpenImagePicker}
+                        style={[styles.ButtonContainer, { marginRight: 10 }]}>
+                        <Title
+                            text={"사진 보관함"}
+                            fontSize={16}
+                            color={Colors.White}
+                            style={styles.ModalTitle}
+                        />
+                        <ImagePickerIcon />
+                    </Pressable>
+                    <Pressable
+                        onPress={handleOpenCamera}
+                        style={styles.ButtonContainer}>
+                        <Title
+                            text={"사진 찍기"}
+                            fontSize={16}
+                            color={Colors.White}
+                            style={styles.ModalTitle}
+                        />
+                        <CameraIcon />
+                    </Pressable>
+                </View>
+            </View>
+        );
+    }
 
     return (
         <View style={styles.Container}>
@@ -36,24 +102,24 @@ const AddPet = () => {
             <ScrollView style={styles.HorizontalContainer}>
                 <FormProvider {...form}>
                     {/* TODO: 이미지 변경 */}
-                    <Image
-                        source={asset.profile}
-                        style={{
-                            marginTop: 50,
-                            marginBottom: 10,
-                            alignSelf: "center"
-                        }} />
+                    <Pressable onPress={() => setIsVisible(true)}>
+                        <Image
+                            source={asset.profile}
+                            style={{
+                                marginTop: 50,
+                                marginBottom: 10,
+                                alignSelf: "center"
+                            }} />
+                    </Pressable>
                     <Input
                         title='반려동물 이름'
                         name={'name'}
                         placeholder={'반려동물의 이름을 입력해주세요'}
-                        placeholderTextColor={Colors.DBDBDB}
                         isRevised={true} />
                     <Input
                         title='품종'
-                        name={'name'}
+                        name={'breed'}
                         defaultValue='말티즈'  //TODO: 앞에서 선택한 품종
-                        placeholderTextColor={Colors.Black}
                         editable={false}
                         children={<Title text={'수정'} color={Colors.AEAEAE} />}
                         onPress={() => {
@@ -67,12 +133,13 @@ const AddPet = () => {
                         {genderType.map((g: IGenderType, index: number) => {
                             return (
                                 <Pressable
+                                    key={g.id}
                                     onPress={() => { setGender(g.type) }}
                                     style={[{
                                         backgroundColor: g.type === gender
                                             ? Colors.FB3F7E
                                             : Colors.F9F9FB,
-                                        marginRight: index === 0 ? 9: 0,
+                                        marginRight: index === 0 ? 9 : 0,
                                     },
                                     styles.GenderContainer]}>
                                     <Title
@@ -97,9 +164,21 @@ const AddPet = () => {
                 </FormProvider>
                 <SingleButton
                     title={'완료'}
-                    disabled={false}
-                    onPress={() => { console.log('완료') }} />
+                    disabled={isValid}
+                    onPress={() => {
+                        if (!isValid) {
+                            console.log('navigation 이동');
+                        }
+                    }} />
             </ScrollView>
+            <BottomModal
+                isVisible={isVisible}
+                onClose={() => {
+                    setIsVisible(false);
+                }}
+                footer={footerPicture}
+                BottomText={'기본 이미지로 할래요'}
+            />
         </View>
     );
 };
@@ -122,5 +201,31 @@ const styles = StyleSheet.create({
     },
     RowView: {
         flexDirection: "row"
+    },
+    BottomModalContainer: {
+        marginTop: 15,
+    },
+    Footer: {
+        flexDirection: "row",
+        paddingHorizontal: 20,
+    },
+    FooterTopLine: {
+        backgroundColor: Colors.Gray838383,
+        height: 1.5,
+        width: 50,
+        alignSelf: "center",
+    },
+    ButtonContainer: {
+        backgroundColor: Colors.FB3F7E,
+        flex: 1,
+        height: 50,
+        justifyContent: "center",
+        alignItems: "center",
+        borderRadius: 10,
+        flexDirection: "row"
+    },
+    ModalTitle: {
+        textAlign: "center", 
+        marginRight: 4
     }
 })
