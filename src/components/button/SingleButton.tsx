@@ -1,28 +1,31 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Pressable } from 'react-native';
 import Title from '../text/Title';
 import { Colors } from '../../styles/Colors';
 
 interface IProps {
     title: string;
     disabled: boolean;
+    onPress: () => void;
 }
 
 const SingleButton = (props: IProps) => {
-    const { title, disabled } = props;
+    const { title, disabled, onPress } = props;
 
     return (
-        <View style={[
-            styles.nextButtonContainer,
-            { backgroundColor: disabled ? Colors.DBDBDB : Colors.FB3F7E }
-        ]}>
+        <Pressable
+            onPress={onPress}
+            style={[
+                styles.nextButtonContainer,
+                { backgroundColor: disabled ? Colors.DBDBDB : Colors.FB3F7E }
+            ]}>
             <Title
                 text={title}
                 fontSize={16}
                 color={Colors.White}
                 style={{ paddingVertical: 24, textAlign: "center" }}
             />
-        </View>
+        </Pressable>
     );
 };
 
