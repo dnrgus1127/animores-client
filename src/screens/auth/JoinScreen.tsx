@@ -15,6 +15,11 @@ import { RootStackParamList } from "../../navigation/type";
 import { ScreenName } from "../../statics/constants/ScreenName";
 import Countdown from "../../components/Countdown";
 
+interface Irequest {
+  method: string;
+  redirect: string;
+}
+
 const JoinScreen = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList, ScreenName.Join>>();
 
@@ -141,19 +146,34 @@ const JoinScreen = () => {
     }
   }
 
+  
   // Email - 인증번호 전송 클릭 시
-  const sendVerificationCode = () => {
+  const sendVerificationCode = async () => {
+    const url = `https://gv5jgxia2e.execute-api.ap-northeast-2.amazonaws.com/Prod/api/v1/account/check-email/${email}`
+
     // 이메일 중복 검사
+    const response = await fetch(url, {
+      method: "GET",
+      redirect: "follow",
+    })
+    let userCheck = await response.json()
+    .catch((error) => console.error(error))
 
-    // 중복일 경우
-    // setWarningText({...warningText, email: '이미 사용중인 이메일입니다.'}) 또는
-    // setWarningText({...warningText, email: '사용하실 수 없는 이메일입니다.'})
-
-    // 중복이 아니면 인증번호 전송
-    setSampleCode('1234')
+    //console.log(userCheck.data)
+    
+    if (userCheck.data){
+      // 중복일 경우
+      setValidation({...validation, email: false})
+      setWarningText({...warningText, email: '이미 가입된 이메일입니다.'})
+    } else {
+      // 중복이 아니면 인증번호 전송
+      setSampleCode('1234')
+      console.log('코드전송')
+    }
 
     // 카운트 시작 3:00
   }
+  
 
   // Email - 재전송 클릭 시
   const refreshVerificationCode = () => {
