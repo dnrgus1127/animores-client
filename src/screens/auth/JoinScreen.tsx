@@ -7,12 +7,18 @@ import HeaderNavigation from "../../navigation/HeaderNavigation";
 import { Colors } from "../../styles/Colors";
 import { emailRegex, nicknameRegex, pwRegex } from "../../js/util";
 import { AuthModel } from "../../model/AuthModel";
-import { SecureEyeIcon } from "../../assets/svg";
+import { DeleteIcon, SecureEyeIcon } from "../../assets/svg";
 import AgreementOnTerms from "./AgreementOnTerms";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from "../../navigation/type";
 import { ScreenName } from "../../statics/constants/ScreenName";
+import Countdown from "../../components/Countdown";
+
+interface Irequest {
+  method: string;
+  redirect: string;
+}
 
 const JoinScreen = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList, ScreenName.Join>>();
@@ -49,8 +55,8 @@ const JoinScreen = () => {
   // Email 인증 상태
   const [verificationState, setVerificationState] = useState<AuthModel.IVerificationModel['state']>('none')
 
-  // Nickname 중복 확인
-  const [availableNickname, setAvailableNickname] = useState(false)
+  // 이메일 인증 카운트
+  const [resetCount, setResetCount] = useState(false)
 
   // 약관동의
   const [agreements, setAgreements] = useState<string[]>([])
@@ -67,8 +73,7 @@ const JoinScreen = () => {
   })
 
   useEffect(() => {
-    console.log({...validation})
-    
+    //console.log({...validation})
   }, [validation])
 
   // 약관동의
@@ -76,9 +81,6 @@ const JoinScreen = () => {
     setAgreements(value)
     setValidation({...validation, agreements: valid})
   }
-
-  
-  // 중복 이벤트 합치기
 
   const handleOnChangeEmail = (inputText:string) => {
     // 이메일 재입력 시 인증번호 무효화
@@ -96,18 +98,23 @@ const JoinScreen = () => {
     }
   }
 
+  const afterCountdown = () => {
+    setVerificationState('timeout')
+    setResetCount(false)
+    setWarningText({...warningText, verificationCode: '인증시간이 초과되었습니다.'})
+  }
+
   const handleOnChangeNickname = (inputText:string) => {
     setUserInput({...userInput, nickname: inputText})
-    setAvailableNickname(false)
-    setValidation({...validation, nicknameConfirm: false})
+    // 닉네임 재입력 시 인증번호 무효화
+    setValidation({...validation, nickname: false, nicknameConfirm: false})
     
     const matchNickname = inputText.match(nicknameRegex)
 
     if (matchNickname === null) {
-      setValidation({...validation, nickname: false})
       setWarningText({...warningText, nickname: '영문, 한글, 숫자만 가능하며 3~20자로 입력해주세요.'})
     } else {
-      setValidation({...validation, nickname: true})
+      setValidation({...validation, nickname: true, nicknameConfirm: false})
       setWarningText({...warningText, nickname: ''})
     }
   }
@@ -139,35 +146,51 @@ const JoinScreen = () => {
     }
   }
 
+  
   // Email - 인증번호 전송 클릭 시
-  const sendVerificationCode = () => {
+  const sendVerificationCode = async () => {
+    const url = `https://gv5jgxia2e.execute-api.ap-northeast-2.amazonaws.com/Prod/api/v1/account/check-email/${email}`
+
     // 이메일 중복 검사
+    const response = await fetch(url, {
+      method: "GET",
+      redirect: "follow",
+    })
+    let userCheck = await response.json()
+    .catch((error) => console.error(error))
 
-    // 중복일 경우
-    // setWarningText({...warningText, email: '이미 사용중인 이메일입니다.'}) 또는
-    // setWarningText({...warningText, email: '사용하실 수 없는 이메일입니다.'})
-
-    // 중복이 아니면 인증번호 전송
-    setSampleCode('1234')
+    //console.log(userCheck.data)
+    
+    if (userCheck.data){
+      // 중복일 경우
+      setValidation({...validation, email: false})
+      setWarningText({...warningText, email: '이미 가입된 이메일입니다.'})
+    } else {
+      // 중복이 아니면 인증번호 전송
+      setSampleCode('1234')
+      console.log('코드전송')
+    }
 
     // 카운트 시작 3:00
   }
+  
 
   // Email - 재전송 클릭 시
   const refreshVerificationCode = () => {
     // 입력필드, 에러 텍스트 초기화
     setUserInput({...userInput, verificationCode: ''})
     setWarningText({...warningText, verificationCode: ''})
+    setVerificationState('none')
 
     // 새 인증번호 전송
     setSampleCode('4567')
+
+    // 카운트다운 재시작
+    setResetCount(true)
   }
 
   // Email - 인증하기 클릭 시 
   const handleOnChangeVerificationCode = (inputText:string) => {
-    // 인증 실패 : 인증시간 초과 시
-    // setWarningText({...warningText, verificationCode: '인증시간이 초과되었습니다.'})
-
     // 인증 실패 : 인증번호 불일치 시
     if (inputText !== sampleCode) {
       setVerificationState('dismatch')
@@ -186,7 +209,6 @@ const JoinScreen = () => {
     // setWarningText({...warningText, nickname: '이미 사용중인 닉네임입니다.'})
     
     // 확인 완료
-    setAvailableNickname(true)
     setWarningText({...warningText, nickname: '사용하실 수 있는 닉네임입니다.'})
     setValidation({...validation, nicknameConfirm: true})
   }
@@ -243,15 +265,25 @@ const JoinScreen = () => {
           {sampleCode !== '' && verificationState !== 'success' ? (
             <View>
               <View style={styles.joinInputWrap}>
-                <BasicInput 
-                  placeholder='인증번호를 입력해주세요' 
-                  marginTop={20} 
-                  keyboardType='numeric' 
-                  value={verificationCode} 
-                  onChangeText={(value) => setUserInput({...userInput, verificationCode: value})} 
-                  returnKeyType='done'
-                  disabled={validation.verificationCode ? true : false}
-                />
+                <View style={[styles.joinInputWrap, { flex: 1, position: 'relative' }]}>
+                  <BasicInput 
+                    placeholder='인증번호를 입력해주세요' 
+                    marginTop={20} 
+                    keyboardType='numeric' 
+                    value={verificationCode} 
+                    onChangeText={(value) => setUserInput({...userInput, verificationCode: value})} 
+                    returnKeyType='done'
+                    disabled={verificationState === 'timeout'}
+                  />
+                  <View
+                    style={{ position: 'absolute', right: 0, flexDirection: 'row', height: 30 }}
+                  >
+                    <Countdown afterCountdown={afterCountdown} resetCount={resetCount} />
+                    <Pressable style={{ marginLeft: 8 }}>
+                      <DeleteIcon />
+                    </Pressable>
+                  </View>
+                </View>
                 <Pressable 
                   style={styles.inputButton} 
                   onPress={() => refreshVerificationCode()}
@@ -259,7 +291,7 @@ const JoinScreen = () => {
                   <Text>재전송</Text>
                 </Pressable>
               </View>
-              {verificationState === 'dismatch' && (
+              {verificationState === 'dismatch' || verificationState === 'timeout' && (
                 <View>
                   <Text style={styles.errorText}>
                     {warningText.verificationCode}
@@ -267,12 +299,21 @@ const JoinScreen = () => {
                 </View>
               )}
               <View>
-                <Pressable 
-                  style={[styles.primaryButton, { marginTop: 20, marginLeft: 0, width: '100%' }]} 
-                  onPress={() => handleOnChangeVerificationCode(verificationCode)}
-                >
-                  <Text style={styles.primaryButtonText}>인증 하기</Text>
-                </Pressable>
+                {verificationState === 'timeout' ? (
+                  <Pressable 
+                    style={[styles.primaryButton, styles.buttonDisabled, { marginTop: 20, marginLeft: 0, width: '100%' }]}
+                    disabled
+                  >
+                    <Text style={styles.textDisabled}>인증 하기</Text>
+                  </Pressable>
+                ) : (
+                  <Pressable 
+                    style={[styles.primaryButton, { marginTop: 20, marginLeft: 0, width: '100%' }]} 
+                    onPress={() => handleOnChangeVerificationCode(verificationCode)}
+                  >
+                    <Text style={styles.primaryButtonText}>인증 하기</Text>
+                  </Pressable>
+                )}
               </View>
             </View>
           ) : null}
@@ -302,7 +343,6 @@ const JoinScreen = () => {
               </Text>
             </View>
           )}
-          <Text>중복 확인 {availableNickname ? '완료' : '필요'}</Text>
           <View style={styles.joinInputWrap}>
             <BasicInput 
               title='비밀번호' 
@@ -388,7 +428,7 @@ const styles = StyleSheet.create({
   },
   joinInputWrap: {
     flexDirection: 'row', 
-    alignItems: 'flex-end',
+    alignItems: 'flex-end'
   },
   label: {
     fontSize: 16,
