@@ -21,6 +21,11 @@ import LogoutIcon from './logoutIcon.svg';
 import WithdrawIcon from './withdrawIcon.svg';
 import TestUser from './user2.svg';   //TODO:삭제 예정
 import DeleteIcon from './deleteIcon.svg';   //TODO:삭제 예정
+import InputIcon from './inputIcon.svg'; 
+import ReviseIcon from './reviseIcon.svg'; 
+import CalanderIcon from './calander.svg'; 
+import ImagePickerIcon from './imagePicker.svg'; 
+import CameraIcon from './camera.svg'; 
 
 export {
 	BackButton,
@@ -46,4 +51,9 @@ export {
 	WithdrawIcon,
 	TestUser,
 	DeleteIcon,
+	InputIcon,
+	ReviseIcon,
+	CalanderIcon,
+	ImagePickerIcon,
+	CameraIcon,
 }

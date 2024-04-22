@@ -1,14 +1,14 @@
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
 import { Image, Platform, Pressable, StyleSheet, View } from "react-native";
-import HeaderNavigation from "../../../navigation/HeaderNavigation";
 import { SafeAreaView } from "react-native-safe-area-context";
 import asset from "../../../assets/png";
 import Title from "../../../components/text/Title";
-import { Colors } from "../../../styles/Colors";
-import { ScreenName } from "../../../statics/constants/ScreenName";
-import { useNavigation } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
+import HeaderNavigation from "../../../navigation/HeaderNavigation";
 import { RootStackParamList } from "../../../navigation/type";
+import { ScreenName } from "../../../statics/constants/ScreenName";
+import { Colors } from "../../../styles/Colors";
 
 const PatManagementScreen = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList, ScreenName.PatManagement>>();
@@ -34,7 +34,7 @@ const PatManagementScreen = () => {
             style={{ marginLeft: 12 }}
           />
         </View>
-        <Pressable onPress={() => navigation.navigate(ScreenName.AddPet)}>
+        <Pressable onPress={() => navigation.navigate(ScreenName.PetType)}>
           <Image source={asset.petAdd} />
           <Title
             text={"펫 추가하기"}
