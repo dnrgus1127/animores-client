@@ -1,48 +1,55 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import React from 'react';
-import { Text } from "react-native";
-import { BottomTabStackParamList } from "../../types/BottomTabStackParamList";
+import CalendarScreen from "../screens/celendar/CalendarScreen";
 import HomeScreen from '../screens/home/HomeScreen';
+import MypageScreen from "../screens/myPage/MypageScreen";
 import RecordScreen from '../screens/record/RecordScreen';
 import AllTodoScreen from '../screens/todo';
+import { ScreenName } from "../statics/constants/ScreenName";
+import TabBar from "./TabBar";
 
-const BottomTabStack = createBottomTabNavigator<BottomTabStackParamList>();
+const Tab = createBottomTabNavigator();
 
-const BottomTabStackNavigator = () => {
-	return (
-    <BottomTabStack.Navigator>
-      <BottomTabStack.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{
-          title: "홈",
-          tabBarLabel: "홈",
-          tabBarIcon: () => <Text>🏠</Text>,
-          headerShown: false
-        }}
-      />
-      <BottomTabStack.Screen
-        name="AllTodo"
+const BottomTabNavigator = () => {
+  return (
+    <Tab.Navigator initialRouteName="Home" tabBar={props => <TabBar {...props} />}>
+      <Tab.Screen
+        name={ScreenName.AllTodo}
         component={AllTodoScreen}
         options={{
-          title: "모든할일",
-          tabBarLabel: "모든할일",
-          tabBarIcon: () => <Text>📜</Text>,
-          headerShown: false
+          headerShown: false,
         }}
       />
-      <BottomTabStack.Screen
-        name="Record"
+      <Tab.Screen
+        name={ScreenName.Calendar}
+        component={CalendarScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Tab.Screen
+        name={ScreenName.Home}
+        component={HomeScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Tab.Screen
+        name={ScreenName.Record}
         component={RecordScreen}
         options={{
-          title: "일지",
-          tabBarLabel: "일지",
           headerShown: false,
-          tabBarIcon: () => <Text>📜</Text>,
         }}
       />
-    </BottomTabStack.Navigator>
+      <Tab.Screen
+        name={ScreenName.Mypage}
+        component={MypageScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+    </Tab.Navigator>
   );
 };
 
-export default BottomTabStackNavigator;
+export default BottomTabNavigator;

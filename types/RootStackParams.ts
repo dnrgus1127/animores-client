@@ -4,4 +4,13 @@ export type RootStackParams = {
   Join: undefined;
   CreateRecord: undefined;
   AddTodo: undefined;
+  AlertSetting: undefined;
+  CustomerService: undefined;
+  Information: undefined;
+  Notice: undefined;
+  PatManagement: undefined;
+  Profile: undefined;
+  PetType: undefined;
+  BreedType: undefined;
+  AddPet: undefined;
 };

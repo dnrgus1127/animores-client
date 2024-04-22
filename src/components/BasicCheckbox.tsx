@@ -9,10 +9,11 @@ export interface CheckboxProps {
   onValueChangeHandler?: (checked: boolean) => void;
   label?: React.ReactNode;
   style?: StyleSheet;
+  id?: string;
 }
   
 const BasicCheckbox = (props: CheckboxProps) => {
-  const { isChecked, disabled, onValueChangeHandler, label } = props;
+  const { isChecked, disabled, onValueChangeHandler, label, id } = props;
 
   const onPressHandeler = () => {
     if (onValueChangeHandler) {
@@ -25,6 +26,7 @@ const BasicCheckbox = (props: CheckboxProps) => {
       style={styles.checkboxWrap}
       disabled={disabled}
       onPress={onPressHandeler}
+      id={id}
     >
       <View
         style={[

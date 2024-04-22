@@ -1,7 +1,8 @@
 import React from "react";
-import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
+import { Pressable, StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import Modal, { Direction } from "react-native-modal";
 import { Colors } from "../../styles/Colors";
+import Title from "../text/Title";
 
 interface IProps {
   isVisible: boolean;
@@ -10,6 +11,7 @@ interface IProps {
   onModalShow?: () => void;
   onModalHide?: () => void;
   swipeDirection?: Direction | Direction[];
+  BottomText?: string;
   style?: StyleProp<ViewStyle>;
   footer?: () => React.ReactNode;
 }
@@ -22,6 +24,7 @@ const BottomModal: React.FunctionComponent<IProps> = (props: IProps) => {
     onModalShow,
     onModalHide,
     swipeDirection = "down",
+    BottomText,
     style,
     footer,
   } = props;
@@ -37,10 +40,20 @@ const BottomModal: React.FunctionComponent<IProps> = (props: IProps) => {
       onBackButtonPress={onClose}
       onSwipeComplete={onClose}
       backdropOpacity={0.6}
-      style={[style, { width: "100%", margin: "auto" }]}
+      style={[style, styles.ModalStyle]}
     >
       <View style={styles.ModalContainer}>
         {footer && footer()}
+        {/* 프로필 이미지: 기본 이미지로 할래요 */}
+        {BottomText &&
+          <Pressable>
+            <Title
+              text={BottomText}
+              color={Colors.AEAEAE}
+              style={styles.BasicTitle}
+            />
+          </Pressable>
+        }
       </View>
     </Modal>
   );
@@ -53,6 +66,16 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     backgroundColor: Colors.White,
-    height: 132,
+    paddingBottom: 30,
   },
+  ModalStyle: {
+    width: "100%",
+    margin: "auto",
+    justifyContent: "flex-end"
+  },
+  BasicTitle: {
+    textAlign: "center",
+    marginTop: 36,
+    textDecorationLine: "underline"
+  }
 });

@@ -3,7 +3,6 @@ import { FlatList, Pressable, StyleSheet, View } from "react-native";
 import { CommentIcon, DogImage, More, User, UserImage } from "../../assets/svg";
 import FloatingButton from "../../components/button/FloatingButton";
 import BottomModal from "../../components/modal/BottomModal";
-import CommentBottomModal from "../../components/modal/CommentBottomModal";
 import Title from "../../components/text/Title";
 import { RecordModel } from "../../model/RecordModel";
 import HeaderNavigation from "../../navigation/HeaderNavigation";
@@ -187,30 +186,27 @@ const RecordScreen = () => {
   return (
     <>
       <HeaderNavigation middletitle="일지" hasBackButton={false} />
-      <FlatList
-        keyExtractor={(item) => `record-${item.id}`}
-        data={data}
-        renderItem={renderItem}
-        contentContainerStyle={{ paddingBottom: 24 }}
-      />
+      <View style={{ flex: 1 }}>
+        <FlatList
+          keyExtractor={(item) => `record-${item.id}`}
+          data={data}
+          renderItem={renderItem}
+          contentContainerStyle={{ paddingBottom: 24 }}
+        />
+      </View>
       {/* 플로팅 버튼 */}
       <View
-        style={[
-          {
-            backgroundColor: isVisibleMenu
-              ? "rgba(0, 0, 0, 0.5)"
-              : Colors.White,
-            position: isVisibleMenu ? "absolute" : "relative",
-            zIndex: isVisibleMenu ? 10 : 0,
-          },
-        ]}
-      >
+        style={[styles.FloatingButtonContainer,
+        {
+          backgroundColor: isVisibleMenu ? "rgba(0, 0, 0, 0.5)" : "transparent",
+          zIndex: isVisibleMenu ? 1 : 0,
+          top: isVisibleMenu ? 0 : null,
+        }]}>
         <FloatingButton
           isVisibleMenu={isVisibleMenu}
           onPressCancel={() => setIsVisibleMenu(false)}
           onPressFloating={() => setIsVisibleMenu(!isVisibleMenu)}
         />
-
         {/* 모달 */}
         <BottomModal
           isVisible={isVisibleMore}
@@ -218,17 +214,14 @@ const RecordScreen = () => {
             setIsVisibleMore(false);
           }}
           footer={footerMore}
-          style={{ justifyContent: "flex-end" }}
         />
-        <CommentBottomModal
+        <BottomModal
           isVisible={isVisibleComment}
           onClose={() => {
             setIsVisibleComment(false);
           }}
           footer={footerComment}
-          style={{ justifyContent: "flex-end" }}
         />
-        
       </View>
     </>
   );
@@ -238,6 +231,7 @@ export default RecordScreen;
 
 const styles = StyleSheet.create({
   RenderItemContainer: {
+    flex: 1,
     marginTop: 20,
   },
   Top: {
@@ -322,4 +316,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
+  FloatingButtonContainer: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    left: 0,
+  }
 });
