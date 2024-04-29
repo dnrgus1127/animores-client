@@ -1,11 +1,13 @@
-import { SvgProps } from "react-native-svg";
-
 export namespace RecordModel {
 	export interface IRecordModel {
-		id: number;
-		nickName: string;
-		date: string;
-		contents: string;
-		image?: React.ReactElement<SvgProps>;
+		commentCount: number;
+		content: string;
+		createdAt: string;
+		diaryId: number;
+		imageUrl?: string;
+		media: Array<string>;
+		name: string;
+		profileId: number;
+		wishYn: boolean;
 	}
 }
