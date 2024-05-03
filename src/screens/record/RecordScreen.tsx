@@ -1,8 +1,14 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import dayjs from 'dayjs';
-import 'dayjs/locale/ko';
+import dayjs from "dayjs";
+import "dayjs/locale/ko";
 import React, { useState } from "react";
-import { FlatList, Pressable, StyleSheet, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  StyleSheet,
+  View,
+} from "react-native";
 import { CommentIcon, More, User, UserImage } from "../../assets/svg";
 import FloatingButton from "../../components/button/FloatingButton";
 import BottomModal from "../../components/modal/BottomModal";
@@ -13,10 +19,10 @@ import { RecordService } from "../../service/RecordService";
 import { QueryKey } from "../../statics/constants/Querykey";
 import { Colors } from "../../styles/Colors";
 
-dayjs.locale('ko');
+dayjs.locale("ko");
 
 const RecordScreen = () => {
-  const moreLength = 17;  //17자 이상이면 말줄임
+  const moreLength = 17; //17자 이상이면 말줄임
 
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
   const [isVisibleMore, setIsVisibleMore] = useState<boolean>(false); //더보기
@@ -24,25 +30,21 @@ const RecordScreen = () => {
   const [isVisibleComment, setIsVisibleComment] = useState<boolean>(false); //댓글
 
   //일지 리스트
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-  } = useInfiniteQuery(
+  const { data, fetchNextPage, hasNextPage, isLoading } = useInfiniteQuery(
     [QueryKey.RECORD_LIST],
-    ({ pageParam = 1 }) => RecordService.Record.list({ page: pageParam, size: 5 }),
+    ({ pageParam = 1 }) =>
+      RecordService.Record.list({ page: pageParam, size: 5 }),
     {
       getNextPageParam: (lastPage, allPages) => {
         const totalCount = lastPage.data.data.totalCount;
-        const currentPageDataCount = allPages.flat().length;
-    
+        const currentPageDataCount = lastPage.data.data.diaries.length;
+
         if (currentPageDataCount < totalCount) {
-          return currentPageDataCount; 
+          return allPages.length + 1;
         } else {
           return undefined;
         }
-      }
-
+      },
     }
   );
 
@@ -50,10 +52,11 @@ const RecordScreen = () => {
     if (hasNextPage) {
       fetchNextPage();
     }
-  }
+  };
 
-  const diaryData = data?.pages.flatMap(page => page.data.data.diaries) ?? [];
+  const diaryData = data?.pages.flatMap((page) => page.data.data.diaries) ?? [];
 
+  //더보기
   const toggleExpand = (itemId: number) => {
     if (expandedItems.includes(itemId)) {
       setExpandedItems(expandedItems.filter((id) => id !== itemId));
@@ -85,10 +88,12 @@ const RecordScreen = () => {
               text={item.name}
               fontSize={16}
               fontWeight={"bold"}
-              style={{ marginBottom: 6 }} />
+              style={{ marginBottom: 6 }}
+            />
             <Title
               text={dayjs(item.createdAt).format("YYYY.MM.DD HH:mm a")}
-              color={Colors.AEAEAE} />
+              color={Colors.AEAEAE}
+            />
           </View>
           <Pressable
             onPress={() => {
@@ -201,16 +206,13 @@ const RecordScreen = () => {
   return (
     <>
       <HeaderNavigation middletitle="일지" hasBackButton={false} />
-      <View style={{ flex: 1 }}>
-        <FlatList
-          keyExtractor={(item) => `record-${item.diaryId}`}
-          data={diaryData}
-          renderItem={renderItem}
-          contentContainerStyle={{ paddingBottom: 24 }}
-          onEndReached={next}
-          onEndReachedThreshold={0.1}
-        />
-      </View>
+      <FlatList
+        keyExtractor={(item) => `record-${item.diaryId}`}
+        data={diaryData}
+        renderItem={renderItem}
+        onEndReached={next}
+        onEndReachedThreshold={0.4}
+      />
       {/* 플로팅 버튼 */}
       <View
         style={[

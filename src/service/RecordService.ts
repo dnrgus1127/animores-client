@@ -2,7 +2,7 @@ import AxiosContext from "../screens/context/AxiosContext";
 
 export namespace RecordService {
 	export const Record = {
-		list: async ({ page = 1, size = 15 }: { page?: number; size?: number }) => {
+		list: async ({ page = 1, size = 5 }: { page?: number; size?: number }) => {
 			try {
 				const response = await AxiosContext.get(`/api/v1/diaries?page=${page}&size=${size}`);
 				return { data: response.data, status: response.status };
