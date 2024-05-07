@@ -1,7 +1,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -30,29 +30,24 @@ const RecordScreen = () => {
   const [isVisibleComment, setIsVisibleComment] = useState<boolean>(false); //댓글
 
   //일지 리스트
-  const { data, fetchNextPage, hasNextPage, isLoading } = useInfiniteQuery(
-    [QueryKey.RECORD_LIST],
-    ({ pageParam = 1 }) =>
-      RecordService.Record.list({ page: pageParam, size: 5 }),
-    {
-      getNextPageParam: (lastPage, allPages) => {
-        const totalCount = lastPage.data.data.totalCount;
-        const currentPageDataCount = lastPage.data.data.diaries.length;
+  const { data, fetchNextPage, isFetchingNextPage, hasNextPage } =
+    useInfiniteQuery(
+      [QueryKey.RECORD_LIST],
+      ({ pageParam = 1 }) =>
+        RecordService.Record.list({ page: pageParam, size: 5 }),
+      {
+        getNextPageParam: (lastPage, allPages) => {
+          const totalCount = lastPage.data.data.totalCount;
+          const currentPageDataCount = lastPage.data.data.diaries.length;
 
-        if (currentPageDataCount < totalCount) {
-          return allPages.length + 1;
-        } else {
-          return undefined;
-        }
-      },
-    }
-  );
-
-  const next = () => {
-    if (hasNextPage) {
-      fetchNextPage();
-    }
-  };
+          if (currentPageDataCount < totalCount) {
+            return allPages.length + 1;
+          } else {
+            return undefined;
+          }
+        },
+      }
+    );
 
   const diaryData = data?.pages.flatMap((page) => page.data.data.diaries) ?? [];
 
@@ -88,7 +83,7 @@ const RecordScreen = () => {
               text={item.name}
               fontSize={16}
               fontWeight={"bold"}
-              style={{ marginBottom: 6 }}
+              style={{ marginBottom: 2 }}
             />
             <Title
               text={dayjs(item.createdAt).format("YYYY.MM.DD HH:mm a")}
@@ -203,6 +198,11 @@ const RecordScreen = () => {
     );
   };
 
+  const loadMoreData = () => {
+    if (!hasNextPage || isFetchingNextPage) return;
+    fetchNextPage();
+  };
+
   return (
     <>
       <HeaderNavigation middletitle="일지" hasBackButton={false} />
@@ -210,8 +210,8 @@ const RecordScreen = () => {
         keyExtractor={(item) => `record-${item.diaryId}`}
         data={diaryData}
         renderItem={renderItem}
-        onEndReached={next}
-        onEndReachedThreshold={0.4}
+        onEndReachedThreshold={0.6}
+        onEndReached={loadMoreData}
       />
       {/* 플로팅 버튼 */}
       <View
@@ -293,6 +293,11 @@ const styles = StyleSheet.create({
   Footer: {
     flexDirection: "row",
     paddingHorizontal: 20,
+  },
+  LoadingFooter: {
+    paddingVertical: 20,
+    borderTopWidth: 1,
+    borderColor: "#CED0CE",
   },
   FooterTopLine: {
     backgroundColor: Colors.Gray838383,
