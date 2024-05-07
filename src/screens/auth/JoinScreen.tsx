@@ -15,7 +15,7 @@ import { RootStackParamList } from "../../navigation/type";
 import { ScreenName } from "../../statics/constants/ScreenName";
 import Countdown from "../../components/Countdown";
 import { EmailCheckService } from "../../service/EmailCheckService";
-import { useQuery } from 'react-query';
+import { useQuery } from "@tanstack/react-query";
 
 interface Irequest {
   method: string;
