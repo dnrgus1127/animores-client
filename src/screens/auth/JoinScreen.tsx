@@ -14,6 +14,8 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from "../../navigation/type";
 import { ScreenName } from "../../statics/constants/ScreenName";
 import Countdown from "../../components/Countdown";
+import { EmailCheckService } from "../../service/EmailCheckService";
+import { useQuery } from 'react-query';
 
 interface Irequest {
   method: string;
@@ -145,31 +147,32 @@ const JoinScreen = () => {
       setWarningText({...warningText, checkPassword: '비밀번호가 일치합니다.'})
     }
   }
-
   
-  // Email - 인증번호 전송 클릭 시
-  const sendVerificationCode = async () => {
-    const url = `https://gv5jgxia2e.execute-api.ap-northeast-2.amazonaws.com/Prod/api/v1/account/check-email/${email}`
-
-    // 이메일 중복 검사
-    const response = await fetch(url, {
-      method: "GET",
-      redirect: "follow",
-    })
-    let userCheck = await response.json()
-    .catch((error) => console.error(error))
-
-    //console.log(userCheck.data)
-    
-    if (userCheck.data){
-      // 중복일 경우
-      setValidation({...validation, email: false})
-      setWarningText({...warningText, email: '이미 가입된 이메일입니다.'})
-    } else {
+  const onSuccessCheckEmail = (data:{
+    data: any;
+    status: number;
+  }) => {    
+    if (!data.data.data){
       // 중복이 아니면 인증번호 전송
       setSampleCode('1234')
       console.log('코드전송')
+    } else {
+      // 중복일 경우
+      setValidation({...validation, email: false})
+      setWarningText({...warningText, email: '이미 가입된 이메일입니다.'})
     }
+  }
+
+  const { refetch } = useQuery({
+    queryKey: ['userEmail'], 
+    queryFn: () => EmailCheckService.Email.check({email: email}),
+    enabled: false,
+    onSuccess: onSuccessCheckEmail,
+  })
+
+  // Email - 인증번호 전송 클릭 시
+  const sendVerificationCode = () => {
+    refetch()
 
     // 카운트 시작 3:00
   }
