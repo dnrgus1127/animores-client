@@ -1,44 +1,62 @@
+import { useInfiniteQuery } from "@tanstack/react-query";
+import dayjs from "dayjs";
+import "dayjs/locale/ko";
 import React, { useState } from "react";
-import { FlatList, Pressable, StyleSheet, View } from "react-native";
-import { CommentIcon, DogImage, More, User, UserImage } from "../../assets/svg";
+import {
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  StyleSheet,
+  View,
+} from "react-native";
+import { CommentIcon, More, User, UserImage } from "../../assets/svg";
 import FloatingButton from "../../components/button/FloatingButton";
 import BottomModal from "../../components/modal/BottomModal";
 import Title from "../../components/text/Title";
 import { RecordModel } from "../../model/RecordModel";
 import HeaderNavigation from "../../navigation/HeaderNavigation";
+import { RecordService } from "../../service/RecordService";
+import { QueryKey } from "../../statics/constants/Querykey";
 import { Colors } from "../../styles/Colors";
 
+dayjs.locale("ko");
+
 const RecordScreen = () => {
-  const moreLength = 17;
+  const moreLength = 17; //17자 이상이면 말줄임
 
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
   const [isVisibleMore, setIsVisibleMore] = useState<boolean>(false); //더보기
   const [isVisibleMenu, setIsVisibleMenu] = useState<boolean>(false); //플로팅버튼
   const [isVisibleComment, setIsVisibleComment] = useState<boolean>(false); //댓글
 
-  const data: RecordModel.IRecordModel[] = [
+  //일지 리스트
+  const { data, fetchNextPage, hasNextPage, isLoading } = useInfiniteQuery(
+    [QueryKey.RECORD_LIST],
+    ({ pageParam = 1 }) =>
+      RecordService.Record.list({ page: pageParam, size: 5 }),
     {
-      id: 1,
-      nickName: "산책이 귀찮은 아빠",
-      date: "2023.11.03 10:21 오전",
-      contents: "두부랑 마트 다녀왔다 너무 귀찮지만 귀여워서 사진 한 장 찍었다",
-      image: <DogImage />,
-    },
-    {
-      id: 2,
-      nickName: "사랑꾼 엄마",
-      date: "2023.11.03 09:30 오전",
-      contents:
-        "내용내용내용내용내용내용내용내용내내용내용내용내용내용내용내용내용내용내용내용내용내용",
-    },
-    {
-      id: 3,
-      nickName: "두부조아",
-      date: "2023.11.02 08:21 오후",
-      contents: "이건 바로 내용내용내용내용내용내용내용내용내용내용내용내용",
-    },
-  ];
+      getNextPageParam: (lastPage, allPages) => {
+        const totalCount = lastPage.data.data.totalCount;
+        const currentPageDataCount = lastPage.data.data.diaries.length;
 
+        if (currentPageDataCount < totalCount) {
+          return allPages.length + 1;
+        } else {
+          return undefined;
+        }
+      },
+    }
+  );
+
+  const next = () => {
+    if (hasNextPage) {
+      fetchNextPage();
+    }
+  };
+
+  const diaryData = data?.pages.flatMap((page) => page.data.data.diaries) ?? [];
+
+  //더보기
   const toggleExpand = (itemId: number) => {
     if (expandedItems.includes(itemId)) {
       setExpandedItems(expandedItems.filter((id) => id !== itemId));
@@ -54,15 +72,28 @@ const RecordScreen = () => {
     item: RecordModel.IRecordModel;
     index: number;
   }) => {
-    const isExist = expandedItems.includes(item.id);
+    const isExist = expandedItems.includes(item.diaryId);
+
+    const contentToShow =
+      item.content.length > moreLength
+        ? item.content.slice(0, moreLength) + "..."
+        : item.content;
 
     return (
       <View style={styles.RenderItemContainer}>
         <View style={styles.Top}>
           <UserImage />
           <View style={styles.TitleContainer}>
-            <Title text={item.nickName} fontSize={16} fontWeight={"bold"} />
-            <Title text={item.date} color={Colors.AEAEAE} />
+            <Title
+              text={item.name}
+              fontSize={16}
+              fontWeight={"bold"}
+              style={{ marginBottom: 6 }}
+            />
+            <Title
+              text={dayjs(item.createdAt).format("YYYY.MM.DD HH:mm a")}
+              color={Colors.AEAEAE}
+            />
           </View>
           <Pressable
             onPress={() => {
@@ -73,21 +104,11 @@ const RecordScreen = () => {
           </Pressable>
         </View>
         <View style={styles.contentContainer}>
-          {isExist ? (
-            <Title text={item.contents} />
-          ) : (
-            <>
-              {item.contents.length < moreLength ? (
-                <Title text={item.contents} />
-              ) : (
-                <Title text={item.contents.slice(0, moreLength) + "..."} />
-              )}
-            </>
-          )}
-          {!isExist && (
+          <Title text={contentToShow} />
+          {!isExist && item.content.length > moreLength && (
             <Pressable
               onPress={() => {
-                toggleExpand(item.id);
+                toggleExpand(item.diaryId);
               }}
             >
               <Title
@@ -98,10 +119,9 @@ const RecordScreen = () => {
             </Pressable>
           )}
         </View>
-        {item.image &&
-          <View style={{ marginTop: 22 }}>
-            {item.image}
-          </View>}
+        {item.imageUrl && (
+          <View style={{ marginTop: 22 }}>{/* TODO: 이미지 */}</View>
+        )}
         <Pressable
           onPress={() => {
             setIsVisibleComment(true);
@@ -112,7 +132,7 @@ const RecordScreen = () => {
           {/* TODO:댓글 수 수정 */}
           <Title text={"3"} color={Colors.AEAEAE} style={{ marginLeft: 8 }} />
         </Pressable>
-        {data.length - 1 !== index && <View style={styles.BottomLine} />}
+        {index !== diaryData.length - 1 && <View style={styles.BottomLine} />}
       </View>
     );
   };
@@ -186,22 +206,26 @@ const RecordScreen = () => {
   return (
     <>
       <HeaderNavigation middletitle="일지" hasBackButton={false} />
-      <View style={{ flex: 1 }}>
-        <FlatList
-          keyExtractor={(item) => `record-${item.id}`}
-          data={data}
-          renderItem={renderItem}
-          contentContainerStyle={{ paddingBottom: 24 }}
-        />
-      </View>
+      <FlatList
+        keyExtractor={(item) => `record-${item.diaryId}`}
+        data={diaryData}
+        renderItem={renderItem}
+        onEndReached={next}
+        onEndReachedThreshold={0.4}
+      />
       {/* 플로팅 버튼 */}
       <View
-        style={[styles.FloatingButtonContainer,
-        {
-          backgroundColor: isVisibleMenu ? "rgba(0, 0, 0, 0.5)" : "transparent",
-          zIndex: isVisibleMenu ? 1 : 0,
-          top: isVisibleMenu ? 0 : null,
-        }]}>
+        style={[
+          styles.FloatingButtonContainer,
+          {
+            backgroundColor: isVisibleMenu
+              ? "rgba(0, 0, 0, 0.5)"
+              : "transparent",
+            zIndex: isVisibleMenu ? 1 : 0,
+            top: isVisibleMenu ? 0 : null,
+          },
+        ]}
+      >
         <FloatingButton
           isVisibleMenu={isVisibleMenu}
           onPressCancel={() => setIsVisibleMenu(false)}
@@ -232,7 +256,8 @@ export default RecordScreen;
 const styles = StyleSheet.create({
   RenderItemContainer: {
     flex: 1,
-    marginTop: 20,
+    paddingTop: 20,
+    backgroundColor: Colors.White,
   },
   Top: {
     flexDirection: "row",
@@ -259,7 +284,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   BottomLine: {
-    borderBottomWidth: 8,
+    borderBottomWidth: 6,
     borderBottomColor: Colors.F4F4F4,
   },
   BottomModalContainer: {
@@ -321,5 +346,5 @@ const styles = StyleSheet.create({
     bottom: 0,
     right: 0,
     left: 0,
-  }
+  },
 });
