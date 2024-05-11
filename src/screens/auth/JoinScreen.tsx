@@ -223,6 +223,7 @@ const JoinScreen = () => {
         <View style={commonStyles.container}>
           <View style={styles.joinInputWrap}>
             <BasicInput 
+              name='email'
               title='이메일' 
               placeholder='이메일을 입력해주세요' 
               value={email} 
@@ -256,6 +257,7 @@ const JoinScreen = () => {
               )
             }
           </View>
+          
           {!email ? null : (
             <View>
               <Text 
@@ -270,6 +272,7 @@ const JoinScreen = () => {
               <View style={styles.joinInputWrap}>
                 <View style={[styles.joinInputWrap, { flex: 1, position: 'relative' }]}>
                   <BasicInput 
+                    name='verification_code'
                     placeholder='인증번호를 입력해주세요' 
                     marginTop={20} 
                     keyboardType='numeric' 
@@ -320,7 +323,7 @@ const JoinScreen = () => {
               </View>
             </View>
           ) : null}
-          <View style={styles.joinInputWrap}>
+          {/* <View style={styles.joinInputWrap}>
             <BasicInput 
               title='닉네임' 
               placeholder='닉네임을 입력해주세요' 
@@ -397,7 +400,7 @@ const JoinScreen = () => {
                 {warningText.checkPassword}
               </Text>
             </View>
-          )}
+          )} */}
 
           <AgreementOnTerms checkedAgreements={checkedAgreements} />
           
