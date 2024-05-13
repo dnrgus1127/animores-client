@@ -1,14 +1,15 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
-  ActivityIndicator,
   FlatList,
   Pressable,
   StyleSheet,
   View,
+  useWindowDimensions
 } from "react-native";
+import Toast from 'react-native-toast-message';
 import { CommentIcon, More, User, UserImage } from "../../assets/svg";
 import FloatingButton from "../../components/button/FloatingButton";
 import BottomModal from "../../components/modal/BottomModal";
@@ -23,12 +24,14 @@ dayjs.locale("ko");
 
 const RecordScreen = () => {
   const moreLength = 17; //17자 이상이면 말줄임
+  const { height } = useWindowDimensions();
 
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
   const [isVisibleMore, setIsVisibleMore] = useState<boolean>(false); //더보기
   const [isVisibleMenu, setIsVisibleMenu] = useState<boolean>(false); //플로팅버튼
   const [isVisibleComment, setIsVisibleComment] = useState<boolean>(false); //댓글
-
+  const [deleteItemId, setDeleteItemId] = useState<number | null>(null);
+  console.log('deleteItemId', deleteItemId)
   //일지 리스트
   const { data, fetchNextPage, isFetchingNextPage, hasNextPage } =
     useInfiniteQuery(
@@ -48,6 +51,26 @@ const RecordScreen = () => {
         },
       }
     );
+
+  //일지 삭제
+  const mutation = useMutation(
+    (diaryId: number) => RecordService.Record.delete(diaryId),
+    {
+      onSuccess: () => {
+        Toast.show({
+          type: 'message',
+          props: {
+            message: '삭제되었습니다.',
+          },
+          topOffset: height / 2,
+          visibilityTime: 2500,
+        });
+      },
+      onError: (error) => {
+        console.error('Delete error:', error);
+      }
+    }
+  )
 
   const diaryData = data?.pages.flatMap((page) => page.data.data.diaries) ?? [];
 
@@ -93,6 +116,7 @@ const RecordScreen = () => {
           <Pressable
             onPress={() => {
               setIsVisibleMore(true);
+              setDeleteItemId(item.diaryId)
             }}
           >
             <More style={styles.MoreIcon} />
@@ -146,14 +170,20 @@ const RecordScreen = () => {
               style={{ textAlign: "center" }}
             />
           </View>
-          <View style={styles.ButtonContainer}>
+          <Pressable
+            onPress={() => {
+              if (deleteItemId !== null) {
+                mutation.mutate(deleteItemId);
+              }
+            }}
+            style={styles.ButtonContainer}>
             <Title
               text={"삭제"}
               fontSize={16}
               color={Colors.White}
               style={{ textAlign: "center" }}
             />
-          </View>
+          </Pressable>
         </View>
       </View>
     );
