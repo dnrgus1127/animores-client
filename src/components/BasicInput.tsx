@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import { StyleSheet, TextInput, View, Text, KeyboardTypeOptions, ReturnKeyTypeOptions } from "react-native";
 import { commonStyles } from '../styles/commonStyles';
 
 interface InputProps {
+  name: string;
+  value?: string;
   title?: string;
   placeholder?: string;
   secureTextEntry?: boolean;
   marginTop?: number;
   onChangeText?: (inputText:string) => void;
-  value?: string;
   keyboardType?: KeyboardTypeOptions | undefined;
   returnKeyType?: ReturnKeyTypeOptions | undefined;
   disabled?: boolean;
@@ -16,7 +18,8 @@ interface InputProps {
 }
 
 const BasicInput = (props:InputProps) => {
-  const { title, placeholder, secureTextEntry, marginTop, onChangeText, value, keyboardType, returnKeyType, disabled, error } = props;
+  const { name, value, title, placeholder, secureTextEntry, marginTop, onChangeText, keyboardType, returnKeyType, disabled, error } = props;
+  const { control } = useForm();
   const [initialValue, setinitialValue] = useState('');
 
   const initialOnChangeText = (inputText:string) => {
@@ -25,19 +28,30 @@ const BasicInput = (props:InputProps) => {
 
   return (
     <View style={[styles.inputWrap, marginTop ? { marginTop: marginTop} : null ]}>
-      {title ? (
-        <Text style={[styles.label, error ? styles.errorText : null]}>{title}</Text>
-      ) : null}
-      <TextInput
-        style={[styles.inputBox, error ? styles.errorUnderline : null]}
-        onChangeText={onChangeText ? onChangeText : initialOnChangeText}
-        value={value ? value : initialValue}
-        placeholder={placeholder ? placeholder : ''}
-        secureTextEntry={secureTextEntry}
-        keyboardType={keyboardType ? keyboardType : 'default'}
-        returnKeyType={returnKeyType ? returnKeyType : 'done'}
-        editable={disabled ? false : true}
-        selectTextOnFocus={disabled ? false : true}
+      <Controller
+        render={({ field: { onChange, onBlur, value } }) => (
+          <>
+            {title ? (
+              <Text style={[styles.label, error ? styles.errorText : null]}>{title}</Text>
+            ) : null}
+            <TextInput
+              style={[styles.inputBox, error ? styles.errorUnderline : null]}
+              value={value ? value : initialValue}
+              onChangeText={(value) => {
+                  onChange(value);
+                  onChangeText ? onChangeText(value) : initialOnChangeText;
+              }}
+              placeholder={placeholder ? placeholder : ''}
+              secureTextEntry={secureTextEntry}
+              keyboardType={keyboardType ? keyboardType : 'default'}
+              returnKeyType={returnKeyType ? returnKeyType : 'done'}
+              editable={disabled ? false : true}
+              selectTextOnFocus={disabled ? false : true}
+            />
+          </>
+        )}
+        name={name}
+        control={control}
       />
     </View>
   )
