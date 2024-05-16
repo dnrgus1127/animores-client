@@ -5,6 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { RootStackParams } from "../../types/RootStackParams";
 import JoinScreen from "../screens/auth/JoinScreen";
 import LoginScreen from "../screens/auth/LoginScreen";
+import CreateDiary from "../screens/diary/CreateDiary";
 import AlertSettingScreen from "../screens/myPage/alert/AlertSettingScreen";
 import CustomerServiceScreen from "../screens/myPage/customerService/CustomerServiceScreen";
 import InformationScreen from "../screens/myPage/information/InformationScreen";
@@ -14,7 +15,6 @@ import BreedType from "../screens/myPage/petManagement/BreedType";
 import PatManagementScreen from "../screens/myPage/petManagement/PatManagementScreen";
 import PetType from "../screens/myPage/petManagement/PetType";
 import ProfileScreen from "../screens/myPage/profile/ProfileScreen";
-import CreateRecord from "../screens/record/CreateRecord";
 import AddTodo from "../screens/todo/AddTodo";
 import { ScreenName } from "../statics/constants/ScreenName";
 import BottomTabStackNavigator from "./BottomTabStackNavigator";
@@ -45,8 +45,8 @@ const FullScreenStackNavigator = () => {
           options={{ headerShown: false }}
         />
         <RootStack.Screen
-          name={ScreenName.CreateRecord}
-          component={CreateRecord}
+          name={ScreenName.CreateDiary}
+          component={CreateDiary}
           options={{ headerShown: false }}
         />
         <RootStack.Screen

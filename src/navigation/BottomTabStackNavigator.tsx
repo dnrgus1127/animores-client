@@ -3,7 +3,7 @@ import React from 'react';
 import CalendarScreen from "../screens/celendar/CalendarScreen";
 import HomeScreen from '../screens/home/HomeScreen';
 import MypageScreen from "../screens/myPage/MypageScreen";
-import RecordScreen from '../screens/record/RecordScreen';
+import DiaryScreen from '../screens/diary/DiaryScreen';
 import AllTodoScreen from '../screens/todo';
 import { ScreenName } from "../statics/constants/ScreenName";
 import TabBar from "./TabBar";
@@ -35,8 +35,8 @@ const BottomTabNavigator = () => {
         }}
       />
       <Tab.Screen
-        name={ScreenName.Record}
-        component={RecordScreen}
+        name={ScreenName.Diary}
+        component={DiaryScreen}
         options={{
           headerShown: false,
         }}

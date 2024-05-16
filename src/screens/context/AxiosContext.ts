@@ -9,7 +9,7 @@ const instance = axios.create({
 	headers: {
 		Accept: 'application/json',
 	},
-	baseURL: 'https://gv5jgxia2e.execute-api.ap-northeast-2.amazonaws.com/Prod',
+	baseURL: 'http://loadbalancer-e8b18c32a70f207a.elb.ap-northeast-2.amazonaws.com:8080',
 } as AxiosRequestConfig);
 
 instance.interceptors.request.use(
