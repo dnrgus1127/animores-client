@@ -14,30 +14,29 @@ import { CommentIcon, More, User, UserImage } from "../../assets/svg";
 import FloatingButton from "../../components/button/FloatingButton";
 import BottomModal from "../../components/modal/BottomModal";
 import Title from "../../components/text/Title";
-import { RecordModel } from "../../model/RecordModel";
+import { DiaryModel } from "../../model/DiaryModel";
 import HeaderNavigation from "../../navigation/HeaderNavigation";
-import { RecordService } from "../../service/RecordService";
+import { DiaryService } from "../../service/DiaryService";
 import { QueryKey } from "../../statics/constants/Querykey";
 import { Colors } from "../../styles/Colors";
 
 dayjs.locale("ko");
 
-const RecordScreen = () => {
+const DairyScreen = () => {
   const moreLength = 17; //17자 이상이면 말줄임
-  const { height } = useWindowDimensions();
 
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
   const [isVisibleMore, setIsVisibleMore] = useState<boolean>(false); //더보기
   const [isVisibleMenu, setIsVisibleMenu] = useState<boolean>(false); //플로팅버튼
   const [isVisibleComment, setIsVisibleComment] = useState<boolean>(false); //댓글
   const [deleteItemId, setDeleteItemId] = useState<number | null>(null);
-  console.log('deleteItemId', deleteItemId)
+
   //일지 리스트
   const { data, fetchNextPage, isFetchingNextPage, hasNextPage } =
     useInfiniteQuery(
-      [QueryKey.RECORD_LIST],
+      [QueryKey.DIARY_LIST],
       ({ pageParam = 1 }) =>
-        RecordService.Record.list({ page: pageParam, size: 5 }),
+        DiaryService.diary.list({ page: pageParam, size: 5 }),
       {
         getNextPageParam: (lastPage, allPages) => {
           const totalCount = lastPage.data.data.totalCount;
@@ -54,17 +53,19 @@ const RecordScreen = () => {
 
   //일지 삭제
   const mutation = useMutation(
-    (diaryId: number) => RecordService.Record.delete(diaryId),
+    (diaryId: number) => DiaryService.diary.delete(diaryId),
     {
-      onSuccess: () => {
-        Toast.show({
-          type: 'message',
-          props: {
-            message: '삭제되었습니다.',
-          },
-          topOffset: height / 2,
-          visibilityTime: 2500,
-        });
+      onSuccess: data => {
+        if (data && data.status === 200) {
+          console.log('Delete successful:', data);
+          Toast.show({
+            type: 'message',
+            props: {
+              message: '삭제되었습니다.',
+            },
+            visibilityTime: 2500,
+          });
+        }
       },
       onError: (error) => {
         console.error('Delete error:', error);
@@ -87,7 +88,7 @@ const RecordScreen = () => {
     item,
     index,
   }: {
-    item: RecordModel.IRecordModel;
+    item: DiaryModel.IDiaryModel;
     index: number;
   }) => {
     const isExist = expandedItems.includes(item.diaryId);
@@ -237,7 +238,7 @@ const RecordScreen = () => {
     <>
       <HeaderNavigation middletitle="일지" hasBackButton={false} />
       <FlatList
-        keyExtractor={(item) => `record-${item.diaryId}`}
+        keyExtractor={(item) => `diary-${item.diaryId}`}
         data={diaryData}
         renderItem={renderItem}
         onEndReachedThreshold={0.6}
@@ -281,7 +282,7 @@ const RecordScreen = () => {
   );
 };
 
-export default RecordScreen;
+export default DairyScreen;
 
 const styles = StyleSheet.create({
   RenderItemContainer: {

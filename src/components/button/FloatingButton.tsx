@@ -54,7 +54,7 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({
             </Pressable>
             <Pressable
               onPress={() => {
-                navigation.navigate(ScreenName.CreateRecord as never);
+                navigation.navigate(ScreenName.CreateDiary as never);
               }}
               style={[styles.PinkButton, { marginTop: 16 }]}
             >

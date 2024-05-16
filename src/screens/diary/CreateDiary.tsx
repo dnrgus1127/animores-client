@@ -18,8 +18,8 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from "../../navigation/type";
 import { ScreenName } from "../../statics/constants/ScreenName";
 
-const CreatRecord = () => {
-  const navigation = useNavigation<StackNavigationProp<RootStackParamList, ScreenName.CreateRecord>>();
+const CreatDiary = () => {
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList, ScreenName.CreateDiary>>();
   
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
@@ -104,7 +104,7 @@ const CreatRecord = () => {
   );
 };
 
-export default CreatRecord;
+export default CreatDiary;
 
 const styles = StyleSheet.create({
   Container: {

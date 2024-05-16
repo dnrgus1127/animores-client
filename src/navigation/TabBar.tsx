@@ -18,12 +18,12 @@ const TabBar = ({ navigation, state }: ITabBarProps) => {
         todoBottomTab,
         calendarBottomTab,
         homeBottomTab,
-        recordBottomTab,
+        diaryBottomTab,
         mypageBottomTab,
         todoBottomTabActive,
         calendarBottomTabActive,
         homeBottomTabActive,
-        recordBottomTabActive,
+        diaryBottomTabActive,
         mypageBottomTabActive,
     } = PngImage.BottomTab;
 
@@ -32,7 +32,7 @@ const TabBar = ({ navigation, state }: ITabBarProps) => {
             case ScreenName.AllTodo: return '모든할일';
             case ScreenName.Calendar: return '캘린더';
             case ScreenName.Home: return '홈';
-            case ScreenName.Record: return '일지';
+            case ScreenName.Diary: return '일지';
             case ScreenName.Mypage: return 'MY';
             default: return '';
         }
@@ -52,10 +52,10 @@ const TabBar = ({ navigation, state }: ITabBarProps) => {
                 return isFocused
                     ? homeBottomTabActive
                     : homeBottomTab
-            case ScreenName.Record:
+            case ScreenName.Diary:
                 return isFocused
-                    ? recordBottomTabActive
-                    : recordBottomTab
+                    ? diaryBottomTabActive
+                    : diaryBottomTab
             case ScreenName.Mypage:
                 return isFocused
                     ? mypageBottomTabActive
