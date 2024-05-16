@@ -39,8 +39,8 @@ const DairyScreen = () => {
         DiaryService.diary.list({ page: pageParam, size: 5 }),
       {
         getNextPageParam: (lastPage, allPages) => {
-          const totalCount = lastPage?.data.data.totalCount;
-          const currentPageDataCount = lastPage.data.data.diaries.length;
+          const totalCount = lastPage?.data?.data.totalCount;
+          const currentPageDataCount = lastPage?.data?.data.diaries.length;
 
           if (currentPageDataCount < totalCount) {
             return allPages.length + 1;
@@ -73,7 +73,7 @@ const DairyScreen = () => {
     }
   )
 
-  const diaryData = data?.pages.flatMap((page) => page.data.data.diaries) ?? [];
+  const diaryData = data?.pages.flatMap((page) => page?.data?.data.diaries) ?? [];
 
   //더보기
   const toggleExpand = (itemId: number) => {
@@ -91,12 +91,12 @@ const DairyScreen = () => {
     item: DiaryModel.IDiaryModel;
     index: number;
   }) => {
-    const isExist = expandedItems.includes(item.diaryId);
+    const isExist = expandedItems.includes(item?.diaryId);
 
     const contentToShow =
-      item.content.length > moreLength
-        ? item.content.slice(0, moreLength) + "..."
-        : item.content;
+      item?.content.length > moreLength
+        ? item?.content.slice(0, moreLength) + "..."
+        : item?.content;
 
     return (
       <View style={styles.RenderItemContainer}>
@@ -104,13 +104,13 @@ const DairyScreen = () => {
           <UserImage />
           <View style={styles.TitleContainer}>
             <Title
-              text={item.name}
+              text={item?.name}
               fontSize={16}
               fontWeight={"bold"}
               style={{ marginBottom: 2 }}
             />
             <Title
-              text={dayjs(item.createdAt).format("YYYY.MM.DD HH:mm a")}
+              text={dayjs(item?.createdAt).format("YYYY.MM.DD HH:mm a")}
               color={Colors.AEAEAE}
             />
           </View>
@@ -125,10 +125,10 @@ const DairyScreen = () => {
         </View>
         <View style={styles.contentContainer}>
           <Title text={contentToShow} />
-          {!isExist && item.content.length > moreLength && (
+          {!isExist && item?.content.length > moreLength && (
             <Pressable
               onPress={() => {
-                toggleExpand(item.diaryId);
+                toggleExpand(item?.diaryId);
               }}
             >
               <Title
@@ -139,7 +139,7 @@ const DairyScreen = () => {
             </Pressable>
           )}
         </View>
-        {item.imageUrl && (
+        {item?.imageUrl && (
           <View style={{ marginTop: 22 }}>{/* TODO: 이미지 */}</View>
         )}
         <Pressable
@@ -152,7 +152,7 @@ const DairyScreen = () => {
           {/* TODO:댓글 수 수정 */}
           <Title text={"3"} color={Colors.AEAEAE} style={{ marginLeft: 8 }} />
         </Pressable>
-        {index !== diaryData.length - 1 && <View style={styles.BottomLine} />}
+        {index !== diaryData?.length - 1 && <View style={styles.BottomLine} />}
       </View>
     );
   };
@@ -238,7 +238,7 @@ const DairyScreen = () => {
     <>
       <HeaderNavigation middletitle="일지" hasBackButton={false} />
       <FlatList
-        keyExtractor={(item) => `diary-${item.diaryId}`}
+        keyExtractor={(item) => `diary-${item?.diaryId}`}
         data={diaryData}
         renderItem={renderItem}
         onEndReachedThreshold={0.6}
