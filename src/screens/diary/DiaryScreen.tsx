@@ -39,7 +39,7 @@ const DairyScreen = () => {
         DiaryService.diary.list({ page: pageParam, size: 5 }),
       {
         getNextPageParam: (lastPage, allPages) => {
-          const totalCount = lastPage.data.data.totalCount;
+          const totalCount = lastPage?.data.data.totalCount;
           const currentPageDataCount = lastPage.data.data.diaries.length;
 
           if (currentPageDataCount < totalCount) {
