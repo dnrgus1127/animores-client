@@ -1,6 +1,6 @@
 import AxiosContext from "../screens/context/AxiosContext";
 
-// 프로필 아이디 변경
+// 일지
 export namespace DiaryService {
 	export const diary = {
 		list: async ({ profileId = 1, page = 1, size = 5 }: { profileId?: number; page?: number; size?: number }) => {

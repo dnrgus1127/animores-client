@@ -1,4 +1,4 @@
-import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
+import { QueryClient, useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
 import React, { useState } from "react";
@@ -6,8 +6,7 @@ import {
   FlatList,
   Pressable,
   StyleSheet,
-  View,
-  useWindowDimensions
+  View
 } from "react-native";
 import Toast from 'react-native-toast-message';
 import { CommentIcon, More, User, UserImage } from "../../assets/svg";
@@ -25,8 +24,10 @@ dayjs.locale("ko");
 const DairyScreen = () => {
   const moreLength = 17; //17자 이상이면 말줄임
 
+  const queryClient = useQueryClient();
+
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
-  const [isVisibleMore, setIsVisibleMore] = useState<boolean>(false); //더보기
+  const [isVisibleMore, setIsVisibleMore] = useState<boolean>(false); //더보기 모달
   const [isVisibleMenu, setIsVisibleMenu] = useState<boolean>(false); //플로팅버튼
   const [isVisibleComment, setIsVisibleComment] = useState<boolean>(false); //댓글
   const [deleteItemId, setDeleteItemId] = useState<number | null>(null);
@@ -52,19 +53,19 @@ const DairyScreen = () => {
     );
 
   //일지 삭제
-  const mutation = useMutation(
+  const { mutate } = useMutation(
     (diaryId: number) => DiaryService.diary.delete(diaryId),
     {
-      onSuccess: data => {
+      onSuccess: async data => {
         if (data && data.status === 200) {
-          console.log('Delete successful:', data);
           Toast.show({
-            type: 'message',
-            props: {
-              message: '삭제되었습니다.',
-            },
-            visibilityTime: 2500,
+            type: 'success',
+            text1: '삭제되었습니다.',
           });
+
+          setIsVisibleMore(false);
+          await queryClient.invalidateQueries([QueryKey.DIARY_LIST]); 
+          //일지 목록 쿼리를 무효화함
         }
       },
       onError: (error) => {
@@ -174,7 +175,7 @@ const DairyScreen = () => {
           <Pressable
             onPress={() => {
               if (deleteItemId !== null) {
-                mutation.mutate(deleteItemId);
+                mutate(deleteItemId);
               }
             }}
             style={styles.ButtonContainer}>
