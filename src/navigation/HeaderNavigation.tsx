@@ -19,6 +19,7 @@ interface IProps {
   textStyle?: StyleProp<TextStyle>;
   onPressRightButton?: () => void;
   isBlack?: boolean;
+  content?: string;
 }
 
 const HeaderNavigation = (props: IProps) => {
@@ -30,9 +31,11 @@ const HeaderNavigation = (props: IProps) => {
     textStyle,
     onPressRightButton,
     isBlack = false,
+    content,
   } = props;
 
   const HIT_SLOP = { top: 10, left: 10, right: 10, bottom: 10 };
+  const isRightTitleDisabled = !content;
 
   return (
     <>
@@ -53,13 +56,17 @@ const HeaderNavigation = (props: IProps) => {
         )}
         {rightTitle && (
           <Pressable
-            onPress={onPressRightButton}
+            onPress={isRightTitleDisabled ? undefined : onPressRightButton}
             style={styles.RightTitleContainer}
           >
             <Title
               text={rightTitle}
               fontSize={18}
-              color={isBlack ? Colors.Black : Colors.DBDBDB}
+              color={
+                isRightTitleDisabled || isBlack 
+                  ? Colors.DBDBDB
+                  : Colors.Black
+              }
               style={[styles.RightTitle, textStyle]}
             />
           </Pressable>
@@ -81,7 +88,7 @@ const styles = StyleSheet.create({
   },
   TouchOpacityBackButton: {
     paddingLeft: 20,
-	zIndex: 1
+    zIndex: 1
   },
   TitleContainer: {
     width: "100%",
