@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Control, Controller, FieldError, FieldValues, RegisterOptions, useForm } from 'react-hook-form';
 import { StyleSheet, TextInput, View, Text, KeyboardTypeOptions, ReturnKeyTypeOptions } from "react-native";
 import { commonStyles } from '../styles/commonStyles';
 
@@ -14,32 +14,31 @@ interface InputProps {
   keyboardType?: KeyboardTypeOptions | undefined;
   returnKeyType?: ReturnKeyTypeOptions | undefined;
   disabled?: boolean;
-  error?: boolean;
+  handleError?: () => void | undefined
+  control?: Control<FieldValues> | undefined
+  rules?:Omit<RegisterOptions<FieldValues, string>, "disabled" | "valueAsNumber" | "valueAsDate" | "setValueAs"> | undefined
 }
 
 const BasicInput = (props:InputProps) => {
-  const { name, value, title, placeholder, secureTextEntry, marginTop, onChangeText, keyboardType, returnKeyType, disabled, error } = props;
-  const { control } = useForm();
-  const [initialValue, setinitialValue] = useState('');
-
-  const initialOnChangeText = (inputText:string) => {
-    setinitialValue(inputText)
-  }
+  const { name, control, rules, handleError, title, placeholder, secureTextEntry, marginTop, onChangeText, keyboardType, returnKeyType, disabled } = props;
 
   return (
     <View style={[styles.inputWrap, marginTop ? { marginTop: marginTop} : null ]}>
       <Controller
-        render={({ field: { onChange, onBlur, value } }) => (
+        name={name}
+        control={control}
+        rules={rules}
+        render={({ field: { onChange, onBlur, value }, fieldState: {error} }) => (
           <>
             {title ? (
               <Text style={[styles.label, error ? styles.errorText : null]}>{title}</Text>
             ) : null}
             <TextInput
               style={[styles.inputBox, error ? styles.errorUnderline : null]}
-              value={value ? value : initialValue}
+              value={value}
               onChangeText={(value) => {
                   onChange(value);
-                  onChangeText ? onChangeText(value) : initialOnChangeText;
+                  onChangeText && onChangeText(value);
               }}
               placeholder={placeholder ? placeholder : ''}
               secureTextEntry={secureTextEntry}
@@ -48,10 +47,9 @@ const BasicInput = (props:InputProps) => {
               editable={disabled ? false : true}
               selectTextOnFocus={disabled ? false : true}
             />
+            {error && <Text style={[styles.errorText]}>{error.message}</Text>}
           </>
         )}
-        name={name}
-        control={control}
       />
     </View>
   )

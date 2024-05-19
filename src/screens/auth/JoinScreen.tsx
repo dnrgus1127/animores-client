@@ -16,13 +16,10 @@ import { ScreenName } from "../../statics/constants/ScreenName";
 import Countdown from "../../components/Countdown";
 import { EmailCheckService } from "../../service/EmailCheckService";
 import { useQuery } from "@tanstack/react-query";
-
-interface Irequest {
-  method: string;
-  redirect: string;
-}
+import { useForm } from "react-hook-form";
 
 const JoinScreen = () => {
+  const { control, handleSubmit, trigger, formState:{errors} } = useForm({ mode: 'onChange'})
   const navigation = useNavigation<StackNavigationProp<RootStackParamList, ScreenName.Join>>();
 
   const [userInput, setUserInput] = useState({
@@ -87,16 +84,13 @@ const JoinScreen = () => {
   const handleOnChangeEmail = (inputText:string) => {
     // 이메일 재입력 시 인증번호 무효화
     setSampleCode('')
-    setUserInput({...userInput, verificationCode: '', email: inputText})
-    
+
     const matchEmail = inputText.match(emailRegex)
 
     if (matchEmail === null) {
       setValidation({...validation, email: false})
-      setWarningText({...warningText, email: '이메일 형식에 맞게 입력해주세요.'})
     } else {   
       setValidation({...validation, email: true})
-      setWarningText({...warningText, email: ''})
     }
   }
 
@@ -107,17 +101,17 @@ const JoinScreen = () => {
   }
 
   const handleOnChangeNickname = (inputText:string) => {
-    setUserInput({...userInput, nickname: inputText})
+   //setUserInput({...userInput, nickname: inputText})
     // 닉네임 재입력 시 인증번호 무효화
     setValidation({...validation, nickname: false, nicknameConfirm: false})
     
     const matchNickname = inputText.match(nicknameRegex)
 
     if (matchNickname === null) {
-      setWarningText({...warningText, nickname: '영문, 한글, 숫자만 가능하며 3~20자로 입력해주세요.'})
+      //setWarningText({...warningText, nickname: '영문, 한글, 숫자만 가능하며 3~20자로 입력해주세요.'})
     } else {
       setValidation({...validation, nickname: true, nicknameConfirm: false})
-      setWarningText({...warningText, nickname: ''})
+      //setWarningText({...warningText, nickname: ''})
     }
   }
 
@@ -129,15 +123,15 @@ const JoinScreen = () => {
 
     if (matchPassword === null) {
       setValidation({...validation, password: false})
-      setWarningText({...warningText, password: '영문 대문자와 소문자, 숫자, 특수문자를 조합하여 8~30자로 입력해주세요.'})
+      //setWarningText({...warningText, password: '영문 대문자와 소문자, 숫자, 특수문자를 조합하여 8~30자로 입력해주세요.'})
     } else {
       setValidation({...validation, password: true})
-      setWarningText({...warningText, password: '사용하실 수 있는 비밀번호 입니다.'})
+      //setWarningText({...warningText, password: '사용하실 수 있는 비밀번호 입니다.'})
     }
   }
 
   const handleOnChangeCheckPassword = (inputText:string) => {
-    setUserInput({...userInput, checkPassword: inputText})
+    //setUserInput({...userInput, checkPassword: inputText})
 
     if (inputText !== password) {
       setValidation({...validation, checkPassword: false})
@@ -163,15 +157,21 @@ const JoinScreen = () => {
     }
   }
 
+
   const { refetch } = useQuery({
-    queryKey: ['userEmail'], 
+    queryKey: ['email'], 
     queryFn: () => EmailCheckService.Email.check({email: email}),
     enabled: false,
     onSuccess: onSuccessCheckEmail,
   })
-
+  
   // Email - 인증번호 전송 클릭 시
   const sendVerificationCode = () => {
+    const isValid = trigger("email")
+    if (!isValid) {
+      return 
+    }
+    
     refetch()
 
     // 카운트 시작 3:00
@@ -216,6 +216,10 @@ const JoinScreen = () => {
     setValidation({...validation, nicknameConfirm: true})
   }
 
+  // const onRegisterPressed = (data:any) => {
+  //   console.log(data)
+  // }
+
   return (
     <SafeAreaView style={styles.Container}>
       <ScrollView>
@@ -225,11 +229,16 @@ const JoinScreen = () => {
             <BasicInput 
               name='email'
               title='이메일' 
-              placeholder='이메일을 입력해주세요' 
-              value={email} 
+              placeholder='이메일을 입력해주세요'
+              control={control}
+              rules={{
+                required: '이메일을 입력해주세요.', 
+                pattern: {
+                value: emailRegex,
+                message: '이메일 형식에 맞게 입력해주세요.'
+              }}}
               onChangeText={handleOnChangeEmail} 
               returnKeyType='done'
-              error={email !== '' && !validation.email}
               disabled={verificationState === 'success'}
             />
             {
@@ -257,8 +266,7 @@ const JoinScreen = () => {
               )
             }
           </View>
-          
-          {!email ? null : (
+          {/* {!email ? null : (
             <View>
               <Text 
                 style={validation.email ? styles.successText : styles.errorText}
@@ -266,7 +274,7 @@ const JoinScreen = () => {
                 {warningText.email}
               </Text>
             </View>
-          )}
+          )} */}
           {sampleCode !== '' && verificationState !== 'success' ? (
             <View>
               <View style={styles.joinInputWrap}>
@@ -274,10 +282,15 @@ const JoinScreen = () => {
                   <BasicInput 
                     name='verification_code'
                     placeholder='인증번호를 입력해주세요' 
+                    control={control}
+                    rules={{
+                      required: '인증번호를 입력해주세요.', 
+                      validate: {
+                      matchCode: (value:string) => value !== sampleCode || '인증번호가 일치하지 않습니다.',
+                    }}}
                     marginTop={20} 
-                    keyboardType='numeric' 
-                    value={verificationCode} 
-                    onChangeText={(value) => setUserInput({...userInput, verificationCode: value})} 
+                    onChangeText={(value) => setUserInput({...userInput, verificationCode: value})}
+                    keyboardType='numeric'
                     returnKeyType='done'
                     disabled={verificationState === 'timeout'}
                   />
@@ -323,14 +336,21 @@ const JoinScreen = () => {
               </View>
             </View>
           ) : null}
-          {/* <View style={styles.joinInputWrap}>
+          <View style={styles.joinInputWrap}>
             <BasicInput 
+              name='nickname'
               title='닉네임' 
               placeholder='닉네임을 입력해주세요' 
-              value={nickname} 
+              control={control}
+              rules={{
+                required: '닉네임을 입력해주세요.', 
+                pattern: {
+                value: nicknameRegex,
+                message: '영문, 한글, 숫자만 가능하며 3~20자로 입력해주세요.'
+              }}}
               onChangeText={handleOnChangeNickname} 
               returnKeyType='done'
-              error={nickname !== '' && !validation.nickname}
+              //error={nickname !== '' && !validation.nickname}
             />
             <Pressable 
               style={styles.inputButton} 
@@ -340,7 +360,7 @@ const JoinScreen = () => {
               <Text style={!validation.nickname && styles.textDisabled}>중복확인</Text>
             </Pressable>
           </View>
-          {!nickname ? null : (
+          {/* {!nickname ? null : (
             <View>
               <Text 
                 style={validation.nickname ? styles.successText : styles.errorText}
@@ -348,16 +368,24 @@ const JoinScreen = () => {
                 {warningText.nickname}
               </Text>
             </View>
-          )}
+          )} */}
           <View style={styles.joinInputWrap}>
             <BasicInput 
+              name='password'
               title='비밀번호' 
               placeholder='8~30자리 영대・소문자, 숫자, 특수문자 조합' 
+              control={control}
+              rules={{
+                required: '비밀번호를 입력해주세요.', 
+                pattern: {
+                value: pwRegex,
+                message: '영문 대문자와 소문자, 숫자, 특수문자를 조합하여 8~30자로 입력해주세요.'
+              }}}
               secureTextEntry={secureText.pw} 
               value={password} 
               onChangeText={handleOnChangePassword} 
               returnKeyType='done'
-              error={password !== '' && !validation.password}
+              //error={password !== '' && !validation.password}
             />
             <Pressable 
               style={styles.secureEyeButton} 
@@ -366,7 +394,7 @@ const JoinScreen = () => {
               <SecureEyeIcon color={secureText.pw ? '#1E1E1E' : '#AFAFAF'} />
             </Pressable>
           </View>
-          {!password ? null : (
+          {/* {!password ? null : (
             <View>
               <Text 
                 style={validation.password ? styles.successText : styles.errorText}
@@ -374,16 +402,22 @@ const JoinScreen = () => {
                 {warningText.password}
               </Text>
             </View>
-          )}
+          )} */}
           <View style={styles.joinInputWrap}>
             <BasicInput 
+              name='check_password'
               title='비밀번호 확인' 
               placeholder='8~30자리 영대・소문자, 숫자, 특수문자 조합' 
-              secureTextEntry={secureText.checkPw} 
-              value={checkPassword} 
+              control={control}
+              rules={{
+                required: '비밀번호를 입력해주세요.', 
+                validate: {
+                  matchPw: (value:string) => value === password || '비밀번호가 일치하지 않습니다.',
+              }}}
+              secureTextEntry={secureText.checkPw}
               onChangeText={handleOnChangeCheckPassword} 
               returnKeyType='done'
-              error={checkPassword !== '' && !validation.checkPassword}
+              //error={checkPassword !== '' && !validation.checkPassword}
             />
             <Pressable 
               style={styles.secureEyeButton} 
@@ -392,7 +426,7 @@ const JoinScreen = () => {
             <SecureEyeIcon color={secureText.checkPw ? '#1E1E1E' : '#AFAFAF'} />
             </Pressable>
           </View>
-          {!checkPassword ? null : (
+          {/* {!checkPassword ? null : (
             <View>
               <Text 
                 style={validation.checkPassword ? styles.successText : styles.errorText}
