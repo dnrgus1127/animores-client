@@ -1,14 +1,14 @@
-export namespace RecordModel {
-	export interface IRecordTotalModel {
+export namespace DiaryModel {
+	export interface IDiaryTotalModel {
 		data: {
 			data: {
-			  diaries: IRecordModel
+			  diaries: IDiaryModel
 			  totalCount: number
 			},
 		  },
 	}
 
-	export interface IRecordModel {
+	export interface IDiaryModel {
 		commentCount: number
 		content: string
 		createdAt: string

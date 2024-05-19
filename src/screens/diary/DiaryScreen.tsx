@@ -1,60 +1,80 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { QueryClient, useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
 import React, { useState } from "react";
 import {
-  ActivityIndicator,
   FlatList,
   Pressable,
   StyleSheet,
-  View,
+  View
 } from "react-native";
+import Toast from 'react-native-toast-message';
 import { CommentIcon, More, User, UserImage } from "../../assets/svg";
 import FloatingButton from "../../components/button/FloatingButton";
 import BottomModal from "../../components/modal/BottomModal";
 import Title from "../../components/text/Title";
-import { RecordModel } from "../../model/RecordModel";
+import { DiaryModel } from "../../model/DiaryModel";
 import HeaderNavigation from "../../navigation/HeaderNavigation";
-import { RecordService } from "../../service/RecordService";
+import { DiaryService } from "../../service/DiaryService";
 import { QueryKey } from "../../statics/constants/Querykey";
 import { Colors } from "../../styles/Colors";
 
 dayjs.locale("ko");
 
-const RecordScreen = () => {
+const DairyScreen = () => {
   const moreLength = 17; //17자 이상이면 말줄임
 
+  const queryClient = useQueryClient();
+
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
-  const [isVisibleMore, setIsVisibleMore] = useState<boolean>(false); //더보기
+  const [isVisibleMore, setIsVisibleMore] = useState<boolean>(false); //더보기 모달
   const [isVisibleMenu, setIsVisibleMenu] = useState<boolean>(false); //플로팅버튼
   const [isVisibleComment, setIsVisibleComment] = useState<boolean>(false); //댓글
+  const [deleteItemId, setDeleteItemId] = useState<number | null>(null);
 
   //일지 리스트
-  const { data, fetchNextPage, hasNextPage, isLoading } = useInfiniteQuery(
-    [QueryKey.RECORD_LIST],
-    ({ pageParam = 1 }) =>
-      RecordService.Record.list({ page: pageParam, size: 5 }),
-    {
-      getNextPageParam: (lastPage, allPages) => {
-        const totalCount = lastPage.data.data.totalCount;
-        const currentPageDataCount = lastPage.data.data.diaries.length;
+  const { data, fetchNextPage, isFetchingNextPage, hasNextPage } =
+    useInfiniteQuery(
+      [QueryKey.DIARY_LIST],
+      ({ pageParam = 1 }) =>
+        DiaryService.diary.list({ page: pageParam, size: 5 }),
+      {
+        getNextPageParam: (lastPage, allPages) => {
+          const totalCount = lastPage?.data?.data.totalCount;
+          const currentPageDataCount = lastPage?.data?.data.diaries.length;
 
-        if (currentPageDataCount < totalCount) {
-          return allPages.length + 1;
-        } else {
-          return undefined;
+          if (currentPageDataCount < totalCount) {
+            return allPages.length + 1;
+          } else {
+            return undefined;
+          }
+        },
+      }
+    );
+
+  //일지 삭제
+  const { mutate } = useMutation(
+    (diaryId: number) => DiaryService.diary.delete(diaryId),
+    {
+      onSuccess: async data => {
+        if (data && data.status === 200) {
+          Toast.show({
+            type: 'success',
+            text1: '삭제되었습니다.',
+          });
+
+          setIsVisibleMore(false);
+          await queryClient.invalidateQueries([QueryKey.DIARY_LIST]); 
+          //일지 목록 쿼리를 무효화함
         }
       },
+      onError: (error) => {
+        console.error('Delete error:', error);
+      }
     }
-  );
+  )
 
-  const next = () => {
-    if (hasNextPage) {
-      fetchNextPage();
-    }
-  };
-
-  const diaryData = data?.pages.flatMap((page) => page.data.data.diaries) ?? [];
+  const diaryData = data?.pages.flatMap((page) => page?.data?.data.diaries) ?? [];
 
   //더보기
   const toggleExpand = (itemId: number) => {
@@ -69,15 +89,15 @@ const RecordScreen = () => {
     item,
     index,
   }: {
-    item: RecordModel.IRecordModel;
+    item: DiaryModel.IDiaryModel;
     index: number;
   }) => {
-    const isExist = expandedItems.includes(item.diaryId);
+    const isExist = expandedItems.includes(item?.diaryId);
 
     const contentToShow =
-      item.content.length > moreLength
-        ? item.content.slice(0, moreLength) + "..."
-        : item.content;
+      item?.content.length > moreLength
+        ? item?.content.slice(0, moreLength) + "..."
+        : item?.content;
 
     return (
       <View style={styles.RenderItemContainer}>
@@ -85,19 +105,20 @@ const RecordScreen = () => {
           <UserImage />
           <View style={styles.TitleContainer}>
             <Title
-              text={item.name}
+              text={item?.name}
               fontSize={16}
               fontWeight={"bold"}
-              style={{ marginBottom: 6 }}
+              style={{ marginBottom: 2 }}
             />
             <Title
-              text={dayjs(item.createdAt).format("YYYY.MM.DD HH:mm a")}
+              text={dayjs(item?.createdAt).format("YYYY.MM.DD HH:mm a")}
               color={Colors.AEAEAE}
             />
           </View>
           <Pressable
             onPress={() => {
               setIsVisibleMore(true);
+              setDeleteItemId(item.diaryId)
             }}
           >
             <More style={styles.MoreIcon} />
@@ -105,10 +126,10 @@ const RecordScreen = () => {
         </View>
         <View style={styles.contentContainer}>
           <Title text={contentToShow} />
-          {!isExist && item.content.length > moreLength && (
+          {!isExist && item?.content.length > moreLength && (
             <Pressable
               onPress={() => {
-                toggleExpand(item.diaryId);
+                toggleExpand(item?.diaryId);
               }}
             >
               <Title
@@ -119,7 +140,7 @@ const RecordScreen = () => {
             </Pressable>
           )}
         </View>
-        {item.imageUrl && (
+        {item?.imageUrl && (
           <View style={{ marginTop: 22 }}>{/* TODO: 이미지 */}</View>
         )}
         <Pressable
@@ -132,7 +153,7 @@ const RecordScreen = () => {
           {/* TODO:댓글 수 수정 */}
           <Title text={"3"} color={Colors.AEAEAE} style={{ marginLeft: 8 }} />
         </Pressable>
-        {index !== diaryData.length - 1 && <View style={styles.BottomLine} />}
+        {index !== diaryData?.length - 1 && <View style={styles.BottomLine} />}
       </View>
     );
   };
@@ -151,14 +172,20 @@ const RecordScreen = () => {
               style={{ textAlign: "center" }}
             />
           </View>
-          <View style={styles.ButtonContainer}>
+          <Pressable
+            onPress={() => {
+              if (deleteItemId !== null) {
+                mutate(deleteItemId);
+              }
+            }}
+            style={styles.ButtonContainer}>
             <Title
               text={"삭제"}
               fontSize={16}
               color={Colors.White}
               style={{ textAlign: "center" }}
             />
-          </View>
+          </Pressable>
         </View>
       </View>
     );
@@ -203,15 +230,20 @@ const RecordScreen = () => {
     );
   };
 
+  const loadMoreData = () => {
+    if (!hasNextPage || isFetchingNextPage) return;
+    fetchNextPage();
+  };
+
   return (
     <>
       <HeaderNavigation middletitle="일지" hasBackButton={false} />
       <FlatList
-        keyExtractor={(item) => `record-${item.diaryId}`}
+        keyExtractor={(item) => `diary-${item?.diaryId}`}
         data={diaryData}
         renderItem={renderItem}
-        onEndReached={next}
-        onEndReachedThreshold={0.4}
+        onEndReachedThreshold={0.6}
+        onEndReached={loadMoreData}
       />
       {/* 플로팅 버튼 */}
       <View
@@ -251,7 +283,7 @@ const RecordScreen = () => {
   );
 };
 
-export default RecordScreen;
+export default DairyScreen;
 
 const styles = StyleSheet.create({
   RenderItemContainer: {
@@ -293,6 +325,11 @@ const styles = StyleSheet.create({
   Footer: {
     flexDirection: "row",
     paddingHorizontal: 20,
+  },
+  LoadingFooter: {
+    paddingVertical: 20,
+    borderTopWidth: 1,
+    borderColor: "#CED0CE",
   },
   FooterTopLine: {
     backgroundColor: Colors.Gray838383,

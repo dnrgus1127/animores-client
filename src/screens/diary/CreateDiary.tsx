@@ -17,12 +17,49 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from "../../navigation/type";
 import { ScreenName } from "../../statics/constants/ScreenName";
+import { useMutation } from "@tanstack/react-query";
+import { DiaryService } from "../../service/DiaryService";
+import Toast from "react-native-toast-message";
+import { FormProvider, useController, useForm, useFormContext } from "react-hook-form";
 
-const CreatRecord = () => {
-  const navigation = useNavigation<StackNavigationProp<RootStackParamList, ScreenName.CreateRecord>>();
+const CreatDiary = () => {
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList, ScreenName.CreateDiary>>();
   
-  const [imageUrls, setImageUrls] = useState<string[]>([]);
-  const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
+  const [ imageUrls, setImageUrls ] = useState<string[]>([]);
+  const [ status, requestPermission ] = ImagePicker.useMediaLibraryPermissions();
+
+  const methods = useForm({
+    defaultValues: {
+      diary: '',
+    },
+  });
+  
+  const { control, handleSubmit: formSubmit } = methods;
+  const { field } = useController({
+    control,
+    name: 'diary',
+    rules: { required: true },
+  });
+
+    // 일지 등록
+    const { mutate } = useMutation(
+      ({ profileId, content } : { profileId: number, content: string }) => 
+        DiaryService.diary.create(profileId, content),
+      {
+        onSuccess: async data => {
+          if (data && data.status === 200) {
+            console.log('data', data)
+            Toast.show({
+              type: 'success',
+              text1: '일지가 등록되었습니다.',
+            });
+          }
+        },
+        onError: (error) => {
+          console.error('Delete error:', error);
+        }
+      }
+    )
 
   const uploadImage = async () => {
     if (!status?.granted) {
@@ -53,10 +90,13 @@ const CreatRecord = () => {
     setImageUrls([...imageUrls, cameraImage.assets[0].uri]);
   };
 
-  // TODO: 서버에 이미지 전송 로직 추가
-  const handleSubmit = () => {};
+  const handleSubmit = formSubmit(({ diary }) => {
+    const profileId = 1;  //TODO: 프로필아이디 변경
+    mutate({ profileId, content: diary });
+  });
 
   return (
+    <FormProvider {...methods}>
     <SafeAreaView style={styles.Container}>
       <HeaderNavigation
         middletitle="일지 작성하기"
@@ -66,11 +106,14 @@ const CreatRecord = () => {
           navigation.goBack();
         }}
         onPressRightButton={handleSubmit}
+        content={methods.getValues('diary')}
       />
       <ScrollView>
         <TextInput
           multiline
           numberOfLines={20}
+          value={field.value}
+          onChangeText={field.onChange}
           placeholder="내용을 작성해주세요"
           style={{
             padding: 16,
@@ -101,10 +144,11 @@ const CreatRecord = () => {
         </View>
       </ScrollView>
     </SafeAreaView>
+    </FormProvider>
   );
 };
 
-export default CreatRecord;
+export default CreatDiary;
 
 const styles = StyleSheet.create({
   Container: {

@@ -1,15 +1,18 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios, { AxiosRequestConfig } from 'axios';
 
+const token = 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxMzpVU0VSIiwiaXNzIjoia2FuZ21vIiwiaWF0IjoxNzE1OTAyMzE5LCJleHAiOjE3MTU5ODg3MTl9.5sGnwZ9Ug183akp31Vb2sO1nKSiIsBoZKKj_ztiVxRG149tiMXHcGnTiA_0rr016pKlvxrBZasS_11cAqAolEw'
+
 // Axios 인스턴스 생성
 const instance = axios.create({
 	timeout: 20000,
 	withCredentials: false,
 	responseType: 'json',
 	headers: {
+		Authorization: `Bearer ${token}`, 
 		Accept: 'application/json',
 	},
-	baseURL: 'https://gv5jgxia2e.execute-api.ap-northeast-2.amazonaws.com/Prod',
+	baseURL: 'http://loadbalancer-e8b18c32a70f207a.elb.ap-northeast-2.amazonaws.com:8080',
 } as AxiosRequestConfig);
 
 instance.interceptors.request.use(
