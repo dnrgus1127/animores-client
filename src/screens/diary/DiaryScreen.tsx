@@ -18,8 +18,12 @@ import HeaderNavigation from "../../navigation/HeaderNavigation";
 import { DiaryService } from "../../service/DiaryService";
 import { QueryKey } from "../../statics/constants/Querykey";
 import { Colors } from "../../styles/Colors";
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
 
 dayjs.locale("ko");
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const DairyScreen = () => {
   const moreLength = 17; //17자 이상이면 말줄임
@@ -33,11 +37,12 @@ const DairyScreen = () => {
   const [deleteItemId, setDeleteItemId] = useState<number | null>(null);
 
   //일지 리스트
+  //TODO: profile api 가져와서 profileId에 넣기
   const { data, fetchNextPage, isFetchingNextPage, hasNextPage } =
     useInfiniteQuery(
       [QueryKey.DIARY_LIST],
       ({ pageParam = 1 }) =>
-        DiaryService.diary.list({ page: pageParam, size: 5 }),
+        DiaryService.diary.list(1, pageParam, 5),
       {
         getNextPageParam: (lastPage, allPages) => {
           const totalCount = lastPage?.data?.data.totalCount;
@@ -64,7 +69,7 @@ const DairyScreen = () => {
           });
 
           setIsVisibleMore(false);
-          await queryClient.invalidateQueries([QueryKey.DIARY_LIST]); 
+          await queryClient.invalidateQueries([QueryKey.DIARY_LIST]);
           //일지 목록 쿼리를 무효화함
         }
       },
@@ -111,7 +116,7 @@ const DairyScreen = () => {
               style={{ marginBottom: 2 }}
             />
             <Title
-              text={dayjs(item?.createdAt).format("YYYY.MM.DD HH:mm a")}
+              text={dayjs.utc(item?.createdAt).utcOffset(9).format("YYYY.MM.DD HH:mm A")}
               color={Colors.AEAEAE}
             />
           </View>

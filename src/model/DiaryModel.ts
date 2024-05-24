@@ -17,6 +17,6 @@ export namespace DiaryModel {
 		media: Array<string>
 		name: string
 		profileId: number
-		wishYn: boolean
+		likeYn: boolean
 	}
 }
