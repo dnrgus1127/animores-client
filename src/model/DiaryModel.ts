@@ -9,7 +9,7 @@ export namespace DiaryModel {
 	}
 
 	export interface IDiaryModel {
-		commentCount: number
+		commentCount: string
 		content: string
 		createdAt: string
 		diaryId: number

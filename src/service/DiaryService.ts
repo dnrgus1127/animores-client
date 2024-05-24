@@ -16,14 +16,9 @@ export namespace DiaryService {
 			const formData = new FormData();
 			formData.append('profileId', profileId.toString());
 			formData.append('content', content);
-			try {
-				const response = await AxiosContext.post(`/api/v1/diaries`, formData, {
-					headers: {
-						Accept: 'application/json',
-						'Content-Type': 'multipart/form-data',
-					},
-				});
 
+			try {
+				const response = await AxiosContext.post(`/api/v1/diaries`, formData);
 				return { data: response.data, status: response.status };
 			} catch (error) {
 				console.error('DiaryService.diary.create:', error);
