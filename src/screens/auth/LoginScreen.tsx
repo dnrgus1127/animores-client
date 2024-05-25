@@ -1,151 +1,129 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Pressable, Image, ScrollView, Dimensions } from "react-native";
-import { IconSnsApple, IconSnsFacebook, IconSnsKakao, IconSnsNaver } from '../../assets/icons';
-import { commonStyles } from '../../styles/commonStyles';
-import FilledInput from '../../components/FilledInput';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import HeaderNavigation from "../../navigation/HeaderNavigation";
+import React from "react";
+import { Image, Pressable, StyleSheet, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  IconSnsApple,
+  IconSnsFacebook,
+  IconSnsKakao,
+  IconSnsNaver,
+} from "../../assets/icons";
+import { EmptyCircleIcon } from "../../assets/svg";
+import FilledInput from "../../components/FilledInput";
+import Title from "../../components/text/Title";
 import { Colors } from "../../styles/Colors";
+import { commonStyles } from "../../styles/commonStyles";
+import { ScreenName } from "../../statics/constants/ScreenName";
 
 const LoginScreen = ({ navigation }: any) => {
-  const [diviceHeight, setDiviceHeight] = useState(375)
-  const currentHeight = Dimensions.get("window")
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-
-  useEffect(() => {
-    setDiviceHeight(currentHeight.height)
-    console.log(diviceHeight)
-  }, [])
-
   return (
-    <SafeAreaView style={styles.Container}>
-      <ScrollView>
-        <HeaderNavigation middletitle="로그인" hasBackButton={false} />
-        <View style={[commonStyles.container, {height: diviceHeight}]}>
-          <View style={styles.top}>
-            <View style={styles.loginInputWrap}>
-              <FilledInput placeholder='이메일' />
-              <FilledInput placeholder='비밀번호' secureTextEntry={true} />
-            </View>
-            <Pressable
-              onPress={() => console.log('Pressed')}
-              style={styles.loginButton}
-              children={<Text style={styles.loginButtonText}>로그인</Text>}
-            >
-            </Pressable>
-          </View>
-
-          <View style={styles.middle}>
-            <View style={commonStyles.commonRowContainer}>
-              <View style={commonStyles.separator} />
-              <View>
-                <Text style={{textAlign: 'center', paddingHorizontal:8, color: '#AEAEAE' }}>SNS 간편 로그인</Text>
-              </View>
-              <View style={commonStyles.separator} />
-            </View>
-            <View style={commonStyles.commonRowContainer}>
-              <View style={{marginTop: 20, flexDirection: 'row', justifyContent: 'space-around', width: '70%'}}>
-                <Pressable
-                  onPress={() => console.log('apple Pressed')}
-                >
-                  <Image source={IconSnsApple} alt="icon sns apple" />
-                </Pressable>
-                <Pressable
-                  onPress={() => console.log('facebook Pressed')}
-                >
-                  <Image source={IconSnsFacebook} alt="icon sns facebook" />
-                </Pressable>
-                <Pressable
-                  onPress={() => console.log('kakao Pressed')}
-                >
-                  <Image source={IconSnsKakao} alt="icon sns kakao" />
-                </Pressable>
-                <Pressable
-                  onPress={() => console.log('naver Pressed')}
-                >
-                  <Image source={IconSnsNaver} alt="icon sns naver" />
-                </Pressable>
-              </View>
-            </View>
-          </View>
-          <View style={styles.bottom}>
-            <View style={commonStyles.commonRowContainer}>
-              <Pressable
-                onPress={() => console.log('아이디찾기')}
-              >
-                <Text
-                  style={{color: '#AEAEAE'}}
-                >아이디찾기</Text>
-              </Pressable>
-              <View style={commonStyles.verticalBar}></View>
-              <Pressable
-                onPress={() => console.log('비밀번호 찾기')}
-              >
-                <Text
-                  style={{color: '#AEAEAE'}}
-                >비밀번호 찾기</Text>
-              </Pressable>
-              <View style={commonStyles.verticalBar}></View>
-              <Pressable
-                onPress={() => navigation.navigate('Join')}
-              >
-                <Text>회원가입</Text>
-              </Pressable>
-            </View>
-          </View>
+    <SafeAreaView style={styles.container}>
+      <Title
+        text={"로그인"}
+        fontSize={18}
+        fontWeight="bold"
+        style={{ textAlign: "center", paddingVertical: 26 }}
+      />
+      <View style={{ paddingHorizontal: 20 }}>
+        <FilledInput
+          placeholder="이메일"
+          style={{ marginTop: 40, marginBottom: 10 }}
+        />
+        <FilledInput placeholder="비밀번호" secureTextEntry={true} />
+        <View style={styles.autoLogin}>
+          <EmptyCircleIcon />
+          <Title
+            text={"자동 로그인"}
+            color={Colors.AEAEAE}
+            style={{
+              marginLeft: 12,
+              paddingBottom: 4,
+            }}
+          />
         </View>
-      </ScrollView>
+        <Pressable
+          style={styles.loginButton}
+          children={<Title text="로그인" color={Colors.White} />}
+        />
+        <View style={[commonStyles.commonRowContainer, { marginTop: 68 }]}>
+          <View style={commonStyles.separator} />
+          <Title
+            text={"SNS 간편 로그인"}
+            color={Colors.AEAEAE}
+            style={{ paddingHorizontal: 8 }}
+          />
+          <View style={commonStyles.separator} />
+        </View>
+      </View>
+      <View style={commonStyles.commonRowContainer}>
+        <View style={styles.loginContainer}>
+          <Pressable>
+            <Image source={IconSnsNaver} alt="icon sns naver" />
+          </Pressable>
+          <Pressable>
+            <Image source={IconSnsKakao} alt="icon sns kakao" />
+          </Pressable>
+          <Pressable>
+            <Image source={IconSnsFacebook} alt="icon sns facebook" />
+          </Pressable>
+          <Pressable>
+            <Image source={IconSnsApple} alt="icon sns apple" />
+          </Pressable>
+        </View>
+      </View>
+      <View style={[commonStyles.commonRowContainer, { marginTop: 92 }]}>
+        <Pressable>
+          <Title text="아이디 찾기" color={Colors.AEAEAE} />
+        </Pressable>
+        <View style={commonStyles.verticalBar} />
+        <Pressable>
+          <Title text="비밀번호 찾기" color={Colors.AEAEAE} />
+        </Pressable>
+        <View style={commonStyles.verticalBar} />
+        <Pressable onPress={() => navigation.navigate(ScreenName.Join)}>
+          <Title text="회원가입" fontWeight="bold" />
+        </Pressable>
+      </View>
     </SafeAreaView>
-  )
-}
+  );
+};
 
-export default LoginScreen
-
+export default LoginScreen;
 
 const styles = StyleSheet.create({
-  Container: {
+  container: {
     flex: 1,
     backgroundColor: Colors.White,
   },
-  top: {
-    //flex: 0.55,
-    //backgroundColor: 'yellow',
-  },
   loginInputWrap: {
-    alignItems: 'center',
+    alignItems: "center",
     marginHorizontal: 50,
   },
   checkboxWrap: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginTop: 15,
   },
   autoLoginLabel: {
-    color: '#AEAEAE',
+    color: Colors.AEAEAE,
   },
   checkedLabel: {
-    color: '#000',
+    color: "#000",
   },
   loginButton: {
-    marginTop: 15,
     height: 58,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     borderRadius: 15,
-    backgroundColor: '#FB3F7E',
+    backgroundColor: Colors.FB3F7E,
   },
-  loginButtonText: {
-    fontSize: 16,
-    color: '#fff',
+  autoLogin: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 14,
   },
-  middle: {
-    //flex: 0.25,
-    //backgroundColor: 'beige',
-  },
-  bottom: {
-    //flex: 0.2,
-    //backgroundColor: 'pink',
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
+  loginContainer: {
+    marginTop: 30,
+    flexDirection: "row",
+    justifyContent: "space-around",
+    width: "60%",
   },
 });

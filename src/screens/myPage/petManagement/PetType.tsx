@@ -1,13 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useState } from "react";
-import {
-  Image,
-  Platform,
-  Pressable,
-  StyleSheet,
-  View
-} from "react-native";
+import { Image, Platform, Pressable, StyleSheet, View } from "react-native";
 import { IPetTypes } from "../../../../types/PetTypes";
 import SingleButton from "../../../components/button/SingleButton";
 import Title from "../../../components/text/Title";
@@ -19,12 +13,14 @@ import { Colors } from "../../../styles/Colors";
 
 const PetType = () => {
   const navigation =
-    useNavigation<StackNavigationProp<RootStackParamList, ScreenName.PetType>>();
+    useNavigation<
+      StackNavigationProp<RootStackParamList, ScreenName.PetType>
+    >();
 
   const [petType, setPetType] = useState<string>("");
 
   return (
-    <View style={styles.Container}>
+    <View style={styles.container}>
       <HeaderNavigation
         middletitle="펫 추가"
         hasBackButton={true}
@@ -32,7 +28,7 @@ const PetType = () => {
           navigation.goBack();
         }}
       />
-      <View style={styles.PaddingContainer}>
+      <View style={styles.paddingContainer}>
         <View style={{ flex: 1 }}>
           <Title
             text={"종류가 무엇인가요?"}
@@ -48,25 +44,25 @@ const PetType = () => {
                   setPetType(t.name);
                 }}
                 style={[
-                  styles.PressableType,
+                  styles.pressableType,
                   petType === ""
-                    ? styles.PressableType
+                    ? styles.pressableType
                     : petType === t.name
-                      ? styles.selectedType
-                      : styles.unselectedType,
+                    ? styles.selectedType
+                    : styles.unselectedType,
                 ]}
               >
                 <Image source={t.image} />
                 <Title
                   text={t.name}
-                  fontWeight={petType ? 'bold' : 'normal'}
+                  fontWeight={petType ? "bold" : "normal"}
                   style={{ marginLeft: 16, alignSelf: "center" }}
                 />
               </Pressable>
             );
           })}
         </View>
-        <View style={styles.ButtonContainer}>
+        <View style={styles.buttonContainer}>
           <SingleButton
             title={"다음"}
             disabled={!petType}
@@ -85,15 +81,15 @@ const PetType = () => {
 export default PetType;
 
 const styles = StyleSheet.create({
-  Container: {
+  container: {
     flex: 1,
     backgroundColor: Colors.White,
   },
-  PaddingContainer: {
+  paddingContainer: {
     flex: 1,
     paddingHorizontal: 20,
   },
-  PressableType: {
+  pressableType: {
     flexDirection: "row",
     backgroundColor: Colors.F9F9FB,
     paddingVertical: 8,
@@ -123,7 +119,7 @@ const styles = StyleSheet.create({
     opacity: 0.4,
     backgroundColor: Colors.F9F9FB,
   },
-  ButtonContainer: {
-    justifyContent: 'flex-end',
+  buttonContainer: {
+    justifyContent: "flex-end",
   },
 });

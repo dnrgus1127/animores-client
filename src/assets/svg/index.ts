@@ -26,6 +26,7 @@ import ReviseIcon from './reviseIcon.svg';
 import CalanderIcon from './calander.svg'; 
 import ImagePickerIcon from './imagePicker.svg'; 
 import CameraIcon from './camera.svg'; 
+import EmptyCircleIcon from './Circle.svg'; 
 
 export {
 	BackButton,
@@ -56,4 +57,5 @@ export {
 	CalanderIcon,
 	ImagePickerIcon,
 	CameraIcon,
+	EmptyCircleIcon,
 }

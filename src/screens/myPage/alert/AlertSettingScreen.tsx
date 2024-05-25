@@ -6,7 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const AlertSettingScreen = ({navigation} : any) => {
   return (
-    <SafeAreaView style={styles.Container}>
+    <SafeAreaView style={styles.container}>
       <HeaderNavigation
         middletitle="알림 설정"
         hasBackButton={true}
@@ -21,7 +21,7 @@ const AlertSettingScreen = ({navigation} : any) => {
 export default AlertSettingScreen;
 
 const styles = StyleSheet.create({
-  Container: {
+  container: {
     flex: 1,
     backgroundColor: Colors.White,
   },
