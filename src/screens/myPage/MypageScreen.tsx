@@ -64,7 +64,7 @@ const MypageScreen = ({ navigation }: any) => {
   ];
 
   return (
-    <SafeAreaView style={styles.Container}>
+    <SafeAreaView style={styles.container}>
       <HeaderNavigation
         middletitle="마이페이지"
         hasBackButton={true}
@@ -72,15 +72,15 @@ const MypageScreen = ({ navigation }: any) => {
           navigation.goBack();
         }}
       />
-      <View style={styles.TopBackground}>
-        <View style={styles.GrayBackground}>
+      <View style={styles.topBackground}>
+        <View style={styles.grayBackground}>
           {myPageTopList.map((m: IMypageList, index: number) => {
             return (
               <Pressable
                 key={m.id}
                 onPress={() => navigation.navigate(m.screen)}
                 style={[
-                  styles.MyPageContainer,
+                  styles.myPageContainer,
                   { paddingTop: index === 0 ? 30 : 0 },
                 ]}
               >
@@ -91,15 +91,15 @@ const MypageScreen = ({ navigation }: any) => {
           })}
         </View>
       </View>
-      <View style={styles.BottomBackground}>
-        <View style={styles.WhiteBackground}>
+      <View style={styles.bottomBackground}>
+        <View style={styles.whiteBackground}>
           {myPageBottomList.map((m: IMypageList, index: number) => {
             return (
               <Pressable
                 key={m.id}
                 onPress={() => navigation.navigate(m.screen)}
                 style={[
-                  styles.MyPageContainer,
+                  styles.myPageContainer,
                   { paddingTop: index === 0 ? 30 : 0 },
                 ]}
               >
@@ -108,7 +108,7 @@ const MypageScreen = ({ navigation }: any) => {
               </Pressable>
             );
           })}
-          <View style={styles.VersionInformationContainer}>
+          <View style={styles.versionInformationContainer}>
             <View style={{ flexDirection: "row" }}>
               <VersionIcon />
               <Title text={"버전 정보"} style={{ marginLeft: 10 }} />
@@ -116,8 +116,8 @@ const MypageScreen = ({ navigation }: any) => {
             <Title text={"최신 버전 입니다"} color={Colors.AEAEAE} />
           </View>
         </View>
-        <View style={styles.LogoutContainer}>
-          <Pressable style={styles.RowView}>
+        <View style={styles.logoutContainer}>
+          <Pressable style={styles.rowView}>
             <LogoutIcon />
             <Title
               text={"로그아웃"}
@@ -132,7 +132,7 @@ const MypageScreen = ({ navigation }: any) => {
               marginHorizontal: 18,
             }}
           />
-          <Pressable style={styles.RowView}>
+          <Pressable style={styles.rowView}>
             <WithdrawIcon />
             <Title
               text={"탈퇴하기"}
@@ -149,44 +149,44 @@ const MypageScreen = ({ navigation }: any) => {
 export default MypageScreen;
 
 const styles = StyleSheet.create({
-  Container: {
+  container: {
     flex: 1,
     backgroundColor: Colors.White,
   },
-  MyPageContainer: {
+  myPageContainer: {
     flexDirection: "row",
     alignItems: "center",
     paddingBottom: 30,
     marginHorizontal: 20,
   },
-  TopBackground: {
+  topBackground: {
     backgroundColor: "white",
     paddingVertical: 22,
     paddingHorizontal: 20,
   },
-  BottomBackground: {
+  bottomBackground: {
     backgroundColor: Colors.F9F9FB,
     paddingVertical: 22,
     flex: 1,
     paddingHorizontal: 20,
   },
-  WhiteBackground: {
+  whiteBackground: {
     backgroundColor: "white",
     borderRadius: 20,
   },
-  GrayBackground: {
+  grayBackground: {
     backgroundColor: Colors.F9F9FB,
     borderRadius: 20,
   },
-  RowView: {
+  rowView: {
     flexDirection: "row",
   },
-  LogoutContainer: {
+  logoutContainer: {
     flexDirection: "row",
     justifyContent: "center",
     marginTop: 50,
   },
-  VersionInformationContainer: {
+  versionInformationContainer: {
     flexDirection: "row",
     paddingHorizontal: 20,
     paddingBottom: 30,

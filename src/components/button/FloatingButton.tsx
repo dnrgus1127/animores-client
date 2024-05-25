@@ -26,19 +26,19 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({
 
   return (
       <Pressable
-        style={styles.CreateDetailRocordIcon}
+        style={styles.createDetailRocordIcon}
         onPress={() => {
           onPressFloating();
         }}
       >
         {/* TODO: never수정 */}
         {isVisibleMenu ? (
-          <View style={styles.PinkButtonContainer}>
+          <View style={styles.pinkButtonContainer}>
             <Pressable
               onPress={() => {
                 navigation.navigate(ScreenName.AddTodo as never);
               }}
-              style={styles.PinkButton}
+              style={styles.pinkButton}
             >
               <Title
                 text={"일정 추가"}
@@ -56,7 +56,7 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({
               onPress={() => {
                 navigation.navigate(ScreenName.CreateDiary as never);
               }}
-              style={[styles.PinkButton, { marginTop: 16 }]}
+              style={[styles.pinkButton, { marginTop: 16 }]}
             >
               <Title
                 text={"일지 쓰기"}
@@ -74,14 +74,14 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({
               onPress={() => {
                 onPressCancel();
               }}
-              style={styles.CancleIconContainer}
+              style={styles.cancleIconContainer}
             >
               <CancleIcon />
             </Pressable>
           </View>
         ) : (
           <Pressable
-            style={styles.CreateRocordIcon}
+            style={styles.createRocordIcon}
             onPress={() => {
               onPressFloating();
             }}
@@ -96,25 +96,25 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({
 export default FloatingButton;
 
 const styles = StyleSheet.create({
-  CreateDetailRocordIcon: {
+  createDetailRocordIcon: {
     position: "absolute",
     bottom: 32,
     right: 0,
   },
-  CreateRocordIcon: {
+  createRocordIcon: {
     position: "absolute",
     bottom: 0,
     right: 0,
   },
-  CancleIconContainer: {
+  cancleIconContainer: {
     marginTop: 27,
     alignItems: "flex-end",
     marginRight: 12,
   },
-  PinkButtonContainer: {
+  pinkButtonContainer: {
     marginRight: 20,
   },
-  PinkButton: {
+  pinkButton: {
     backgroundColor: Colors.FB3F7E,
     paddingHorizontal: 20,
     paddingVertical: 15,

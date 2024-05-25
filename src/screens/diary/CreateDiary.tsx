@@ -97,7 +97,7 @@ const CreatDiary = () => {
 
   return (
     <FormProvider {...methods}>
-    <SafeAreaView style={styles.Container}>
+    <SafeAreaView style={styles.container}>
       <HeaderNavigation
         middletitle="일지 작성하기"
         rightTitle={"완료"}
@@ -120,8 +120,8 @@ const CreatDiary = () => {
             textAlignVertical: "top",
           }}
         />
-        <View style={styles.BottomLine} />
-        <Pressable onPress={uploadImage} style={styles.ImageContainer}>
+        <View style={styles.bottomLine} />
+        <Pressable onPress={uploadImage} style={styles.imageContainer}>
           <Title text={"사진 등록"} />
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {imageUrls.length > 0 ? (
@@ -138,7 +138,7 @@ const CreatDiary = () => {
             )}
           </ScrollView>
         </Pressable>
-        <View style={styles.VideoContainer}>
+        <View style={styles.videoContainer}>
           <Title text={"동영상 등록 (최대 60초)"} />
           <AddImage style={{ marginTop: 11 }} />
         </View>
@@ -151,15 +151,15 @@ const CreatDiary = () => {
 export default CreatDiary;
 
 const styles = StyleSheet.create({
-  Container: {
+  container: {
     flex: 1,
     backgroundColor: Colors.White,
   },
-  BottomLine: {
+  bottomLine: {
     borderBottomWidth: 6,
     borderBottomColor: Colors.F4F4F4,
   },
-  ImageContainer: {
+  imageContainer: {
     marginTop: 20,
     marginLeft: 20,
     marginBottom: 34,
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: 10,
   },
-  VideoContainer: {
+  videoContainer: {
     marginLeft: 20,
     marginBottom: 34,
   },

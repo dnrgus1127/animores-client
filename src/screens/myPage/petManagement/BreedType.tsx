@@ -17,7 +17,7 @@ const BreedType = () => {
     const [keyword, setKeyword] = useState<string>('');
 
     return (
-        <View style={styles.Container}>
+        <View style={styles.container}>
             <HeaderNavigation
                 middletitle="펫 추가"
                 hasBackButton={true}
@@ -25,7 +25,7 @@ const BreedType = () => {
                     navigation.goBack();
                 }}
             />
-            <View style={styles.HorizontalContainer}>
+            <View style={styles.horizontalContainer}>
                 <View>
                     <Title
                         text={"품종이 무엇인가요?"}
@@ -38,7 +38,7 @@ const BreedType = () => {
                         placeholder={'직접 입력하세요'}
                         onChangeText={setKeyword} />
                 </View>
-                <View style={styles.ButtonContainer}>
+                <View style={styles.buttonContainer}>
                     <SingleButton
                         title="다음"
                         disabled={!keyword}
@@ -57,15 +57,15 @@ const BreedType = () => {
 export default BreedType;
 
 const styles = StyleSheet.create({
-    Container: {
+    container: {
         flex: 1,
         backgroundColor: Colors.White,
     },
-    HorizontalContainer: {
+    horizontalContainer: {
         flex: 1,
         paddingHorizontal: 20,
     },
-    ButtonContainer: {
+    buttonContainer: {
         flex: 1,
         justifyContent: 'flex-end',
     },

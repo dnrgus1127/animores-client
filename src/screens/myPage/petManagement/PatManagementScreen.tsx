@@ -14,7 +14,7 @@ const PatManagementScreen = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList, ScreenName.PatManagement>>();
 
   return (
-    <SafeAreaView style={styles.Container}>
+    <SafeAreaView style={styles.container}>
       <HeaderNavigation
         middletitle="펫 관리"
         hasBackButton={true}
@@ -24,8 +24,8 @@ const PatManagementScreen = () => {
         rightTitle="편집"
         isBlack={true}
       />
-      <View style={styles.ProfileTitleContainer}>
-        <View style={styles.ProfileTitle}>
+      <View style={styles.profileTitleContainer}>
+        <View style={styles.profileTitle}>
           <Title text={"펫 정보"} fontSize={16} />
           <Title
             text={"0"}
@@ -50,16 +50,16 @@ const PatManagementScreen = () => {
 export default PatManagementScreen;
 
 const styles = StyleSheet.create({
-  Container: {
+  container: {
     flex: 1,
     backgroundColor: Colors.White,
   },
-  ProfileTitleContainer: {
+  profileTitleContainer: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
   },
-  ProfileTitle: {
+  profileTitle: {
     width: 238,
     borderWidth: 1,
     borderColor: Colors.F9F9FB,

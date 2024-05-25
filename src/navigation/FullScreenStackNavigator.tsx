@@ -25,7 +25,7 @@ const RootStack = createNativeStackNavigator<RootStackParams>();
 const FullScreenStackNavigator = () => {
   return (
     <SafeAreaView
-      style={styles.Container}
+      style={styles.container}
       edges={["left", "right", "bottom", "top"]}
     >
       <RootStack.Navigator>
@@ -107,7 +107,7 @@ const FullScreenStackNavigator = () => {
 export default FullScreenStackNavigator;
 
 const styles = StyleSheet.create({
-  Container: {
+  container: {
     flex: 1,
   },
 });

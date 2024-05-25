@@ -9,7 +9,7 @@ export namespace DiaryModel {
 	}
 
 	export interface IDiaryModel {
-		commentCount: number
+		commentCount: string
 		content: string
 		createdAt: string
 		diaryId: number
@@ -17,6 +17,6 @@ export namespace DiaryModel {
 		media: Array<string>
 		name: string
 		profileId: number
-		wishYn: boolean
+		likeYn: boolean
 	}
 }

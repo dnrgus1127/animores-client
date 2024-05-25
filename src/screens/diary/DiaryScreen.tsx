@@ -18,8 +18,12 @@ import HeaderNavigation from "../../navigation/HeaderNavigation";
 import { DiaryService } from "../../service/DiaryService";
 import { QueryKey } from "../../statics/constants/Querykey";
 import { Colors } from "../../styles/Colors";
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
 
 dayjs.locale("ko");
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const DairyScreen = () => {
   const moreLength = 17; //17자 이상이면 말줄임
@@ -33,11 +37,12 @@ const DairyScreen = () => {
   const [deleteItemId, setDeleteItemId] = useState<number | null>(null);
 
   //일지 리스트
+  //TODO: profile api 가져와서 profileId에 넣기
   const { data, fetchNextPage, isFetchingNextPage, hasNextPage } =
     useInfiniteQuery(
       [QueryKey.DIARY_LIST],
       ({ pageParam = 1 }) =>
-        DiaryService.diary.list({ page: pageParam, size: 5 }),
+        DiaryService.diary.list(1, pageParam, 5),
       {
         getNextPageParam: (lastPage, allPages) => {
           const totalCount = lastPage?.data?.data.totalCount;
@@ -64,7 +69,7 @@ const DairyScreen = () => {
           });
 
           setIsVisibleMore(false);
-          await queryClient.invalidateQueries([QueryKey.DIARY_LIST]); 
+          await queryClient.invalidateQueries([QueryKey.DIARY_LIST]);
           //일지 목록 쿼리를 무효화함
         }
       },
@@ -100,10 +105,10 @@ const DairyScreen = () => {
         : item?.content;
 
     return (
-      <View style={styles.RenderItemContainer}>
-        <View style={styles.Top}>
+      <View style={styles.renderItemContainer}>
+        <View style={styles.top}>
           <UserImage />
-          <View style={styles.TitleContainer}>
+          <View style={styles.titleContainer}>
             <Title
               text={item?.name}
               fontSize={16}
@@ -111,7 +116,7 @@ const DairyScreen = () => {
               style={{ marginBottom: 2 }}
             />
             <Title
-              text={dayjs(item?.createdAt).format("YYYY.MM.DD HH:mm a")}
+              text={dayjs.utc(item?.createdAt).utcOffset(9).format("YYYY.MM.DD HH:mm A")}
               color={Colors.AEAEAE}
             />
           </View>
@@ -121,7 +126,7 @@ const DairyScreen = () => {
               setDeleteItemId(item.diaryId)
             }}
           >
-            <More style={styles.MoreIcon} />
+            <More style={styles.moreIcon} />
           </Pressable>
         </View>
         <View style={styles.contentContainer}>
@@ -147,13 +152,13 @@ const DairyScreen = () => {
           onPress={() => {
             setIsVisibleComment(true);
           }}
-          style={styles.CommentIconContainer}
+          style={styles.commentIconContainer}
         >
           <CommentIcon />
           {/* TODO:댓글 수 수정 */}
           <Title text={"3"} color={Colors.AEAEAE} style={{ marginLeft: 8 }} />
         </Pressable>
-        {index !== diaryData?.length - 1 && <View style={styles.BottomLine} />}
+        {index !== diaryData?.length - 1 && <View style={styles.bottomLine} />}
       </View>
     );
   };
@@ -161,10 +166,10 @@ const DairyScreen = () => {
   //더보기 모달 footer
   const footerMore = (): React.ReactNode => {
     return (
-      <View style={styles.BottomModalContainer}>
-        <View style={styles.FooterTopLine} />
-        <View style={[styles.Footer, { marginTop: 33 }]}>
-          <View style={[styles.ButtonContainer, { marginRight: 10 }]}>
+      <View style={styles.bottomModalContainer}>
+        <View style={styles.footerTopLine} />
+        <View style={[styles.footer, { marginTop: 33 }]}>
+          <View style={[styles.buttonContainer, { marginRight: 10 }]}>
             <Title
               text={"수정"}
               fontSize={16}
@@ -178,7 +183,7 @@ const DairyScreen = () => {
                 mutate(deleteItemId);
               }
             }}
-            style={styles.ButtonContainer}>
+            style={styles.buttonContainer}>
             <Title
               text={"삭제"}
               fontSize={16}
@@ -194,16 +199,16 @@ const DairyScreen = () => {
   //댓글 모달 footer
   const footerComment = (): React.ReactNode => {
     return (
-      <View style={styles.BottomModalContainer}>
-        <View style={styles.FooterTopLine} />
+      <View style={styles.bottomModalContainer}>
+        <View style={styles.footerTopLine} />
         <Title
           text={"댓글"}
           fontSize={16}
           style={{ textAlign: "center", marginTop: 10 }}
         />
-        <View style={styles.CommentContainer}>
+        <View style={styles.commentContainer}>
           <User />
-          <View style={styles.Comment}>
+          <View style={styles.comment}>
             <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
               <Title text={"사랑꾼 엄마"} fontWeight="bold" fontSize={16} />
               <Title
@@ -248,7 +253,7 @@ const DairyScreen = () => {
       {/* 플로팅 버튼 */}
       <View
         style={[
-          styles.FloatingButtonContainer,
+          styles.floatingButtonContainer,
           {
             backgroundColor: isVisibleMenu
               ? "rgba(0, 0, 0, 0.5)"
@@ -286,21 +291,21 @@ const DairyScreen = () => {
 export default DairyScreen;
 
 const styles = StyleSheet.create({
-  RenderItemContainer: {
+  renderItemContainer: {
     flex: 1,
     paddingTop: 20,
     backgroundColor: Colors.White,
   },
-  Top: {
+  top: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginHorizontal: 20,
   },
-  TitleContainer: {
+  titleContainer: {
     flex: 1,
     marginLeft: 12,
   },
-  MoreIcon: {
+  moreIcon: {
     alignSelf: "flex-end",
   },
   contentContainer: {
@@ -308,69 +313,69 @@ const styles = StyleSheet.create({
     marginTop: 22,
     marginHorizontal: 20,
   },
-  CommentIconContainer: {
+  commentIconContainer: {
     flexDirection: "row",
     marginTop: 18,
     marginBottom: 20,
     marginLeft: 20,
     alignItems: "center",
   },
-  BottomLine: {
+  bottomLine: {
     borderBottomWidth: 6,
     borderBottomColor: Colors.F4F4F4,
   },
-  BottomModalContainer: {
+  bottomModalContainer: {
     marginTop: 15,
   },
-  Footer: {
+  footer: {
     flexDirection: "row",
     paddingHorizontal: 20,
   },
-  LoadingFooter: {
+  loadingFooter: {
     paddingVertical: 20,
     borderTopWidth: 1,
     borderColor: "#CED0CE",
   },
-  FooterTopLine: {
+  footerTopLine: {
     backgroundColor: Colors.Gray838383,
     height: 1.5,
     width: 50,
     alignSelf: "center",
   },
-  CommentContainer: {
+  commentContainer: {
     marginHorizontal: 20,
     flexDirection: "row",
     marginTop: 20,
   },
-  Comment: {
+  comment: {
     backgroundColor: Colors.F4F4F4,
     marginLeft: 12,
     paddingHorizontal: 12,
     paddingVertical: 12,
     borderRadius: 10,
   },
-  ButtonContainer: {
+  buttonContainer: {
     backgroundColor: Colors.FB3F7E,
     flex: 1,
     height: 50,
     justifyContent: "center",
     borderRadius: 10,
   },
-  CreateRocordIcon: {
+  createRocordIcon: {
     position: "absolute",
     bottom: 68,
     right: 0,
     zIndex: 1,
   },
-  CancleIconContainer: {
+  cancleIconContainer: {
     marginTop: 27,
     alignItems: "flex-end",
     marginRight: 12,
   },
-  PinkButtonContainer: {
+  pinkButtonContainer: {
     marginRight: 20,
   },
-  PinkButton: {
+  pinkButton: {
     backgroundColor: Colors.FB3F7E,
     paddingHorizontal: 20,
     paddingVertical: 15,
@@ -378,7 +383,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-  FloatingButtonContainer: {
+  floatingButtonContainer: {
     position: "absolute",
     bottom: 0,
     right: 0,
