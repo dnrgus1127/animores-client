@@ -241,7 +241,7 @@ const JoinScreen = () => {
               returnKeyType='done'
               disabled={verificationState === 'success'}
             />
-            {
+            {/* {
               verificationState === 'success' ?
               <Pressable style={[styles.inputButton, { paddingLeft: 5, paddingRight: 5 }]} disabled>
                 <Text style={styles.textDisabled}>인증완료</Text>
@@ -264,7 +264,7 @@ const JoinScreen = () => {
                   </Pressable>
                 )
               )
-            }
+            } */}
           </View>
           {/* {!email ? null : (
             <View>
@@ -352,13 +352,13 @@ const JoinScreen = () => {
               returnKeyType='done'
               //error={nickname !== '' && !validation.nickname}
             />
-            <Pressable 
+            {/* <Pressable 
               style={styles.inputButton} 
               onPress={() => checkNickname()} 
               disabled={!validation.nickname}
             >
               <Text style={!validation.nickname && styles.textDisabled}>중복확인</Text>
-            </Pressable>
+            </Pressable> */}
           </View>
           {/* {!nickname ? null : (
             <View>
@@ -468,7 +468,7 @@ const styles = StyleSheet.create({
   },
   joinInputWrap: {
     flexDirection: 'row', 
-    alignItems: 'flex-end'
+    alignItems: 'flex-end',
   },
   label: {
     fontSize: 16,
