@@ -8,7 +8,7 @@ import { Colors } from "../../../styles/Colors";
 
 const ProfileScreen = ({ navigation }: any) => {
   return (
-    <SafeAreaView style={styles.Container}>
+    <SafeAreaView style={styles.container}>
       <HeaderNavigation
         middletitle="프로필 관리"
         rightTitle={"편집"}
@@ -18,8 +18,8 @@ const ProfileScreen = ({ navigation }: any) => {
           navigation.goBack();
         }}
       />
-      <View style={styles.ProfileTitleContainer}>
-        <View style={styles.ProfileTitle}>
+      <View style={styles.profileTitleContainer}>
+        <View style={styles.profileTitle}>
           <Title text={"계정 기본 정보"} fontSize={16} />
         </View>
       </View>
@@ -62,8 +62,8 @@ const ProfileScreen = ({ navigation }: any) => {
         />
         <Title text={"•••••••••••••••"} fontSize={16} style={{ flex: 1.5 }} />
       </View>
-      <View style={[styles.ProfileTitleContainer, { marginTop: 80 }]}>
-        <View style={styles.ProfileTitle}>
+      <View style={[styles.profileTitleContainer, { marginTop: 80 }]}>
+        <View style={styles.profileTitle}>
           <Title text={"프로필 정보"} fontSize={16} />
         </View>
       </View>
@@ -90,15 +90,15 @@ const ProfileScreen = ({ navigation }: any) => {
 export default ProfileScreen;
 
 const styles = StyleSheet.create({
-  Container: {
+  container: {
     flex: 1,
     backgroundColor: Colors.White,
   },
-  ProfileTitleContainer: {
+  profileTitleContainer: {
     alignItems: "center",
     marginTop: 14,
   },
-  ProfileTitle: {
+  profileTitle: {
     width: 238,
     borderWidth: 1,
     borderColor: Colors.F9F9FB,

@@ -12,7 +12,7 @@ const AddTodo = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList, ScreenName.AddTodo>>();
 
   return (
-    <SafeAreaView style={styles.Container}>
+    <SafeAreaView style={styles.container}>
       <HeaderNavigation
         middletitle="일정 추가"
         hasBackButton={true}
@@ -27,7 +27,7 @@ const AddTodo = () => {
 export default AddTodo;
 
 const styles = StyleSheet.create({
-  Container: {
+  container: {
     flex: 1,
     backgroundColor: Colors.White,
   },

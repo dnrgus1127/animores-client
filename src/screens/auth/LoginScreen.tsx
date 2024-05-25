@@ -45,13 +45,13 @@ const LoginScreen = ({ navigation }: any) => {
           children={<Title text="로그인" color={Colors.White} />}
         />
         <View style={[commonStyles.commonRowContainer, { marginTop: 68 }]}>
-          <View style={styles.separator} />
+          <View style={commonStyles.separator} />
           <Title
             text={"SNS 간편 로그인"}
             color={Colors.AEAEAE}
             style={{ paddingHorizontal: 8 }}
           />
-          <View style={styles.separator} />
+          <View style={commonStyles.separator} />
         </View>
       </View>
       <View style={commonStyles.commonRowContainer}>
@@ -93,11 +93,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.White,
-  },
-  separator: {
-    flex: 1,
-    height: 1,
-    backgroundColor: Colors.AEAEAE,
   },
   loginInputWrap: {
     alignItems: "center",

@@ -64,7 +64,7 @@ const TabBar = ({ navigation, state }: ITabBarProps) => {
     }
 
     return (
-        <View style={styles.Container}>
+        <View style={styles.container}>
             {state.routes.map((route: RouteProp<ParamListBase>, index: number) => {
                 const isFocused = state.index === index;
                 const icon = getIcon(route.name, isFocused)
@@ -84,7 +84,7 @@ const TabBar = ({ navigation, state }: ITabBarProps) => {
                 return (
                     <View
                         key={route.key}
-                        style={isFocused ? styles.FocusedTab : null}>
+                        style={isFocused ? styles.focusedTab : null}>
                         <Pressable
                             onPress={onPress}
                             style={styles.pressable}>
@@ -108,14 +108,14 @@ const TabBar = ({ navigation, state }: ITabBarProps) => {
 export default TabBar;
 
 const styles = StyleSheet.create({
-    Container: {
+    container: {
         flexDirection: 'row',
         paddingHorizontal: 28,
         paddingBottom: 12,
         justifyContent: "space-between",
         backgroundColor: Colors.White,
     },
-    FocusedTab: {
+    focusedTab: {
         borderTopWidth: 2,
         borderTopColor: Colors.FB3F7E,
     },

@@ -40,9 +40,9 @@ const BottomModal: React.FunctionComponent<IProps> = (props: IProps) => {
       onBackButtonPress={onClose}
       onSwipeComplete={onClose}
       backdropOpacity={0.6}
-      style={[style, styles.ModalStyle]}
+      style={[style, styles.modalStyle]}
     >
-      <View style={styles.ModalContainer}>
+      <View style={styles.modalContainer}>
         {footer && footer()}
         {/* 프로필 이미지: 기본 이미지로 할래요 */}
         {BottomText &&
@@ -50,7 +50,7 @@ const BottomModal: React.FunctionComponent<IProps> = (props: IProps) => {
             <Title
               text={BottomText}
               color={Colors.AEAEAE}
-              style={styles.BasicTitle}
+              style={styles.basicTitle}
             />
           </Pressable>
         }
@@ -62,18 +62,18 @@ const BottomModal: React.FunctionComponent<IProps> = (props: IProps) => {
 export default BottomModal;
 
 const styles = StyleSheet.create({
-  ModalContainer: {
+  modalContainer: {
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     backgroundColor: Colors.White,
     paddingBottom: 30,
   },
-  ModalStyle: {
+  modalStyle: {
     width: "100%",
     margin: "auto",
     justifyContent: "flex-end"
   },
-  BasicTitle: {
+  basicTitle: {
     textAlign: "center",
     marginTop: 36,
     textDecorationLine: "underline"

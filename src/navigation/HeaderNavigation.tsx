@@ -39,25 +39,25 @@ const HeaderNavigation = (props: IProps) => {
 
   return (
     <>
-      <View style={styles.HeaderContainer}>
+      <View style={styles.headerContainer}>
         {hasBackButton && (
           <TouchableOpacity
             onPress={onPressBackButton}
             hitSlop={HIT_SLOP}
-            style={styles.TouchOpacityBackButton}
+            style={styles.touchOpacityBackButton}
           >
             <BackButton />
           </TouchableOpacity>
         )}
         {middletitle && (
-          <View style={styles.TitleContainer}>
-            <Title text={middletitle} fontSize={18} style={styles.Title} />
+          <View style={styles.titleContainer}>
+            <Title text={middletitle} fontSize={18} style={styles.title} />
           </View>
         )}
         {rightTitle && (
           <Pressable
             onPress={isRightTitleDisabled ? undefined : onPressRightButton}
-            style={styles.RightTitleContainer}
+            style={styles.rightTitleContainer}
           >
             <Title
               text={rightTitle}
@@ -67,12 +67,12 @@ const HeaderNavigation = (props: IProps) => {
                   ? Colors.DBDBDB
                   : Colors.Black
               }
-              style={[styles.RightTitle, textStyle]}
+              style={[styles.rightTitle, textStyle]}
             />
           </Pressable>
         )}
       </View>
-      <View style={styles.BorderBottom} />
+      <View style={styles.borderBottom} />
     </>
   );
 };
@@ -80,32 +80,32 @@ const HeaderNavigation = (props: IProps) => {
 export default HeaderNavigation;
 
 const styles = StyleSheet.create({
-  HeaderContainer: {
+  headerContainer: {
     flexDirection: "row",
     height: 64,
     alignItems: "center",
     backgroundColor: Colors.White
   },
-  TouchOpacityBackButton: {
+  touchOpacityBackButton: {
     paddingLeft: 20,
     zIndex: 1
   },
-  TitleContainer: {
+  titleContainer: {
     width: "100%",
     position: "absolute",
   },
-  RightTitleContainer: {
+  rightTitleContainer: {
     flex: 1,
     marginRight: 20,
   },
-  Title: {
+  title: {
     alignItems: "center",
     textAlign: "center",
   },
-  RightTitle: {
+  rightTitle: {
     textAlign: "right",
   },
-  BorderBottom: {
+  borderBottom: {
     borderBottomWidth: 1,
     borderBottomColor: "#DBDBDB",
     width: "100%",

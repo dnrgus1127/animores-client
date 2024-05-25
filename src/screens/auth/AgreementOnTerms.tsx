@@ -99,7 +99,7 @@ const AgreementOnterms = (props: IProps) => {
 export default AgreementOnterms
 
 const styles = StyleSheet.create({
-  Container: {
+  container: {
     flex: 1,
     backgroundColor: Colors.White,
   },

@@ -217,7 +217,7 @@ const JoinScreen = () => {
   }
 
   return (
-    <SafeAreaView style={styles.Container}>
+    <SafeAreaView style={styles.container}>
       <ScrollView>
         <HeaderNavigation middletitle='회원가입' hasBackButton={true} onPressBackButton={() => navigation.goBack()} />
         <View style={commonStyles.container}>
@@ -428,7 +428,7 @@ const JoinScreen = () => {
 export default JoinScreen
 
 const styles = StyleSheet.create({
-  Container: {
+  container: {
     flex: 1,
     backgroundColor: Colors.White,
   },

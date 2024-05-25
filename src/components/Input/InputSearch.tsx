@@ -17,35 +17,35 @@ const InputSearch = (props: ISearchProps) => {
 
     //TODO: 검색기능 추가
     return (
-        <View style={styles.Container}>
-            <Controller
-                render={({ field: { onChange, onBlur, value } }) => (
-                    <>
-                        <InputIcon style={{ marginHorizontal: 16 }} />
-                        <TextInput
-                            placeholder={placeholder}
-                            onBlur={onBlur}
-                            value={value}
-                            onChangeText={(value) => {
-                                onChange(value);
-                                onChangeText && onChangeText(value);
-                            }}
-                            style={{ flex: 1, flexGrow: 1, paddingRight: 16 }}
-                        />
-                    </>
-                )}
-                name={name}
-                control={control}
-                defaultValue={defaultValue}
-            />
-        </View>
+      <View style={styles.container}>
+        <Controller
+          render={({ field: { onChange, onBlur, value } }) => (
+            <>
+              <InputIcon style={{ marginHorizontal: 16 }} />
+              <TextInput
+                placeholder={placeholder}
+                onBlur={onBlur}
+                value={value}
+                onChangeText={(value) => {
+                  onChange(value);
+                  onChangeText && onChangeText(value);
+                }}
+                style={{ flex: 1, flexGrow: 1, paddingRight: 16 }}
+              />
+            </>
+          )}
+          name={name}
+          control={control}
+          defaultValue={defaultValue}
+        />
+      </View>
     );
 };
 
 export default InputSearch;
 
 const styles = StyleSheet.create({
-    Container: {
+    container: {
         borderWidth: 1,
         borderColor: Colors.F1F1F1,
         borderRadius: 10,
