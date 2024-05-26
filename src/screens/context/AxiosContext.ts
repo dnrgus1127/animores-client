@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios, { AxiosRequestConfig } from 'axios';
 
-const token = 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxMzpVU0VSIiwiaXNzIjoia2FuZ21vIiwiaWF0IjoxNzE2NDUxNTkyLCJleHAiOjE3MTY1Mzc5OTJ9.68ZgIi7V_TkZAz_IcLFCwckeax6m7uTpXlUOy-q18U-CO4pV-nui4Ct570bTpJXfoECNECHzWHVt5J-FrCdg6A'
+const token = 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxMzpVU0VSIiwiaXNzIjoia2FuZ21vIiwiaWF0IjoxNzE2NzY1ODU4LCJleHAiOjE3MTY4NTIyNTh9.-7x4T-qxS7-nopYCDiQHFWyE0VToDVEBZ6yzTWqzTr0362pqzPvnwLyClpsnpNIu5VQbATYZmE9B3dZxLgE9XQ'
 
 // Axios 인스턴스 생성
 const instance = axios.create({

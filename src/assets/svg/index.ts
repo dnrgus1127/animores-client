@@ -26,7 +26,11 @@ import ReviseIcon from './reviseIcon.svg';
 import CalanderIcon from './calander.svg'; 
 import ImagePickerIcon from './imagePicker.svg'; 
 import CameraIcon from './camera.svg'; 
-import EmptyCircleIcon from './Circle.svg'; 
+import EmptyCircleIcon from './circle.svg'; 
+import IconSnsApple from "./sns_apple.svg"
+import IconSnsFacebook from "./sns_facebook.svg"
+import IconSnsKakao from "./sns_kakao.svg"
+import IconSnsNaver from "./sns_naver.svg"
 
 export {
 	BackButton,
@@ -58,4 +62,8 @@ export {
 	ImagePickerIcon,
 	CameraIcon,
 	EmptyCircleIcon,
+	IconSnsApple,
+	IconSnsFacebook,
+	IconSnsKakao,
+	IconSnsNaver,
 }

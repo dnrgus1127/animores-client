@@ -1,13 +1,7 @@
 import React from "react";
 import { Image, Pressable, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import {
-  IconSnsApple,
-  IconSnsFacebook,
-  IconSnsKakao,
-  IconSnsNaver,
-} from "../../assets/icons";
-import { EmptyCircleIcon } from "../../assets/svg";
+import { EmptyCircleIcon, IconSnsApple, IconSnsFacebook, IconSnsKakao, IconSnsNaver } from "../../assets/svg";
 import FilledInput from "../../components/FilledInput";
 import Title from "../../components/text/Title";
 import { Colors } from "../../styles/Colors";
@@ -57,16 +51,16 @@ const LoginScreen = ({ navigation }: any) => {
       <View style={commonStyles.commonRowContainer}>
         <View style={styles.loginContainer}>
           <Pressable>
-            <Image source={IconSnsNaver} alt="icon sns naver" />
+            <IconSnsNaver />
           </Pressable>
           <Pressable>
-            <Image source={IconSnsKakao} alt="icon sns kakao" />
+            <IconSnsKakao />
           </Pressable>
           <Pressable>
-            <Image source={IconSnsFacebook} alt="icon sns facebook" />
+            <IconSnsFacebook />
           </Pressable>
           <Pressable>
-            <Image source={IconSnsApple} alt="icon sns apple" />
+            <IconSnsApple />
           </Pressable>
         </View>
       </View>
@@ -79,7 +73,9 @@ const LoginScreen = ({ navigation }: any) => {
           <Title text="비밀번호 찾기" color={Colors.AEAEAE} />
         </Pressable>
         <View style={commonStyles.verticalBar} />
-        <Pressable onPress={() => navigation.navigate(ScreenName.Join)}>
+        <Pressable
+          onPress={() =>
+            navigation.navigate(ScreenName.Join)}>
           <Title text="회원가입" fontWeight="bold" />
         </Pressable>
       </View>
