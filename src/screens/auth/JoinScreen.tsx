@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Pressable, Text, ScrollView } from "react-native";
+import { View, TextInput, StyleSheet, Pressable, Text, ScrollView } from "react-native";
+import { Control, Controller, FieldError, FieldValues, RegisterOptions, useForm } from 'react-hook-form';
 import { commonStyles } from "../../styles/commonStyles";
 import BasicInput from "../../components/BasicInput";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -16,10 +17,9 @@ import { ScreenName } from "../../statics/constants/ScreenName";
 import Countdown from "../../components/Countdown";
 import { EmailCheckService } from "../../service/EmailCheckService";
 import { useQuery } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
 
 const JoinScreen = () => {
-  const { control, handleSubmit, trigger, formState:{errors} } = useForm({ mode: 'onChange'})
+  const { control, handleSubmit, trigger, getValues, watch, formState:{errors} } = useForm({ mode: 'onChange'})
   const navigation = useNavigation<StackNavigationProp<RootStackParamList, ScreenName.Join>>();
 
   const [userInput, setUserInput] = useState({
@@ -219,17 +219,18 @@ const JoinScreen = () => {
   // const onRegisterPressed = (data:any) => {
   //   console.log(data)
   // }
+  const watchEmail = watch("email", false);
+  const watchNickname = watch("nickname", false);
+  const watchPassword = watch("password", false);
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
         <HeaderNavigation middletitle='회원가입' hasBackButton={true} onPressBackButton={() => navigation.goBack()} />
         <View style={commonStyles.container}>
-          <View style={styles.joinInputWrap}>
-            <BasicInput 
+          <View style={[styles.inputWrap, { marginTop: 20 }]}>
+            <Controller 
               name='email'
-              title='이메일' 
-              placeholder='이메일을 입력해주세요'
               control={control}
               rules={{
                 required: '이메일을 입력해주세요.', 
@@ -237,9 +238,29 @@ const JoinScreen = () => {
                 value: emailRegex,
                 message: '이메일 형식에 맞게 입력해주세요.'
               }}}
-              onChangeText={handleOnChangeEmail} 
-              returnKeyType='done'
-              disabled={verificationState === 'success'}
+              render={({ field: { onChange, onBlur, value }, fieldState: {error} }) => (
+                <>
+                  <Text style={[styles.label, error ? styles.errorText : null]}>이메일</Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
+                    <TextInput 
+                      style={[styles.inputBox]}
+                      placeholder='이메일을 입력해주세요'
+                      onChangeText={(value) => {
+                        onChange(value);
+                      }} 
+                      returnKeyType='done'
+                    />
+                    <Pressable 
+                      style={[styles.inputButton, { paddingLeft: 5, paddingRight: 5 }]} 
+                      disabled={error}
+                    >
+                      <Text style={error && styles.textDisabled}>인증번호 전송</Text>
+                    </Pressable>
+                  </View>
+                  {error && <Text style={styles.errorText}>{error.message}</Text>}
+                  {value && !error && <Text style={styles.successText}>인증이 완료되었습니다.</Text>}
+                </>
+              )}
             />
             {/* {
               verificationState === 'success' ?
@@ -266,16 +287,8 @@ const JoinScreen = () => {
               )
             } */}
           </View>
-          {/* {!email ? null : (
-            <View>
-              <Text 
-                style={validation.email ? styles.successText : styles.errorText}
-              >
-                {warningText.email}
-              </Text>
-            </View>
-          )} */}
-          {sampleCode !== '' && verificationState !== 'success' ? (
+          
+          {/* {sampleCode !== '' && verificationState !== 'success' ? (
             <View>
               <View style={styles.joinInputWrap}>
                 <View style={[styles.joinInputWrap, { flex: 1, position: 'relative' }]}>
@@ -335,12 +348,11 @@ const JoinScreen = () => {
                 )}
               </View>
             </View>
-          ) : null}
-          <View style={styles.joinInputWrap}>
-            <BasicInput 
+          ) : null} */}
+
+          <View style={[styles.inputWrap, { marginTop: 20 }]}>
+            <Controller
               name='nickname'
-              title='닉네임' 
-              placeholder='닉네임을 입력해주세요' 
               control={control}
               rules={{
                 required: '닉네임을 입력해주세요.', 
@@ -348,32 +360,33 @@ const JoinScreen = () => {
                 value: nicknameRegex,
                 message: '영문, 한글, 숫자만 가능하며 3~20자로 입력해주세요.'
               }}}
-              onChangeText={handleOnChangeNickname} 
-              returnKeyType='done'
-              //error={nickname !== '' && !validation.nickname}
+              render={({ field: { onChange, onBlur, value }, fieldState: {error} }) => (
+                <>
+                  <Text style={[styles.label, error ? styles.errorText : null]}>닉네임</Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
+                    <TextInput 
+                      style={[styles.inputBox, error ? styles.errorUnderline : null]}
+                      placeholder='닉네임을 입력해주세요' 
+                      onChangeText={(value) => onChange(value) && handleOnChangeNickname} 
+                      returnKeyType='done'
+                    />
+                    <Pressable 
+                      style={[styles.inputButton]} 
+                      disabled={error}
+                    >
+                      <Text style={error && styles.textDisabled}>중복확인</Text>
+                    </Pressable>
+                  </View>
+                  {error && <Text style={styles.errorText}>{error.message}</Text>}
+                  {value && !error && <Text style={styles.successText}>사용하실 수 있는 닉네임입니다.</Text>}
+                </>
+              )}
             />
-            {/* <Pressable 
-              style={styles.inputButton} 
-              onPress={() => checkNickname()} 
-              disabled={!validation.nickname}
-            >
-              <Text style={!validation.nickname && styles.textDisabled}>중복확인</Text>
-            </Pressable> */}
           </View>
-          {/* {!nickname ? null : (
-            <View>
-              <Text 
-                style={validation.nickname ? styles.successText : styles.errorText}
-              >
-                {warningText.nickname}
-              </Text>
-            </View>
-          )} */}
-          <View style={styles.joinInputWrap}>
-            <BasicInput 
+
+          <View style={[styles.inputWrap, { marginTop: 20 }]}>
+            <Controller
               name='password'
-              title='비밀번호' 
-              placeholder='8~30자리 영대・소문자, 숫자, 특수문자 조합' 
               control={control}
               rules={{
                 required: '비밀번호를 입력해주세요.', 
@@ -381,60 +394,64 @@ const JoinScreen = () => {
                 value: pwRegex,
                 message: '영문 대문자와 소문자, 숫자, 특수문자를 조합하여 8~30자로 입력해주세요.'
               }}}
-              secureTextEntry={secureText.pw} 
-              value={password} 
-              onChangeText={handleOnChangePassword} 
-              returnKeyType='done'
-              //error={password !== '' && !validation.password}
+              render={({ field: { onChange, onBlur, value }, fieldState: {error} }) => (
+                <>
+                  <Text style={[styles.label, error ? styles.errorText : null]}>비밀번호</Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
+                    <TextInput 
+                      style={[styles.inputBox, error ? styles.errorUnderline : null]}
+                      placeholder='8~30자리 영대・소문자, 숫자, 특수문자 조합' 
+                      secureTextEntry={secureText.pw}
+                      onChangeText={(value) => onChange(value) && handleOnChangePassword} 
+                      returnKeyType='done'
+                    />
+                    <Pressable 
+                      style={styles.secureEyeButton} 
+                      onPress={() => setScureText({...secureText, pw: !secureText.pw })}
+                    >
+                      <SecureEyeIcon color={secureText.pw ? '#1E1E1E' : '#AFAFAF'} />
+                    </Pressable>
+                  </View>
+                  {error && <Text style={styles.errorText}>{error.message}</Text>}
+                  {value && !error && <Text style={styles.successText}>사용하실 수 있는 비밀번호 입니다.</Text>}
+                </>
+              )}
             />
-            <Pressable 
-              style={styles.secureEyeButton} 
-              onPress={() => setScureText({...secureText, pw: !secureText.pw })}
-            >
-              <SecureEyeIcon color={secureText.pw ? '#1E1E1E' : '#AFAFAF'} />
-            </Pressable>
           </View>
-          {/* {!password ? null : (
-            <View>
-              <Text 
-                style={validation.password ? styles.successText : styles.errorText}
-              >
-                {warningText.password}
-              </Text>
-            </View>
-          )} */}
-          <View style={styles.joinInputWrap}>
-            <BasicInput 
+
+          <View style={[styles.inputWrap, { marginTop: 20 }]}>
+            <Controller
               name='check_password'
-              title='비밀번호 확인' 
-              placeholder='8~30자리 영대・소문자, 숫자, 특수문자 조합' 
               control={control}
               rules={{
                 required: '비밀번호를 입력해주세요.', 
                 validate: {
-                  matchPw: (value:string) => value === password || '비밀번호가 일치하지 않습니다.',
+                  matchPw: (value:string) => value === getValues("password") || '비밀번호가 일치하지 않습니다.',
               }}}
-              secureTextEntry={secureText.checkPw}
-              onChangeText={handleOnChangeCheckPassword} 
-              returnKeyType='done'
-              //error={checkPassword !== '' && !validation.checkPassword}
+              render={({ field: { onChange, onBlur, value }, fieldState: {error} }) => (
+                <>
+                  <Text style={[styles.label, error ? styles.errorText : null]}>비밀번호 확인</Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
+                    <TextInput 
+                      style={[styles.inputBox, error ? styles.errorUnderline : null]}
+                      placeholder='8~30자리 영대・소문자, 숫자, 특수문자 조합' 
+                      secureTextEntry={secureText.checkPw}
+                      onChangeText={(value) => onChange(value) && handleOnChangeCheckPassword} 
+                      returnKeyType='done'
+                    />
+                    <Pressable 
+                      style={styles.secureEyeButton} 
+                      onPress={() => setScureText({...secureText, checkPw: !secureText.checkPw })}
+                    >
+                      <SecureEyeIcon color={secureText.checkPw ? '#1E1E1E' : '#AFAFAF'} />
+                    </Pressable>
+                  </View>
+                  {error && <Text style={styles.errorText}>{error.message}</Text>}
+                  {value && !error && <Text style={styles.successText}>비밀번호가 일치합니다.</Text>}
+                </>
+              )}
             />
-            <Pressable 
-              style={styles.secureEyeButton} 
-              onPress={() => setScureText({...secureText, checkPw: !secureText.checkPw })}
-            >
-            <SecureEyeIcon color={secureText.checkPw ? '#1E1E1E' : '#AFAFAF'} />
-            </Pressable>
           </View>
-          {/* {!checkPassword ? null : (
-            <View>
-              <Text 
-                style={validation.checkPassword ? styles.successText : styles.errorText}
-              >
-                {warningText.checkPassword}
-              </Text>
-            </View>
-          )} */}
 
           <AgreementOnTerms checkedAgreements={checkedAgreements} />
           
@@ -466,13 +483,24 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.White,
   },
-  joinInputWrap: {
-    flexDirection: 'row', 
-    alignItems: 'flex-end',
+  inputWrap: {
+    flex: 1,
+    width: '100%',
+    marginTop: 40,
   },
   label: {
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  inputBox: {
+    flex: 1,
+    height: 42,
+    paddingTop: 10,
+    paddingBottom: 10,
+    backgroundColor: '#FFF',
+    borderBottomColor: '#C1C1C1',
+    borderBottomWidth: 1,
+    fontSize: 14
   },
   inputButton: {
     backgroundColor: '#F2F2F2', 
@@ -518,5 +546,8 @@ const styles = StyleSheet.create({
   },
   successText: {
     color: '#00B01C',
+  },
+  errorUnderline: {
+    borderBottomColor: '#FF4040',
   }
 });
