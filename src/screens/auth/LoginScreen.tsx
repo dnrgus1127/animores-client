@@ -1,14 +1,28 @@
 import React from "react";
-import { Image, Pressable, StyleSheet, View } from "react-native";
+import { useForm } from "react-hook-form";
+import { Pressable, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { EmptyCircleIcon, IconSnsApple, IconSnsFacebook, IconSnsKakao, IconSnsNaver } from "../../assets/svg";
-import FilledInput from "../../components/FilledInput";
+import {
+	EmptyCircleIcon,
+	IconSnsApple,
+	IconSnsFacebook,
+	IconSnsKakao,
+	IconSnsNaver,
+} from "../../assets/svg";
+import InputBox from "../../components/Input/InputBox";
 import Title from "../../components/text/Title";
+import { ScreenName } from "../../statics/constants/ScreenName";
 import { Colors } from "../../styles/Colors";
 import { commonStyles } from "../../styles/commonStyles";
-import { ScreenName } from "../../statics/constants/ScreenName";
+import { AuthModel } from "../../model/AuthModel";
 
 const LoginScreen = ({ navigation }: any) => {
+  const { control, handleSubmit } = useForm();
+
+  const onsubmit = (data: AuthModel.ILoginModel) => {
+    console.log("data", data);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <Title
@@ -18,11 +32,18 @@ const LoginScreen = ({ navigation }: any) => {
         style={{ textAlign: "center", paddingVertical: 26 }}
       />
       <View style={{ paddingHorizontal: 20 }}>
-        <FilledInput
+        <InputBox
+          name={"email"}
           placeholder="이메일"
+          control={control}
           style={{ marginTop: 40, marginBottom: 10 }}
         />
-        <FilledInput placeholder="비밀번호" secureTextEntry={true} />
+        <InputBox
+          name={"password"}
+          placeholder="비밀번호"
+          control={control}
+          secureTextEntry={true}
+        />
         <View style={styles.autoLogin}>
           <EmptyCircleIcon />
           <Title
@@ -35,6 +56,7 @@ const LoginScreen = ({ navigation }: any) => {
           />
         </View>
         <Pressable
+          onPress={handleSubmit((data) => onsubmit(data))}
           style={styles.loginButton}
           children={<Title text="로그인" color={Colors.White} />}
         />
@@ -73,9 +95,7 @@ const LoginScreen = ({ navigation }: any) => {
           <Title text="비밀번호 찾기" color={Colors.AEAEAE} />
         </Pressable>
         <View style={commonStyles.verticalBar} />
-        <Pressable
-          onPress={() =>
-            navigation.navigate(ScreenName.Join)}>
+        <Pressable onPress={() => navigation.navigate(ScreenName.Join)}>
           <Title text="회원가입" fontWeight="bold" />
         </Pressable>
       </View>
