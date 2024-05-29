@@ -5,7 +5,7 @@ export namespace DiaryModel {
 			  diaries: IDiaryModel
 			  totalCount: number
 			},
-		  },
+		},
 	}
 
 	export interface IDiaryModel {
