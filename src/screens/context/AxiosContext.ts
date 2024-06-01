@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios, { AxiosRequestConfig } from 'axios';
+import { AuthService } from '../../service/AuthService';
 
 // Axios 인스턴스 생성
 const instance = axios.create({
@@ -12,11 +13,12 @@ const instance = axios.create({
 	baseURL: 'http://loadbalancer-e8b18c32a70f207a.elb.ap-northeast-2.amazonaws.com:8080',
 } as AxiosRequestConfig);
 
+//요청 인터셉터
 instance.interceptors.request.use(
 	async (config) => {
-		const token = await AsyncStorage.getItem('token');
-		if (token) {
-			config.headers.Authorization = `Bearer ${token}`;
+		const accessToken = await AsyncStorage.getItem('accessToken');
+		if (accessToken) {
+			config.headers.Authorization = `Bearer ${accessToken}`;
 		}
 		return config;
 	},
@@ -24,5 +26,34 @@ instance.interceptors.request.use(
 		return Promise.reject(error);
 	}
 );
+
+//응답 인터셉터
+instance.interceptors.response.use(
+	(response) => response,
+	async (error) => {
+		const originRequest = error.config;
+
+		if (error.response.status === 401 && !originRequest._retry) {
+			originRequest._retry = true;
+
+			const refreshToken = await AsyncStorage.getItem('refreshToken');
+
+			if (refreshToken) {
+				const response = AuthService.Auth.refreshToken(refreshToken);
+
+				if (response) {
+					const { accessToken } = response.data;
+
+					await AsyncStorage.setItem('accessToken', accessToken);
+					originRequest.headers.Authorization = `Bearer ${accessToken}`;
+
+					return instance(originRequest);
+				}
+			}
+		}
+
+		return Promise.reject(error);
+	}
+)
 
 export default instance;
