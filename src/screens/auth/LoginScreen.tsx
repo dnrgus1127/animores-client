@@ -1,51 +1,63 @@
+import { useMutation } from "@tanstack/react-query";
 import React from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { Pressable, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
 import {
-  EmptyCircleIcon,
-  IconSnsApple,
-  IconSnsFacebook,
-  IconSnsKakao,
-  IconSnsNaver,
+	EmptyCircleIcon,
+	IconSnsApple,
+	IconSnsFacebook,
+	IconSnsKakao,
+	IconSnsNaver,
 } from "../../assets/svg";
 import InputBox from "../../components/Input/InputBox";
 import Title from "../../components/text/Title";
+import { AuthModel } from "../../model/AuthModel";
+import { AuthService } from "../../service/AuthService";
 import { ScreenName } from "../../statics/constants/ScreenName";
 import { Colors } from "../../styles/Colors";
 import { commonStyles } from "../../styles/commonStyles";
-import { AuthModel } from "../../model/AuthModel";
-import { useMutation } from "@tanstack/react-query";
-import { AuthService } from "../../service/AuthService";
-import Toast from "react-native-toast-message";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setTokens } from "../../utils/storage/Storage";
 
-/*
+/*O
 1.사용자 로그인 시 access token, refresh token을 서버로부터 받아서 저장함
    -> 로그인 시 토큰 저장
 2.access token이 만료되면 refresh token을 사용해서 새로운 엑세스 토큰을 발급 받음
 3.모든 api 요청 전에 엑세스 토큰을 확인하고, 만료된 경우 새로운 access token 발급받아 요청 시도
 */
 
+// TODO: 타입 변경
 const LoginScreen = ({ navigation }: any) => {
   const { control, handleSubmit } = useForm<AuthModel.ILoginModel>();
 
-  const { mutate } = useMutation({
-    mutationFn: (data: AuthModel.ILoginModel) =>
+  const { mutate } = useMutation<
+    AuthModel.ILoginResponseModel,
+    unknown,
+    AuthModel.ILoginModel
+  >({
+    mutationFn: async (data: AuthModel.ILoginModel) =>
       AuthService.Auth.login(data.email, data.password),
 
-    onSuccess: async (response) => {
+    onSuccess: async (response: AuthModel.ILoginResponseModel) => {
       console.log("response", response);
-      if (response) {
+      if (response.data) {
         const { accessToken, refreshToken } = response.data;
-        await setTokens(accessToken, refreshToken);
+
+        if (accessToken && refreshToken) {
+          await setTokens(accessToken, refreshToken);
+        }
 
         Toast.show({
           type: "success",
           text1: "로그인 성공",
         });
         navigation.navigate(ScreenName.Home);
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "아이디 또는 비밀번호를 다시 입력해주세요.",
+        });
       }
     },
     onError: () => {
@@ -56,9 +68,7 @@ const LoginScreen = ({ navigation }: any) => {
     },
   });
 
-  const onsubmit: SubmitHandler<AuthModel.ILoginModel> = (
-    data: AuthModel.ILoginModel
-  ) => {
+  const onsubmit = (data: AuthModel.ILoginModel) => {
     mutate(data);
   };
 
