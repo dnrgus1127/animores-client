@@ -15,8 +15,9 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from "../../navigation/type";
 import { ScreenName } from "../../statics/constants/ScreenName";
 import Countdown from "../../components/Countdown";
-import { EmailCheckService } from "../../service/EmailCheckService";
+//import { EmailCheckService } from "../../service/EmailCheckService";
 import { useQuery } from "@tanstack/react-query";
+import axios from 'axios';
 
 const JoinScreen = () => {
   const { control, handleSubmit, trigger, getValues, watch, formState:{errors} } = useForm({ mode: 'onChange'})
@@ -63,6 +64,7 @@ const JoinScreen = () => {
   // 필수정보 입력 확인
   const [validation, setValidation] = useState({
     email: false,
+    emailcheck: false,
     verificationCode: false,
     nickname: false,
     nicknameConfirm: false,
@@ -79,19 +81,6 @@ const JoinScreen = () => {
   const checkedAgreements = (value:string[], valid:boolean) => {
     setAgreements(value)
     setValidation({...validation, agreements: valid})
-  }
-
-  const handleOnChangeEmail = (inputText:string) => {
-    // 이메일 재입력 시 인증번호 무효화
-    setSampleCode('')
-
-    const matchEmail = inputText.match(emailRegex)
-
-    if (matchEmail === null) {
-      setValidation({...validation, email: false})
-    } else {   
-      setValidation({...validation, email: true})
-    }
   }
 
   const afterCountdown = () => {
@@ -145,36 +134,50 @@ const JoinScreen = () => {
   const onSuccessCheckEmail = (data:{
     data: any;
     status: number;
-  }) => {    
-    if (!data.data.data){
+  }) => {
+    if (!data.data){
       // 중복이 아니면 인증번호 전송
-      setSampleCode('1234')
-      console.log('코드전송')
+      setSampleCode("1234")
+      console.log("코드전송")
     } else {
       // 중복일 경우
       setValidation({...validation, email: false})
       setWarningText({...warningText, email: '이미 가입된 이메일입니다.'})
+      console.log(getValues("email"))
     }
   }
 
-
-  const { refetch } = useQuery({
-    queryKey: ['email'], 
-    queryFn: () => EmailCheckService.Email.check({email: email}),
-    enabled: false,
-    onSuccess: onSuccessCheckEmail,
-  })
+  const EmailCheckService = async (email: string ) => {
+    const baseURL = "http://loadbalancer-e8b18c32a70f207a.elb.ap-northeast-2.amazonaws.com:8080";
+      await axios.get(`${baseURL}/api/v1/account/check-email/${email}`)
+      .then((response) => {
+          onSuccessCheckEmail({data: response.data.data, status: response.data.status});
+      })
+      .catch(function (error) {
+          console.error('EmailCheckService:', error);
+          return { data: null, status: error || 500 };
+      })
+  }
   
   // Email - 인증번호 전송 클릭 시
   const sendVerificationCode = () => {
+    setValidation({...validation, emailcheck: true})
+
     const isValid = trigger("email")
     if (!isValid) {
       return 
     }
-    
-    refetch()
+
+    EmailCheckService(getValues("email"));
 
     // 카운트 시작 3:00
+  }
+
+  const handleOnChangeEmail = (inputText:string) => {
+    // 이메일 재입력 시 인증번호 무효화
+    setSampleCode('')
+
+    setValidation({...validation, email: false, emailCheck: false})
   }
   
 
@@ -219,6 +222,7 @@ const JoinScreen = () => {
   // const onRegisterPressed = (data:any) => {
   //   console.log(data)
   // }
+
   const watchEmail = watch("email", false);
   const watchNickname = watch("nickname", false);
   const watchPassword = watch("password", false);
@@ -228,6 +232,7 @@ const JoinScreen = () => {
       <ScrollView>
         <HeaderNavigation middletitle='회원가입' hasBackButton={true} onPressBackButton={() => navigation.goBack()} />
         <View style={commonStyles.container}>
+
           <View style={[styles.inputWrap, { marginTop: 20 }]}>
             <Controller 
               name='email'
@@ -247,50 +252,50 @@ const JoinScreen = () => {
                       placeholder='이메일을 입력해주세요'
                       onChangeText={(value) => {
                         onChange(value);
+                        //handleOnChangeEmail(value)
                       }} 
                       returnKeyType='done'
                     />
-                    <Pressable 
-                      style={[styles.inputButton, { paddingLeft: 5, paddingRight: 5 }]} 
-                      disabled={error}
-                    >
-                      <Text style={error && styles.textDisabled}>인증번호 전송</Text>
-                    </Pressable>
+                    {
+                      verificationState === 'success' ?
+                      <Pressable style={[styles.inputButton, { paddingLeft: 5, paddingRight: 5 }]} disabled>
+                        <Text style={styles.textDisabled}>인증완료</Text>
+                      </Pressable>
+                      : (verificationState === 'fail' ?
+                        <Pressable style={[styles.inputButton, { paddingLeft: 5, paddingRight: 5 }]} disabled>
+                          <Text style={styles.textDisabled}>인증실패</Text>
+                        </Pressable>
+                        : (sampleCode === '' ? 
+                          <Pressable 
+                            style={[styles.inputButton, { paddingLeft: 5, paddingRight: 5 }]} 
+                            disabled={error} 
+                            onPress={() => sendVerificationCode()}
+                          >
+                            <Text style={error && styles.textDisabled}>인증번호 전송</Text>
+                          </Pressable>
+                          : 
+                          <Pressable style={[styles.inputButton, { paddingLeft: 5, paddingRight: 5 }]} disabled>
+                            <Text style={styles.textDisabled}>전송완료</Text>
+                          </Pressable>
+                        )
+                      )
+                    }
                   </View>
-                  {error && <Text style={styles.errorText}>{error.message}</Text>}
-                  {value && !error && <Text style={styles.successText}>인증이 완료되었습니다.</Text>}
+                  {error && !validation.email && <Text style={styles.errorText}>{error.message}</Text>}
+                  {value && validation.emailCheck && !validation.email && <Text style={styles.errorText}>이미 가입된 이메일입니다.</Text>}
+                  {value && validation.email && <Text style={styles.successText}>인증이 완료되었습니다.</Text>}
                 </>
               )}
             />
-            {/* {
-              verificationState === 'success' ?
-              <Pressable style={[styles.inputButton, { paddingLeft: 5, paddingRight: 5 }]} disabled>
-                <Text style={styles.textDisabled}>인증완료</Text>
-              </Pressable>
-              : (verificationState === 'fail' ?
-                <Pressable style={[styles.inputButton, { paddingLeft: 5, paddingRight: 5 }]} disabled>
-                  <Text style={styles.textDisabled}>인증실패</Text>
-                </Pressable>
-                : (sampleCode === '' ? 
-                  <Pressable 
-                    style={[styles.inputButton, { paddingLeft: 5, paddingRight: 5 }]} 
-                    disabled={!validation.email} 
-                    onPress={() => sendVerificationCode()}
-                  >
-                    <Text style={!validation.email && styles.textDisabled}>인증번호 전송</Text>
-                  </Pressable>
-                  : 
-                  <Pressable style={[styles.inputButton, { paddingLeft: 5, paddingRight: 5 }]} disabled>
-                    <Text style={styles.textDisabled}>전송완료</Text>
-                  </Pressable>
-                )
-              )
-            } */}
+          </View>
+
+          <View>
+            <Text>samplecode: {sampleCode}</Text>
           </View>
           
-          {/* {sampleCode !== '' && verificationState !== 'success' ? (
+          {sampleCode !== '' && verificationState !== 'success' ? (
             <View>
-              <View style={styles.joinInputWrap}>
+              <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
                 <View style={[styles.joinInputWrap, { flex: 1, position: 'relative' }]}>
                   <BasicInput 
                     name='verification_code'
@@ -299,16 +304,15 @@ const JoinScreen = () => {
                     rules={{
                       required: '인증번호를 입력해주세요.', 
                       validate: {
-                      matchCode: (value:string) => value !== sampleCode || '인증번호가 일치하지 않습니다.',
+                      matchCode: (value:string) => value !== sampleCode && '인증번호가 일치하지 않습니다.',
                     }}}
                     marginTop={20} 
                     onChangeText={(value) => setUserInput({...userInput, verificationCode: value})}
                     keyboardType='numeric'
-                    returnKeyType='done'
                     disabled={verificationState === 'timeout'}
                   />
                   <View
-                    style={{ position: 'absolute', right: 0, flexDirection: 'row', height: 30 }}
+                    style={{ position: 'absolute', bottom: 0, right: 0, flexDirection: 'row', height: 30 }}
                   >
                     <Countdown afterCountdown={afterCountdown} resetCount={resetCount} />
                     <Pressable style={{ marginLeft: 8 }}>
@@ -348,7 +352,7 @@ const JoinScreen = () => {
                 )}
               </View>
             </View>
-          ) : null} */}
+          ) : null}
 
           <View style={[styles.inputWrap, { marginTop: 20 }]}>
             <Controller
