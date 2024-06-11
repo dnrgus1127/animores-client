@@ -18,7 +18,6 @@ import ProfileScreen from "../screens/myPage/profile/ProfileScreen";
 import AddTodo from "../screens/todo/AddTodo";
 import { ScreenName } from "../statics/constants/ScreenName";
 import BottomTabStackNavigator from "./BottomTabStackNavigator";
-;
 
 const RootStack = createNativeStackNavigator<RootStackParams>();
 
