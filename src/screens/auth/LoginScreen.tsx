@@ -19,6 +19,7 @@ import { ScreenName } from "../../statics/constants/ScreenName";
 import { Colors } from "../../styles/Colors";
 import { commonStyles } from "../../styles/commonStyles";
 import { setTokens } from "../../utils/storage/Storage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LoginScreen = ({ navigation }: any) => {
   const { control, handleSubmit } = useForm<AuthModel.ILoginModel>();
@@ -32,12 +33,12 @@ const LoginScreen = ({ navigation }: any) => {
       return AuthService.Auth.login(data.email, data.password);
     },
     onSuccess: async (response: AuthModel.ILoginResponseModel) => {
-      console.log("response", response);
       if (response.data) {
         const { accessToken, refreshToken } = response.data;
 
         if (accessToken && refreshToken) {
           await setTokens(accessToken, refreshToken);
+          await AsyncStorage.setItem("userToken", accessToken);
         }
 
         Toast.show({
