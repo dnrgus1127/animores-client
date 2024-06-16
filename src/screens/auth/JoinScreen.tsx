@@ -15,13 +15,13 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../../navigation/type";
 import { ScreenName } from "../../statics/constants/ScreenName";
 import Countdown from "../../components/Countdown";
-//import { EmailCheckService } from "../../service/EmailCheckService";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
 const JoinScreen = () => {
   const { control, handleSubmit, trigger, getValues, watch, formState:{errors} } = useForm({ mode: "onChange"})
   const navigation = useNavigation<StackNavigationProp<RootStackParamList, ScreenName.Join>>();
+  const baseURL = "http://loadbalancer-e8b18c32a70f207a.elb.ap-northeast-2.amazonaws.com:8080";
   
   // 패스워드 보이기/가리기 상태
   const [secureText, setScureText] = useState({
@@ -47,64 +47,33 @@ const JoinScreen = () => {
   // 필수정보 입력 확인
   const [validation, setValidation] = useState({
     email: false,
-    emailcheck: false,
+    emailCheck: false,
     verificationCode: false,
-    verificationCodeCheck: false,
     nickname: false,
-    nicknameConfirm: false,
+    nicknameCheck: false,
     password: false,
     checkPassword: false,
     agreements: false,
   })
 
-  // useEffect(() => {
-  //   console.log({...validation})
-  // }, [validation])
-
-  // 약관동의
-  const checkedAgreements = (value:string[], valid:boolean) => {
-    setAgreements(value)
-    setValidation({...validation, agreements: valid})
-  }
-
-  const afterCountdown = () => {
-    setVerificationState("timeout")
-    setResetCount(false)
-  }
-
-  const handleOnChangeNickname = (inputText:string) => {
-    // 닉네임 재입력 시 인증 무효화
-    setValidation({...validation, nickname: false, nicknameConfirm: false})
-    
-    const matchNickname = inputText.match(nicknameRegex)
-
-    if (matchNickname === null) {
-    } else {
-      setValidation({...validation, nickname: true, nicknameConfirm: false})
+  // 이메일 입력 시
+  const handleOnChangeEmail = (inputText:string) => {
+    // 이메일 재입력 시 인증번호 무효화
+    if (inputText !== getValues("email")) {
+      setValidation({...validation, emailCheck: false})
+      setSampleCode("")
     }
-  }
 
-  const handleOnChangePassword = (inputText:string) => {
-    // 패스워드 재입력 시 패스워드 확인 입력 필드 초기화
-    //setUserInput({...userInput, password: inputText, checkPassword: ""})
-    
-    const matchPassword = inputText.match(pwRegex)
+    const matchEmail = inputText.match(emailRegex)
 
-    if (matchPassword === null) {
-      setValidation({...validation, password: false})
+    if (matchEmail === null) {
+      setValidation({...validation, email: false})
     } else {
-      setValidation({...validation, password: true})
-    }
-  }
-
-  const handleOnChangeCheckPassword = (inputText:string) => {
-    if (inputText !== password) {
-      setValidation({...validation, checkPassword: false})
-    } else {
-      setValidation({...validation, checkPassword: true})
+      setValidation({...validation, email: true})
     }
   }
   
+  // Email - 중복확인 요청 성공 시
   const onSuccessCheckEmail = (data:{
     data: any;
     status: number;
@@ -116,22 +85,20 @@ const JoinScreen = () => {
       setValidation({...validation, emailCheck: true, email: true})
     } else {
       // 중복일 경우
-      setValidation({...validation, emailCheck: true, email: false})
-      //setWarningText({...warningText, email: "이미 가입된 이메일입니다."})
+      setValidation({...validation, emailCheck: false, email: true})
       console.log(getValues("email"))
     }
   }
 
-  const EmailCheckService = async (email: string ) => {
-    const baseURL = "http://loadbalancer-e8b18c32a70f207a.elb.ap-northeast-2.amazonaws.com:8080";
-      await axios.get(`${baseURL}/api/v1/account/check-email/${email}`)
-      .then((response) => {
-          onSuccessCheckEmail({data: response.data.data, status: response.data.status});
-      })
-      .catch(function (error) {
-          //console.error("EmailCheckService:", error);
-          return { data: null, status: error || 500 };
-      })
+  // Email - 중복확인 클릭 시
+  const checkEmail = async (email: string ) => {
+    await axios.get(`${baseURL}/api/v1/account/check-email/${email}`)
+    .then((response) => {
+        onSuccessCheckEmail({data: response.data.data, status: response.data.status});
+    })
+    .catch(function (error) {
+        return { data: null, status: error || 500 };
+    })
   }
   
   // Email - 인증번호 전송 클릭 시
@@ -141,27 +108,32 @@ const JoinScreen = () => {
       return 
     }
 
-    EmailCheckService(getValues("email"));
+    checkEmail(getValues("email"));
 
     // 카운트 시작 3:00
   }
 
-  const handleOnChangeEmail = (inputText:string) => {
-    // 이메일 재입력 시 인증번호 무효화
-    if (inputText !== getValues("email")) {
-      setSampleCode("")
-    }
-
-    setValidation({...validation, email: false, emailCheck: false})
-    console.log(validation.email, validation.emailCheck)
+  // 카운트다운
+  const afterCountdown = () => {
+    setVerificationState("timeout")
+    setResetCount(false)
   }
   
+  // Email - 인증번호 확인 클릭 시
+  const checkVerificationCode = (inputText:string) => {
+    // 인증 실패 : 인증번호 불일치 시
+    if (inputText !== sampleCode) {
+      setVerificationState("dismatch")
+    } else {
+      // 인증 완료
+      setValidation({...validation, verificationCode: true})
+      setVerificationState("success")
+    }
+  }
 
   // Email - 재전송 클릭 시
   const refreshVerificationCode = () => {
     // 입력필드, 에러 텍스트 초기화
-    //setUserInput({...userInput, verificationCode: ""})
-    //setWarningText({...warningText, verificationCode: ""})
     setVerificationState("none")
 
     // 새 인증번호 전송
@@ -171,32 +143,81 @@ const JoinScreen = () => {
     setResetCount(true)
   }
 
-  // Email - 인증하기 클릭 시 
-  const handleOnChangeVerificationCode = (inputText:string) => {
-    // 인증 실패 : 인증번호 불일치 시
-    if (inputText !== sampleCode) {
-      setVerificationState("dismatch")
+  const handleOnChangeNickname = (inputText:string) => {
+    // 닉네임 재입력 시 인증 무효화
+    setNicknameState("none")
+    
+    const matchNickname = inputText.match(nicknameRegex)
+
+    if (matchNickname === null) {
+      setValidation({...validation, nickname: false})
     } else {
-      // 인증 완료
-      setValidation({...validation, verificationCode: true})
-      setVerificationState("success")
-      console.log(validation.email, validation.verificationCode)
+      setValidation({...validation, nickname: true})
+    }
+  }
+  
+  const onSuccessCheckNickname = (data:{
+    data: any;
+    status: number;
+  }) => {
+    if (!data.data){
+      setValidation({...validation, nicknameCheck: true, nickname: true})
+      setNicknameState("success")
+    } else {
+      // 중복일 경우
+      setValidation({...validation, nicknameCheck: false, nickname: true})
+      setNicknameState("fail")
+      console.log(getValues("nickname"))
     }
   }
 
   // Nickname - 중복확인 클릭 시
-  const checkNickname = () => {
+  const checkNickname = async (nickname: string) => {
     // 중복이면 
-    // setWarningText({...warningText, nickname: "이미 사용중인 닉네임입니다."})
+    await axios.get(`${baseURL}/api/v1/account/check-nickname/${nickname}`)
+    .then((response) => {
+        onSuccessCheckNickname({data: response.data.data, status: response.data.status});
+    })
+    .catch(function (error) {
+        console.log('---500---')
+        return { data: null, status: error || 500 };
+    })
     
     // 확인 완료
-    //setWarningText({...warningText, nickname: "사용하실 수 있는 닉네임입니다."})
-    setValidation({...validation, nicknameConfirm: true})
+    setValidation({...validation, nicknameCheck: true})
   }
 
-  // const onRegisterPressed = (data:any) => {
-  //   console.log(data)
-  // }
+  // 패스워드 입력
+  const handleOnChangePassword = (inputText:string) => {
+    // 패스워드 재입력 시 패스워드 확인 입력 필드 초기화
+
+    const matchPassword = inputText.match(pwRegex)
+
+    if (matchPassword === null) {
+      setValidation({...validation, password: false})
+    } else {
+      setValidation({...validation, password: true})
+    }
+  }
+
+  // 패스워드 확인
+  const handleOnChangeCheckPassword = (inputText:string) => {
+    if (inputText !== getValues("password")) {
+      setValidation({...validation, checkPassword: false})
+    } else {
+      setValidation({...validation, checkPassword: true})
+    }
+  }
+
+  // 약관동의
+  const checkedAgreements = (value:string[], valid:boolean) => {
+    setAgreements(value)
+    setValidation({...validation, agreements: valid})
+  }
+
+  const onRegisterPressed = (data:any) => {
+    console.log(data)
+  }
 
   const watchEmail = watch("email", false);
   const watchNickname = watch("nickname", false);
@@ -313,7 +334,7 @@ const JoinScreen = () => {
               />
               <Pressable 
                 style={[styles.primaryButton, verificationState === "timeout" && styles.buttonDisabled, { marginTop: 20, marginLeft: 0, width: "100%" }]} 
-                onPress={() => handleOnChangeVerificationCode(getValues("verification_code"))}
+                onPress={() => checkVerificationCode(getValues("verification_code"))}
                 disabled={verificationState === "timeout"}
               >
                 <Text style={verificationState === "timeout" ? styles.textDisabled : styles.primaryButtonText}>인증 하기</Text>
@@ -328,7 +349,7 @@ const JoinScreen = () => {
               rules={{
                 required: "닉네임을 입력해주세요.", 
                 pattern: {
-                value: nicknameRegex,
+                value: nicknameRegex, // 닉네임 8자 이상이면 인증 안되는 오류
                 message: "영문, 한글, 숫자만 가능하며 3~20자로 입력해주세요."
               }}}
               render={({ field: { onChange, onBlur, value }, fieldState: {error} }) => (
@@ -338,18 +359,20 @@ const JoinScreen = () => {
                     <TextInput 
                       style={[styles.inputBox, error ? styles.errorUnderline : null]}
                       placeholder="닉네임을 입력해주세요" 
-                      onChangeText={(value) => onChange(value) && handleOnChangeNickname} 
+                      onChangeText={(value) => onChange(value) && handleOnChangeNickname(value)} 
                       returnKeyType="done"
                     />
-                    <Pressable 
+                    <Pressable
                       style={[styles.inputButton]} 
                       disabled={error}
+                      onPress={() => checkNickname(value)}
                     >
                       <Text style={error && styles.textDisabled}>중복확인</Text>
                     </Pressable>
                   </View>
                   {error && <Text style={styles.errorText}>{error.message}</Text>}
-                  {value && !error && <Text style={styles.successText}>사용하실 수 있는 닉네임입니다.</Text>}
+                  {value && nicknameState === 'fail' && <Text style={styles.errorText}>이미 사용중인 닉네임입니다.</Text>}
+                  {value && nicknameState === 'success' && <Text style={styles.successText}>사용하실 수 있는 닉네임입니다.</Text>}
                 </>
               )}
             />
@@ -373,7 +396,7 @@ const JoinScreen = () => {
                       style={[styles.inputBox, error ? styles.errorUnderline : null]}
                       placeholder="8~30자리 영대・소문자, 숫자, 특수문자 조합" 
                       secureTextEntry={secureText.pw}
-                      onChangeText={(value) => onChange(value) && handleOnChangePassword} 
+                      onChangeText={(value) => onChange(value) && handleOnChangePassword(value)} 
                       returnKeyType="done"
                     />
                     <Pressable 
@@ -407,7 +430,7 @@ const JoinScreen = () => {
                       style={[styles.inputBox, error ? styles.errorUnderline : null]}
                       placeholder="8~30자리 영대・소문자, 숫자, 특수문자 조합"
                       secureTextEntry={secureText.checkPw}
-                      onChangeText={(value) => onChange(value) && handleOnChangeCheckPassword} 
+                      onChangeText={(value) => onChange(value) && handleOnChangeCheckPassword(value)} 
                       returnKeyType="done"
                     />
                     <Pressable 
@@ -428,14 +451,14 @@ const JoinScreen = () => {
           
           {Object.values(validation).every(item => item === true) ? (
             <Pressable
-              onPress={() => console.log("Pressed")}
+              onPress={() => onRegisterPressed(validation)}
               style={[styles.primaryLargeButton]}
               children={<Text style={[styles.primaryButtonText]}>회원가입</Text>}
             >
             </Pressable>
           ) : (
             <Pressable
-              onPress={() => console.log("Pressed")}
+              onPress={() => onRegisterPressed()}
               style={[styles.primaryLargeButton, styles.buttonDisabled]}
               children={<Text style={[styles.primaryButtonText, styles.textDisabled]}>회원가입</Text>}
             >
