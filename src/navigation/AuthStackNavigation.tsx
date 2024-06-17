@@ -1,6 +1,6 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
-import { StyleSheet } from 'react-native';
+import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { RootStackParams } from "../../types/RootStackParams";
 import JoinScreen from "../screens/auth/JoinScreen";
@@ -86,6 +86,11 @@ const AuthStackNavigation = () => {
         <RootStack.Screen
           name={ScreenName.AddPet}
           component={AddPet}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
+          name={ScreenName.Login}
+          component={LoginScreen}
           options={{ headerShown: false }}
         />
       </RootStack.Navigator>
