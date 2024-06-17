@@ -5,11 +5,11 @@ import { Pressable, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import {
-	EmptyCircleIcon,
-	IconSnsApple,
-	IconSnsFacebook,
-	IconSnsKakao,
-	IconSnsNaver,
+  EmptyCircleIcon,
+  IconSnsApple,
+  IconSnsFacebook,
+  IconSnsKakao,
+  IconSnsNaver,
 } from "../../assets/svg";
 import InputBox from "../../components/Input/InputBox";
 import Title from "../../components/text/Title";
@@ -19,33 +19,26 @@ import { ScreenName } from "../../statics/constants/ScreenName";
 import { Colors } from "../../styles/Colors";
 import { commonStyles } from "../../styles/commonStyles";
 import { setTokens } from "../../utils/storage/Storage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-/*O
-1.사용자 로그인 시 access token, refresh token을 서버로부터 받아서 저장함
-   -> 로그인 시 토큰 저장
-2.access token이 만료되면 refresh token을 사용해서 새로운 엑세스 토큰을 발급 받음
-3.모든 api 요청 전에 엑세스 토큰을 확인하고, 만료된 경우 새로운 access token 발급받아 요청 시도
-*/
-
-// TODO: 타입 변경
 const LoginScreen = ({ navigation }: any) => {
   const { control, handleSubmit } = useForm<AuthModel.ILoginModel>();
 
   const { mutate } = useMutation<
     AuthModel.ILoginResponseModel,
-    unknown,
+    Error,
     AuthModel.ILoginModel
   >({
-    mutationFn: async (data: AuthModel.ILoginModel) =>
-      AuthService.Auth.login(data.email, data.password),
-
+    mutationFn: async (data: AuthModel.ILoginModel) => {
+      return AuthService.Auth.login(data.email, data.password);
+    },
     onSuccess: async (response: AuthModel.ILoginResponseModel) => {
-      console.log("response", response);
       if (response.data) {
         const { accessToken, refreshToken } = response.data;
 
         if (accessToken && refreshToken) {
           await setTokens(accessToken, refreshToken);
+          await AsyncStorage.setItem("userToken", accessToken);
         }
 
         Toast.show({

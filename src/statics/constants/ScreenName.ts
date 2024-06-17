@@ -15,8 +15,10 @@ export enum ScreenName {
 	Notice = 'Notice',
 	PatManagement = 'PatManagement',
 	Profile = 'Profile',
+	Profiles = 'Profiles',
 	VersionInformation = 'VersionInformation',
 	PetType = 'PetType',
 	BreedType = 'BreedType',
 	AddPet = 'AddPet',
+	HomeScreen = 'HomeScreen',
 }

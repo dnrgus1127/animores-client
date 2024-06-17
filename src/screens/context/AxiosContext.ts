@@ -1,4 +1,3 @@
-import { AuthModel } from './../../model/AuthModel';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios, { AxiosRequestConfig } from 'axios';
 import { AuthService } from '../../service/AuthService';
@@ -43,7 +42,7 @@ instance.interceptors.response.use(
 				const response = await AuthService.Auth.refreshToken(refreshToken);
 		
 				if (response && response.data.success) {
-					const { accessToken } = response.data.data;
+					const { accessToken } = response.data;
 
 					await AsyncStorage.setItem('accessToken', accessToken);
 					originRequest.headers.Authorization = `Bearer ${accessToken}`;

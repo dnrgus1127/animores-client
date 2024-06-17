@@ -1,6 +1,6 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
-import { StyleSheet } from 'react-native';
+import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { RootStackParams } from "../../types/RootStackParams";
 import JoinScreen from "../screens/auth/JoinScreen";
@@ -21,7 +21,7 @@ import BottomTabStackNavigator from "./BottomTabStackNavigator";
 
 const RootStack = createNativeStackNavigator<RootStackParams>();
 
-const FullScreenStackNavigator = () => {
+const AuthStackNavigation = () => {
   return (
     <SafeAreaView
       style={styles.container}
@@ -31,16 +31,6 @@ const FullScreenStackNavigator = () => {
         <RootStack.Screen
           name={ScreenName.BottomTab}
           component={BottomTabStackNavigator}
-          options={{ headerShown: false }}
-        />
-        <RootStack.Screen
-          name={ScreenName.Login}
-          component={LoginScreen}
-          options={{ headerShown: false }}
-        />
-        <RootStack.Screen
-          name={ScreenName.Join}
-          component={JoinScreen}
           options={{ headerShown: false }}
         />
         <RootStack.Screen
@@ -98,12 +88,17 @@ const FullScreenStackNavigator = () => {
           component={AddPet}
           options={{ headerShown: false }}
         />
+        <RootStack.Screen
+          name={ScreenName.Login}
+          component={LoginScreen}
+          options={{ headerShown: false }}
+        />
       </RootStack.Navigator>
     </SafeAreaView>
   );
 };
 
-export default FullScreenStackNavigator;
+export default AuthStackNavigation;
 
 const styles = StyleSheet.create({
   container: {

@@ -15,4 +15,6 @@ export type RootStackParamList = {
 	[ScreenName.PetType]: undefined;
 	[ScreenName.BreedType]: undefined;
 	[ScreenName.AddPet]: undefined;
+	[ScreenName.Mypage]: undefined;
+	[ScreenName.HomeScreen]: undefined;
 }
