@@ -7,6 +7,7 @@ import DiaryScreen from "../screens/diary/DiaryScreen";
 import AllTodoScreen from "../screens/todo";
 import { ScreenName } from "../statics/constants/ScreenName";
 import TabBar from "./TabBar";
+import ProfilesScreen from "../screens/myPage/profile/ProfilesScreen";
 
 const Tab = createBottomTabNavigator();
 
