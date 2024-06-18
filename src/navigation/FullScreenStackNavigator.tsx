@@ -4,6 +4,7 @@ import { StyleSheet } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { RootStackParams } from "../../types/RootStackParams";
 import JoinScreen from "../screens/auth/JoinScreen";
+import JoinCompleted from "../screens/auth/JoinCompleted";
 import LoginScreen from "../screens/auth/LoginScreen";
 import CreateDiary from "../screens/diary/CreateDiary";
 import AlertSettingScreen from "../screens/myPage/alert/AlertSettingScreen";
@@ -42,6 +43,11 @@ const FullScreenStackNavigator = () => {
         <RootStack.Screen
           name={ScreenName.Join}
           component={JoinScreen}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
+          name={ScreenName.JoinCompleted}
+          component={JoinCompleted}
           options={{ headerShown: false }}
         />
         <RootStack.Screen
