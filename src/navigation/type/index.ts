@@ -18,4 +18,5 @@ export type RootStackParamList = {
 	[ScreenName.Mypage]: undefined;
 	[ScreenName.Home]: undefined;
 	[ScreenName.Profiles]: undefined;
+	[ScreenName.CreateProfile]: undefined;
 }

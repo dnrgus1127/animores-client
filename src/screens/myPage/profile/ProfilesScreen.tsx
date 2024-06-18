@@ -2,7 +2,7 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
-import { Image, SafeAreaView, StyleSheet, View } from "react-native";
+import { Image, Pressable, SafeAreaView, StyleSheet, View } from "react-native";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 import Title from "../../../components/text/Title";
 import { RootStackParamList } from "../../../navigation/type";
@@ -16,6 +16,8 @@ const ProfilesScreen = () => {
     useNavigation<
       StackNavigationProp<RootStackParamList, ScreenName.Profiles>
     >();
+
+  const baseURL = "https://animores-image.s3.ap-northeast-2.amazonaws.com";
 
   const { data: profile } = useQuery({
     queryKey: [QueryKey.PROFILE],
@@ -32,26 +34,34 @@ const ProfilesScreen = () => {
     });
   }
 
+  const handlePress = (item) => {
+	if (item.id === 'add') {
+		navigation.navigate(ScreenName.CreateProfile)
+	}
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.profileTitleContainer}>
         <View style={styles.profileGrid}>
           {profiles.map((item) => {
-            console.log("item.imageUrl", item.imageUrl);
             return (
-              <View key={item.id} style={styles.profileItem}>
+              <Pressable
+			   	key={item.id} 
+			   	onPress={() => handlePress(item)}
+			  	style={styles.profileItem}>
                 <Image
                   source={
                     item.id === "add"
                       ? asset.petAdd
                       : {
-                          uri: `https://animores-image.s3.ap-northeast-2.amazonaws.com/${item.imageUrl}`,
+                          uri: `${baseURL}/${item.imageUrl}`,
                         }
                   }
                   style={styles.profileImage}
                 />
                 <Title text={item.name} />
-              </View>
+              </Pressable>
             );
           })}
         </View>

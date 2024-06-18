@@ -6,7 +6,6 @@ import { RootStackParams } from "../../types/RootStackParams";
 import JoinScreen from "../screens/auth/JoinScreen";
 import LoginScreen from "../screens/auth/LoginScreen";
 import { ScreenName } from "../statics/constants/ScreenName";
-import BottomTabStackNavigator from "./BottomTabStackNavigator";
 
 const RootStack = createNativeStackNavigator<RootStackParams>();
 
@@ -17,11 +16,6 @@ const GuestStackNavigation = () => {
       edges={["left", "right", "bottom", "top"]}
     >
       <RootStack.Navigator>
-		<RootStack.Screen
-          name={ScreenName.BottomTab}
-          component={BottomTabStackNavigator}
-          options={{ headerShown: false }}
-        />
         <RootStack.Screen
           name={ScreenName.Login}
           component={LoginScreen}
