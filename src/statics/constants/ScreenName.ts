@@ -5,6 +5,7 @@ export enum ScreenName {
 	AllTodo = 'AllTodo',
 	Login = 'Login',
 	Join = 'Join',
+	JoinCompleted = 'JoinCompleted',
 	CreateDiary = 'CreateDiary',
 	Diary = 'Diary',
 	AddTodo = 'AddTodo',

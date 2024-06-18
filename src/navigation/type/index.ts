@@ -9,6 +9,7 @@ export type BottomStackParamList = {
 export type RootStackParamList = {
     [ScreenName.Login]: undefined;
     [ScreenName.Join]: undefined;
+    [ScreenName.JoinCompleted]: undefined;
     [ScreenName.CreateDiary]: undefined;
     [ScreenName.AddTodo]: undefined;
 	[ScreenName.PatManagement]: undefined;
