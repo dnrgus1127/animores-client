@@ -20,5 +20,4 @@ export enum ScreenName {
 	PetType = 'PetType',
 	BreedType = 'BreedType',
 	AddPet = 'AddPet',
-	HomeScreen = 'HomeScreen',
 }

@@ -18,6 +18,7 @@ import ProfileScreen from "../screens/myPage/profile/ProfileScreen";
 import AddTodo from "../screens/todo/AddTodo";
 import { ScreenName } from "../statics/constants/ScreenName";
 import BottomTabStackNavigator from "./BottomTabStackNavigator";
+import ProfilesScreen from "../screens/myPage/profile/ProfilesScreen";
 
 const RootStack = createNativeStackNavigator<RootStackParams>();
 
@@ -71,6 +72,11 @@ const AuthStackNavigation = () => {
         <RootStack.Screen
           name={ScreenName.Profile}
           component={ProfileScreen}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
+          name={ScreenName.Profiles}
+          component={ProfilesScreen}
           options={{ headerShown: false }}
         />
         <RootStack.Screen
