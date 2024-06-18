@@ -32,6 +32,9 @@ const JoinScreen = () => {
   // 임시 인증코드
   const [sampleCode, setSampleCode] = useState("")
 
+  // Email 중복 확인 상태
+  const [emailState, setEmailState] = useState<AuthModel.IEmailModel["state"]>("none")
+
   // Email 인증 상태
   const [verificationState, setVerificationState] = useState<AuthModel.IVerificationModel["state"]>("none")
 
@@ -47,7 +50,6 @@ const JoinScreen = () => {
   // 필수정보 입력 확인
   const [validation, setValidation] = useState({
     email: false,
-    emailCheck: false,
     verificationCode: false,
     nickname: false,
     nicknameCheck: false,
@@ -59,8 +61,9 @@ const JoinScreen = () => {
   // 이메일 입력 시
   const handleOnChangeEmail = (inputText:string) => {
     // 이메일 재입력 시 인증번호 무효화
+      setEmailState("none")
+      
     if (inputText !== getValues("email")) {
-      setValidation({...validation, emailCheck: false})
       setSampleCode("")
     }
 
@@ -82,15 +85,15 @@ const JoinScreen = () => {
       // 중복이 아니면 인증번호 전송
       setSampleCode("1234")
       console.log("코드전송")
-      setValidation({...validation, emailCheck: true, email: true})
+      setEmailState("success")
     } else {
       // 중복일 경우
-      setValidation({...validation, emailCheck: false, email: true})
+      setEmailState("fail")
       console.log(getValues("email"))
     }
   }
 
-  // Email - 중복확인 클릭 시
+  // Email - 인증번호 전송 클릭 시
   const checkEmail = async (email: string ) => {
     await axios.get(`${baseURL}/api/v1/account/check-email/${email}`)
     .then((response) => {
@@ -217,6 +220,7 @@ const JoinScreen = () => {
 
   const onRegisterPressed = (data:any) => {
     console.log(data)
+    navigation.navigate(ScreenName.JoinCompleted)
   }
 
   const watchEmail = watch("email", false);
@@ -280,7 +284,7 @@ const JoinScreen = () => {
                     }
                   </View>
                   {error && !validation.email && <Text style={styles.errorText}>{error.message}</Text>}
-                  {value && validation.emailCheck && !validation.email && <Text style={styles.errorText}>이미 가입된 이메일입니다.</Text>}
+                  {value && emailState === "fail" && <Text style={styles.errorText}>이미 가입된 이메일입니다.</Text>}
                   {verificationState === "success" && <Text style={styles.successText}>인증이 완료되었습니다.</Text>}
                 </>
               )}

@@ -1,4 +1,7 @@
 export namespace AuthModel {
+	export interface IEmailModel {
+		state: 'none' | 'fail' | 'success';
+	}
 	export interface IVerificationModel {
 		state: 'none' | 'dismatch' | 'timeout' | 'fail' | 'success';
 	}
