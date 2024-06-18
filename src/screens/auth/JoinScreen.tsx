@@ -68,7 +68,7 @@ const JoinScreen = () => {
     }
 
     const matchEmail = inputText.match(emailRegex)
-
+        
     if (matchEmail === null) {
       setValidation({...validation, email: false})
     } else {
