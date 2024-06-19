@@ -1,5 +1,6 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import React from "react";
+import { BottomTabStackParamList } from "../../types/BottomTabStackParamList";
 import CalendarScreen from "../screens/celendar/CalendarScreen";
 import DiaryScreen from "../screens/diary/DiaryScreen";
 import HomeScreen from "../screens/home/HomeScreen";
@@ -8,12 +9,12 @@ import AllTodoScreen from "../screens/todo";
 import { ScreenName } from "../statics/constants/ScreenName";
 import TabBar from "./TabBar";
 
-const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator<BottomTabStackParamList>();
 
 const BottomTabNavigator = () => {
   return (
     <Tab.Navigator
-      initialRouteName="Home"
+      initialRouteName={"Home"}
       tabBar={(props) => <TabBar {...props} />}
     >
       <Tab.Screen

@@ -1,5 +1,7 @@
 export type BottomTabStackParamList = {
-    Home: undefined;
     AllTodo: undefined;
+	Calendar: undefined;
+    Home: undefined;
     Diary: undefined;
+	Mypage: undefined;
 }

@@ -1,15 +1,16 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import { Image, Pressable, SafeAreaView, StyleSheet, View } from "react-native";
 import { Colors } from "react-native/Libraries/NewAppScreen";
+import asset from "../../../assets/png";
 import Title from "../../../components/text/Title";
 import { RootStackParamList } from "../../../navigation/type";
 import { ProfileService } from "../../../service/ProfileService";
 import { QueryKey } from "../../../statics/constants/Querykey";
 import { ScreenName } from "../../../statics/constants/ScreenName";
-import asset from "../../../assets/png";
 
 const ProfilesScreen = () => {
   const navigation =
@@ -34,11 +35,12 @@ const ProfilesScreen = () => {
     });
   }
 
-  const handlePress = (item) => {
-	if (item.id === 'add') {
-		navigation.navigate(ScreenName.CreateProfile)
-	}
-  }
+  const handlePress = async (item) => {
+    if (item.id === "add") {
+      await AsyncStorage.setItem("profiles", "true");
+      navigation.navigate(ScreenName.CreateProfile);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -47,16 +49,15 @@ const ProfilesScreen = () => {
           {profiles.map((item) => {
             return (
               <Pressable
-			   	key={item.id} 
-			   	onPress={() => handlePress(item)}
-			  	style={styles.profileItem}>
+                key={item.id}
+                onPress={() => handlePress(item)}
+                style={styles.profileItem}
+              >
                 <Image
                   source={
                     item.id === "add"
                       ? asset.petAdd
-                      : {
-                          uri: `${baseURL}/${item.imageUrl}`,
-                        }
+                      : { uri: `${baseURL}/${item.imageUrl}` }
                   }
                   style={styles.profileImage}
                 />
