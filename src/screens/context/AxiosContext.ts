@@ -10,7 +10,7 @@ const instance = axios.create({
 	headers: {
 		Accept: 'application/json',
 	},
-	baseURL: 'http://loadbalancer-e8b18c32a70f207a.elb.ap-northeast-2.amazonaws.com:8080',
+	baseURL: 'http://180.229.5.21:8080',
 } as AxiosRequestConfig);
 
 //요청 인터셉터
