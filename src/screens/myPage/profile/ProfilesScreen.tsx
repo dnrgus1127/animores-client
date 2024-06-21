@@ -38,7 +38,8 @@ const ProfilesScreen = () => {
   const handlePress = async (item) => {
     if (item.id === "add") {
       await AsyncStorage.setItem("profiles", "true");
-      navigation.navigate(ScreenName.CreateProfile);
+      // navigation.navigate(ScreenName.CreateProfile);
+      navigation.navigate(ScreenName.Home);
     }
   };
 

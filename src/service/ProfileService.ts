@@ -11,11 +11,12 @@ export namespace ProfileService {
 				return { data: null, status: error };
 			}
 		},
-		create: async (name: string, profileImage: string) => {
-			console.log('name', name, 'profileImage', profileImage);
+		create: async (name: string) => {
+			console.log('name', name);
 			try {
-				const response = await AxiosContext.post(`/api/v1/profiles`,
-					{ name, profileImage });
+				const response = await AxiosContext.post(`/api/v1/profiles`, {
+					request: { name: name }
+				});
 				console.log('response', response);
 				return { data: response.data, status: response.status };
 			} catch (error) {

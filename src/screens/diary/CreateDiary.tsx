@@ -48,7 +48,6 @@ const CreatDiary = () => {
       {
         onSuccess: async data => {
           if (data && data.status === 200) {
-            console.log('data', data)
             Toast.show({
               type: 'success',
               text1: '일지가 등록되었습니다.',

@@ -41,8 +41,8 @@ const CreateProfile = () => {
   };
 
   const { mutate } = useMutation(
-    ({ name, profileImage }: { name: string; profileImage: string }) =>
-      ProfileService.profile.create(name, profileImage),
+    ({ name }: { name: string }) =>
+      ProfileService.profile.create(name),
     {
       onSuccess: async (data) => {
         if (data && data.status === 200) {
@@ -88,7 +88,9 @@ const CreateProfile = () => {
             />
           ) : (
             <DefaultProfileImage
-              style={{ alignSelf: "center", marginTop: 70, marginBottom: 36 }}
+              style={{ alignSelf: "center", 
+                marginTop: 70, 
+                marginBottom: 36 }}
             />
           )}
         </Pressable>
@@ -122,7 +124,7 @@ const CreateProfile = () => {
           title="추가하기"
           disabled={!textInput}
           onPress={() => {
-            mutate({ name: textInput, profileImage });
+            mutate({ name: textInput });
             // navigation.navigate(ScreenName.Home);
           }}
         />
