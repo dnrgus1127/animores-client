@@ -10,4 +10,5 @@ export enum Colors {
 	Gray717171 = '#717171',
 	C1C1C1 = '#C1C1C1',
 	F1F1F1 = '#F1F1F1',
+	FF4040 = '#FF4040',
 }
