@@ -3,7 +3,6 @@ import React from "react";
 import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { RootStackParams } from "../../types/RootStackParams";
-import JoinScreen from "../screens/auth/JoinScreen";
 import LoginScreen from "../screens/auth/LoginScreen";
 import CreateDiary from "../screens/diary/CreateDiary";
 import AlertSettingScreen from "../screens/myPage/alert/AlertSettingScreen";
@@ -14,7 +13,9 @@ import AddPet from "../screens/myPage/petManagement/AddPet";
 import BreedType from "../screens/myPage/petManagement/BreedType";
 import PatManagementScreen from "../screens/myPage/petManagement/PatManagementScreen";
 import PetType from "../screens/myPage/petManagement/PetType";
+import CreateProfile from "../screens/myPage/profile/CreateProfile";
 import ProfileScreen from "../screens/myPage/profile/ProfileScreen";
+import ProfilesScreen from "../screens/myPage/profile/ProfilesScreen";
 import AddTodo from "../screens/todo/AddTodo";
 import { ScreenName } from "../statics/constants/ScreenName";
 import BottomTabStackNavigator from "./BottomTabStackNavigator";
@@ -74,6 +75,11 @@ const AuthStackNavigation = () => {
           options={{ headerShown: false }}
         />
         <RootStack.Screen
+          name={ScreenName.Profiles}
+          component={ProfilesScreen}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
           name={ScreenName.PetType}
           component={PetType}
           options={{ headerShown: false }}
@@ -91,6 +97,11 @@ const AuthStackNavigation = () => {
         <RootStack.Screen
           name={ScreenName.Login}
           component={LoginScreen}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
+          name={ScreenName.CreateProfile}
+          component={CreateProfile}
           options={{ headerShown: false }}
         />
       </RootStack.Navigator>

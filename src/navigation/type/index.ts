@@ -1,11 +1,5 @@
 import { ScreenName } from "../../statics/constants/ScreenName"
 
-export type BottomStackParamList = {
-    [ScreenName.Home]: undefined;
-    [ScreenName.AllTodo]: undefined;
-    [ScreenName.Diary]: undefined;
-}
-
 export type RootStackParamList = {
     [ScreenName.Login]: undefined;
     [ScreenName.Join]: undefined;
@@ -17,5 +11,7 @@ export type RootStackParamList = {
 	[ScreenName.BreedType]: undefined;
 	[ScreenName.AddPet]: undefined;
 	[ScreenName.Mypage]: undefined;
-	[ScreenName.HomeScreen]: undefined;
+	[ScreenName.Home]: undefined;
+	[ScreenName.Profiles]: undefined;
+	[ScreenName.CreateProfile]: undefined;
 }
