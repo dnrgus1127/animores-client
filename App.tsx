@@ -47,7 +47,12 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <NavigationContainer>
         <GestureHandlerRootView style={{ flex: 1 }}>
-          {isAuthenticated ? (
+          {isAuthenticated ?
+            <AuthStackNavigation />
+            :
+            <GuestStackNavigation />
+          }
+          {/* {isAuthenticated ? (
             isProfileSelected ? (
               <AuthStackNavigation />
             ) : (
@@ -55,7 +60,7 @@ const App = () => {
             )
           ) : (
             <GuestStackNavigation />
-          )}
+          )} */}
           <Toast />
         </GestureHandlerRootView>
       </NavigationContainer>

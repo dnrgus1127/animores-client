@@ -46,7 +46,8 @@ const LoginScreen = ({ navigation }: any) => {
           text1: "로그인 성공",
         });
 		
-        navigation.navigate(ScreenName.Profiles);
+        navigation.navigate(ScreenName.Home);
+        // navigation.navigate(ScreenName.Profiles);
       } else {
         Toast.show({
           type: "error",
