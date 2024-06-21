@@ -1,10 +1,8 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
-import { StyleSheet } from 'react-native';
+import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { RootStackParams } from "../../types/RootStackParams";
-import JoinScreen from "../screens/auth/JoinScreen";
-import JoinCompleted from "../screens/auth/JoinCompleted";
 import LoginScreen from "../screens/auth/LoginScreen";
 import CreateDiary from "../screens/diary/CreateDiary";
 import AlertSettingScreen from "../screens/myPage/alert/AlertSettingScreen";
@@ -15,14 +13,16 @@ import AddPet from "../screens/myPage/petManagement/AddPet";
 import BreedType from "../screens/myPage/petManagement/BreedType";
 import PatManagementScreen from "../screens/myPage/petManagement/PatManagementScreen";
 import PetType from "../screens/myPage/petManagement/PetType";
+import CreateProfile from "../screens/myPage/profile/CreateProfile";
 import ProfileScreen from "../screens/myPage/profile/ProfileScreen";
+import ProfilesScreen from "../screens/myPage/profile/ProfilesScreen";
 import AddTodo from "../screens/todo/AddTodo";
 import { ScreenName } from "../statics/constants/ScreenName";
 import BottomTabStackNavigator from "./BottomTabStackNavigator";
 
 const RootStack = createNativeStackNavigator<RootStackParams>();
 
-const FullScreenStackNavigator = () => {
+const AuthStackNavigation = () => {
   return (
     <SafeAreaView
       style={styles.container}
@@ -32,21 +32,6 @@ const FullScreenStackNavigator = () => {
         <RootStack.Screen
           name={ScreenName.BottomTab}
           component={BottomTabStackNavigator}
-          options={{ headerShown: false }}
-        />
-        <RootStack.Screen
-          name={ScreenName.Login}
-          component={LoginScreen}
-          options={{ headerShown: false }}
-        />
-        <RootStack.Screen
-          name={ScreenName.Join}
-          component={JoinScreen}
-          options={{ headerShown: false }}
-        />
-        <RootStack.Screen
-          name={ScreenName.JoinCompleted}
-          component={JoinCompleted}
           options={{ headerShown: false }}
         />
         <RootStack.Screen
@@ -90,6 +75,11 @@ const FullScreenStackNavigator = () => {
           options={{ headerShown: false }}
         />
         <RootStack.Screen
+          name={ScreenName.Profiles}
+          component={ProfilesScreen}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
           name={ScreenName.PetType}
           component={PetType}
           options={{ headerShown: false }}
@@ -104,12 +94,22 @@ const FullScreenStackNavigator = () => {
           component={AddPet}
           options={{ headerShown: false }}
         />
+        <RootStack.Screen
+          name={ScreenName.Login}
+          component={LoginScreen}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
+          name={ScreenName.CreateProfile}
+          component={CreateProfile}
+          options={{ headerShown: false }}
+        />
       </RootStack.Navigator>
     </SafeAreaView>
   );
 };
 
-export default FullScreenStackNavigator;
+export default AuthStackNavigation;
 
 const styles = StyleSheet.create({
   container: {

@@ -1,6 +1,8 @@
-import { QueryClient, useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
 import React, { useState } from "react";
 import {
   FlatList,
@@ -18,8 +20,7 @@ import HeaderNavigation from "../../navigation/HeaderNavigation";
 import { DiaryService } from "../../service/DiaryService";
 import { QueryKey } from "../../statics/constants/Querykey";
 import { Colors } from "../../styles/Colors";
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
+import CenterModal from "../../components/modal/CenterModal";
 
 dayjs.locale("ko");
 dayjs.extend(utc);
@@ -35,6 +36,7 @@ const DairyScreen = () => {
   const [isVisibleMenu, setIsVisibleMenu] = useState<boolean>(false); //플로팅버튼
   const [isVisibleComment, setIsVisibleComment] = useState<boolean>(false); //댓글
   const [deleteItemId, setDeleteItemId] = useState<number | null>(null);
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
 
   //일지 리스트
   //TODO: profile api 가져와서 profileId에 넣기
@@ -180,7 +182,8 @@ const DairyScreen = () => {
           <Pressable
             onPress={() => {
               if (deleteItemId !== null) {
-                mutate(deleteItemId);
+                // mutate(deleteItemId);
+                setIsModalVisible(true);
               }
             }}
             style={styles.buttonContainer}>
@@ -282,6 +285,10 @@ const DairyScreen = () => {
             setIsVisibleComment(false);
           }}
           footer={footerComment}
+        />
+        <CenterModal
+          visible={isModalVisible}
+          onClose={() => setIsModalVisible(false)}
         />
       </View>
     </>

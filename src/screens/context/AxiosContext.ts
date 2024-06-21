@@ -1,4 +1,3 @@
-import { AuthModel } from './../../model/AuthModel';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios, { AxiosRequestConfig } from 'axios';
 import { AuthService } from '../../service/AuthService';
@@ -11,7 +10,7 @@ const instance = axios.create({
 	headers: {
 		Accept: 'application/json',
 	},
-	baseURL: 'http://loadbalancer-e8b18c32a70f207a.elb.ap-northeast-2.amazonaws.com:8080',
+	baseURL: 'http://180.229.5.21:8080',
 } as AxiosRequestConfig);
 
 //요청 인터셉터
@@ -43,7 +42,7 @@ instance.interceptors.response.use(
 				const response = await AuthService.Auth.refreshToken(refreshToken);
 		
 				if (response && response.data.success) {
-					const { accessToken } = response.data.data;
+					const { accessToken } = response.data;
 
 					await AsyncStorage.setItem('accessToken', accessToken);
 					originRequest.headers.Authorization = `Bearer ${accessToken}`;

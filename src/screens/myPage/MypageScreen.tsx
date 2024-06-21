@@ -17,6 +17,11 @@ import Title from "../../components/text/Title";
 import HeaderNavigation from "../../navigation/HeaderNavigation";
 import { ScreenName } from "../../statics/constants/ScreenName";
 import { Colors } from "../../styles/Colors";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Toast from "react-native-toast-message";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { RootStackParamList } from "../../navigation/type";
 
 interface IMypageList {
   id: number;
@@ -25,7 +30,10 @@ interface IMypageList {
   screen?: any;
 }
 
-const MypageScreen = ({ navigation }: any) => {
+const MypageScreen = () => {
+  const navigation =
+    useNavigation<StackNavigationProp<RootStackParamList, ScreenName.Mypage>>();
+
   const myPageTopList: IMypageList[] = [
     {
       id: 1,
@@ -62,6 +70,22 @@ const MypageScreen = ({ navigation }: any) => {
       screen: ScreenName.Information,
     },
   ];
+
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.clear();
+      Toast.show({
+        type: "success",
+        text1: "로그아웃 성공",
+      });
+	  navigation.navigate(ScreenName.Login);
+    } catch (e) {
+		Toast.show({
+			type: "error",
+			text1: "로그아웃 실패"
+		})
+	}
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -117,7 +141,7 @@ const MypageScreen = ({ navigation }: any) => {
           </View>
         </View>
         <View style={styles.logoutContainer}>
-          <Pressable style={styles.rowView}>
+          <Pressable onPress={handleLogout} style={styles.rowView}>
             <LogoutIcon />
             <Title
               text={"로그아웃"}
