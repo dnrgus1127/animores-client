@@ -52,7 +52,7 @@ const BasicInput = (props:InputProps) => {
               {name === 'email' && (
                 <Pressable 
                   style={[styles.inputButton, { paddingLeft: 5, paddingRight: 5 }]} 
-                  disabled={error}
+                  disabled={error && true}
                 >
                   <Text style={error && styles.textDisabled}>인증번호 전송</Text>
                 </Pressable>
@@ -60,7 +60,7 @@ const BasicInput = (props:InputProps) => {
               {name === 'nickname' && (
                 <Pressable 
                   style={[styles.inputButton, { paddingLeft: 5, paddingRight: 5 }]} 
-                  disabled={error}
+                  disabled={error && true}
                 >
                   <Text style={error && styles.textDisabled}>중복확인</Text>
                 </Pressable>
