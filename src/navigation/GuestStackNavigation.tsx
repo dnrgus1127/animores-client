@@ -7,6 +7,7 @@ import JoinScreen from "../screens/auth/JoinScreen";
 import LoginScreen from "../screens/auth/LoginScreen";
 import { ScreenName } from "../statics/constants/ScreenName";
 import ProfilesScreen from "../screens/myPage/profile/ProfilesScreen";
+import CreateProfile from "../screens/myPage/profile/CreateProfile";
 
 const RootStack = createNativeStackNavigator<RootStackParams>();
 
@@ -27,9 +28,15 @@ const GuestStackNavigation = () => {
           component={JoinScreen}
           options={{ headerShown: false }}
         />
-         <RootStack.Screen
+		{/* TODO: 해결 */}
+        <RootStack.Screen
           name={ScreenName.Profiles}
           component={ProfilesScreen}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
+          name={ScreenName.CreateProfile}
+          component={CreateProfile}
           options={{ headerShown: false }}
         />
       </RootStack.Navigator>

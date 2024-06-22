@@ -8,7 +8,7 @@ const instance = axios.create({
 	withCredentials: false,
 	responseType: 'json',
 	headers: {
-		Accept: 'application/json',
+		'Content-Type': 'application/json',
 	},
 	baseURL: 'http://180.229.5.21:8080',
 } as AxiosRequestConfig);
