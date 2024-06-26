@@ -12,13 +12,14 @@ export namespace ProfileService {
 				return { data: null, status: error };
 			}
 		},
-		create: async (name: string) => {
-			console.log('name', name);
-			try {
-				const response = await AxiosContext.post(`/api/v1/profiles`, {
-					request: { name: name }
-				})
-				console.log('response', response);
+		create: async (formData: FormData) => {
+			console.log('formData', formData);
+			try{
+				const response = await AxiosContext.post(`/api/v1/profiles`, formData, {
+				  headers: {
+					'Content-Type': 'multipart/form-data'
+				  }
+				});
 				return { data: response.data, status: response.status };
 			} catch (error) {
 				console.error('ProfileService.Profile.create:', error);

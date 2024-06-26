@@ -10,6 +10,7 @@ import { LogBox } from "react-native";
 import AuthStackNavigation from "./src/navigation/AuthStackNavigation";
 import GuestStackNavigation from "./src/navigation/GuestStackNavigation";
 import ProfilesScreen from "./src/screens/myPage/profile/ProfilesScreen";
+import { ScreenName } from "./src/statics/constants/ScreenName";
 
 const queryClient = new QueryClient();
 
@@ -21,14 +22,15 @@ const App = () => {
     null
   );
 
+  //TODO:프로필 선택하지 않고 앱 껐을 경우, 프로필 선택하는 화면 나오게 수정
   useEffect(() => {
     const checkToken = async () => {
       try {
         const token = await AsyncStorage.getItem("userToken");
         setIsAuthenticated(!!token);
 
-        const profileSelected = await AsyncStorage.getItem("profiles");
-        setIsProfileSelected(!!profileSelected);
+        const lastScreen = await AsyncStorage.getItem("lastScreen");
+        setIsProfileSelected(lastScreen === ScreenName.Profiles);
       } catch (error) {
         console.error("Error token:", error);
         setIsAuthenticated(false);
@@ -47,12 +49,7 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <NavigationContainer>
         <GestureHandlerRootView style={{ flex: 1 }}>
-          {isAuthenticated ?
-            <AuthStackNavigation />
-            :
-            <GuestStackNavigation />
-          }
-          {/* {isAuthenticated ? (
+          {isAuthenticated ? (
             isProfileSelected ? (
               <AuthStackNavigation />
             ) : (
@@ -60,7 +57,7 @@ const App = () => {
             )
           ) : (
             <GuestStackNavigation />
-          )} */}
+          )}
           <Toast />
         </GestureHandlerRootView>
       </NavigationContainer>
