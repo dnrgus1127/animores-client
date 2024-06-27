@@ -16,8 +16,7 @@ import { RootStackParamList } from "../../../navigation/type";
 import { ProfileService } from "../../../service/ProfileService";
 import { ScreenName } from "../../../statics/constants/ScreenName";
 import { Colors } from "../../../styles/Colors";
-import { useState } from "react";
-import React = require("react");
+import React, { useState } from "react";
 
 const CreateProfile = () => {
   const [textInput, onChangeText] = useState<string>("");
@@ -62,11 +61,11 @@ const CreateProfile = () => {
 
     if (profileImage) {
       console.log('profileImage', profileImage);
-      
+
       //이미지 파일을 Blob 형식으로 변환
       const response = await fetch(profileImage);
       const blob = await response.blob();
-      
+
       //파일을 formData에 추가
       formData.append('profileImage', {
         uri: profileImage,
@@ -81,7 +80,7 @@ const CreateProfile = () => {
           type: 'success',
           text1: '프로필이 생성되었습니다!'
         });
-        navigation.navigate(ScreenName.Home);
+        navigation.navigate(ScreenName.Home, { id: '' });
       },
       onError: (error) => {
         console.error('Error creating profile:', error);

@@ -11,6 +11,7 @@ import { RootStackParamList } from "../../../navigation/type";
 import { ProfileService } from "../../../service/ProfileService";
 import { QueryKey } from "../../../statics/constants/Querykey";
 import { ScreenName } from "../../../statics/constants/ScreenName";
+import { IProfile } from "../../../../types/Profile";
 
 const ProfilesScreen = () => {
   const navigation =
@@ -37,7 +38,7 @@ const ProfilesScreen = () => {
     saveLastScreen();
   }, [])
 
-  const profiles = [...(profile?.data.data || [])];
+  const profiles = [...(profile?.data?.data || [])];
 
   if (profiles.length < 6) {
     profiles.push({
@@ -47,9 +48,11 @@ const ProfilesScreen = () => {
     });
   }
 
-  const handlePress = async (item: { id: string; }) => {
+  const handlePress = async (item: IProfile) => {
     if (item.id === "add") {
       navigation.navigate(ScreenName.CreateProfile);
+    } else {
+      navigation.navigate(ScreenName.Home, { profile: item })
     }
   };
 
