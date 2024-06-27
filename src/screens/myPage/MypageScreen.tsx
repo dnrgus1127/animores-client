@@ -177,7 +177,7 @@ export default MypageScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.White,
+    backgroundColor: Colors.F9F9FB
   },
   myPageContainer: {
     flexDirection: "row",
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
   logoutContainer: {
     flexDirection: "row",
     justifyContent: "center",
-    marginTop: 50,
+    marginTop: 50
   },
   versionInformationContainer: {
     flexDirection: "row",
