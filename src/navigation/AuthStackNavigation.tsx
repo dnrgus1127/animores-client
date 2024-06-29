@@ -28,7 +28,8 @@ const AuthStackNavigation = () => {
       style={styles.container}
       edges={["left", "right", "bottom", "top"]}
     >
-      <RootStack.Navigator>
+      <RootStack.Navigator
+        initialRouteName={ScreenName.Profiles}>
         <RootStack.Screen
           name={ScreenName.BottomTab}
           component={BottomTabStackNavigator}

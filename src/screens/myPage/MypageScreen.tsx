@@ -74,6 +74,7 @@ const MypageScreen = () => {
   const handleLogout = async () => {
     try {
       await AsyncStorage.clear();
+      
       Toast.show({
         type: "success",
         text1: "로그아웃 성공",

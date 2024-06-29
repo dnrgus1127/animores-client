@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useQuery } from "@tanstack/react-query";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Image, Pressable, SafeAreaView, StyleSheet, View } from "react-native";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 import asset from "../../../assets/png";
@@ -52,7 +52,7 @@ const ProfilesScreen = () => {
     if (item.id === "add") {
       navigation.navigate(ScreenName.CreateProfile);
     } else {
-      navigation.navigate(ScreenName.Home, { profile: item })
+      navigation.navigate(ScreenName.BottomTab)
     }
   };
 
@@ -60,7 +60,7 @@ const ProfilesScreen = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.profileTitleContainer}>
         <View style={styles.profileGrid}>
-          {profiles.map((item) => {
+          {profiles.map((item: IProfile) => {
             return (
               <Pressable
                 key={item.id}

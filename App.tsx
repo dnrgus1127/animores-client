@@ -22,7 +22,6 @@ const App = () => {
     null
   );
 
-  //TODO:프로필 선택하지 않고 앱 껐을 경우, 프로필 선택하는 화면 나오게 수정
   useEffect(() => {
     const checkToken = async () => {
       try {
@@ -49,15 +48,10 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <NavigationContainer>
         <GestureHandlerRootView style={{ flex: 1 }}>
-          {isAuthenticated ? (
-            isProfileSelected ? (
-              <AuthStackNavigation />
-            ) : (
-              <ProfilesScreen />
-            )
-          ) : (
-            <GuestStackNavigation />
-          )}
+          {isAuthenticated ?
+            <AuthStackNavigation />
+            : <GuestStackNavigation />
+          }
           <Toast />
         </GestureHandlerRootView>
       </NavigationContainer>
