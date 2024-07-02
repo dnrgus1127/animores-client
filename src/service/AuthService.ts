@@ -14,5 +14,11 @@ export const AuthService = {
 				`/api/v1/account/refresh`, { refreshToken });
 			return response.data;
 		},
+		emailVerificationCode: async (email: string) => {
+			const response = await AxiosContext.post<AuthModel.IEmailVerificationCodeModel>(
+				`/api/v1/account/email-auth-create?email=${email}`, { email });
+			console.log('456...', email, response.data);
+			return response.data;
+		},
 	},
 };

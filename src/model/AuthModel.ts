@@ -23,4 +23,8 @@ export namespace AuthModel {
 		};
 		status: number;
 	}
+
+	export interface IEmailVerificationCodeModel {
+		email: string
+	}
 }

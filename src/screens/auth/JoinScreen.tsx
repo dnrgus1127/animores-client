@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { View, TextInput, StyleSheet, Pressable, Text, ScrollView } from "react-native";
 import { Control, Controller, FieldError, FieldValues, RegisterOptions, useForm } from "react-hook-form";
 import { commonStyles } from "../../styles/commonStyles";
@@ -8,6 +9,7 @@ import HeaderNavigation from "../../navigation/HeaderNavigation";
 import { Colors } from "../../styles/Colors";
 import { emailRegex, nicknameRegex, pwRegex } from "../../js/util";
 import { AuthModel } from "../../model/AuthModel";
+import { AuthService } from "../../service/AuthService";
 import { DeleteIcon, SecureEyeIcon } from "../../assets/svg";
 import AgreementOnTerms from "./AgreementOnTerms";
 import { useNavigation } from "@react-navigation/native";
@@ -15,13 +17,12 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../../navigation/type";
 import { ScreenName } from "../../statics/constants/ScreenName";
 import Countdown from "../../components/Countdown";
-import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
 const JoinScreen = () => {
   const { control, handleSubmit, trigger, getValues, watch, formState:{errors} } = useForm({ mode: "onChange"})
   const navigation = useNavigation<StackNavigationProp<RootStackParamList, ScreenName.Join>>();
-  const baseURL = "http://loadbalancer-e8b18c32a70f207a.elb.ap-northeast-2.amazonaws.com:8080";
+  const baseURL = "http://180.229.5.21:8080";
   
   // 패스워드 보이기/가리기 상태
   const [secureText, setScureText] = useState({
@@ -49,23 +50,26 @@ const JoinScreen = () => {
 
   // 필수정보 입력 확인
   const [validation, setValidation] = useState({
-    email: false,
-    verificationCode: false,
-    nickname: false,
-    nicknameCheck: false,
-    password: false,
-    checkPassword: false,
-    agreements: false,
+    email: false, // 이메일
+    verificationCode: false, // 이메일 인증코드
+    nickname: false, // 닉네임
+    nicknameCheck: false,// 닉네임 중복 확인
+    password: false, // 비밀번호
+    checkPassword: false, // 비밀번호 확인
+    agreements: false, // 약관 동의
   })
 
-  // 이메일 입력 시
+  useEffect(() => {
+    console.log('-----', emailState, verificationState)
+  }, [emailState, verificationState])
+
+  // Email - 입력 시
   const handleOnChangeEmail = (inputText:string) => {
     // 이메일 재입력 시 인증번호 무효화
-      setEmailState("none")
-      
-    if (inputText !== getValues("email")) {
-      setSampleCode("")
-    }
+    // if (inputText !== getValues("email")) {
+    //   setSampleCode("")
+    //   setEmailState("none")
+    // }
 
     const matchEmail = inputText.match(emailRegex)
         
@@ -76,62 +80,63 @@ const JoinScreen = () => {
     }
   }
   
-  // Email - 중복확인 요청 성공 시
+  // 인증번호 전송 클릭 시 이메일 중복 확인
   const onSuccessCheckEmail = (data:{
     data: any;
-    status: number;
+    success: number;
   }) => {
     if (!data.data){
-      // 중복이 아니면 인증번호 전송
-      setSampleCode("1234")
-      console.log("코드전송")
+      // 중복이 아니면 인증번호 생성
+      AuthService.Auth.emailVerificationCode(getValues("email"));
+      // 이메일 중복 체크는 성공
       setEmailState("success")
+      console.log('123...', emailState)
+
+      // 카운트 시작 3:00
     } else {
       // 중복일 경우
       setEmailState("fail")
-      console.log(getValues("email"))
+      console.log("이미 사용중인 이메일")
     }
   }
 
-  // Email - 인증번호 전송 클릭 시
-  const checkEmail = async (email: string ) => {
+  // Email -  인증번호 전송 클릭 시
+  const sendVerificationCode = async (email: string) => {
+    // 중복 확인
     await axios.get(`${baseURL}/api/v1/account/check-email/${email}`)
     .then((response) => {
-        onSuccessCheckEmail({data: response.data.data, status: response.data.status});
+        onSuccessCheckEmail({data: response.data.data, success: response.data.success});
     })
     .catch(function (error) {
-        return { data: null, status: error || 500 };
+        console.log('---500---')
+        return { data: null, success: error || 500 };
     })
   }
-  
-  // Email - 인증번호 전송 클릭 시
-  const sendVerificationCode = (inputText) => {
-    const isValid = trigger("email")
-    if (!isValid) {
-      return 
-    }
 
-    checkEmail(getValues("email"));
-
-    // 카운트 시작 3:00
-  }
 
   // 카운트다운
   const afterCountdown = () => {
     setVerificationState("timeout")
     setResetCount(false)
   }
-  
-  // Email - 인증번호 확인 클릭 시
-  const checkVerificationCode = (inputText:string) => {
-    // 인증 실패 : 인증번호 불일치 시
-    if (inputText !== sampleCode) {
-      setVerificationState("dismatch")
-    } else {
-      // 인증 완료
-      setValidation({...validation, verificationCode: true})
-      setVerificationState("success")
-    }
+
+  // Email -  인증번호 확인 요청
+  const checkVerificationCode = async (email: string, code: string) => {
+    console.log(email, code)
+    // 중복 확인
+    await axios.post(`${baseURL}/api/v1/account/email-auth-verify?email=${email}&code=${code}`)
+    .then((response) => {
+        console.log('코드 성공!', response.data)
+        // 인증 실패 : 인증번호 불일치 시
+
+        // 인증 완료
+        setValidation({...validation, verificationCode: true})
+        setVerificationState("success")
+    })
+    .catch(function (error) {
+        console.log('error!')
+        return { data: null, success: error || 500 };
+    })
   }
 
   // Email - 재전송 클릭 시
@@ -140,12 +145,13 @@ const JoinScreen = () => {
     setVerificationState("none")
 
     // 새 인증번호 전송
-    setSampleCode("4567")
+    //setSampleCode("4567")
 
     // 카운트다운 재시작
     setResetCount(true)
   }
 
+  // Nickname - 입력 시
   const handleOnChangeNickname = (inputText:string) => {
     // 닉네임 재입력 시 인증 무효화
     setNicknameState("none")
@@ -271,7 +277,7 @@ const JoinScreen = () => {
                           <Pressable 
                             style={[styles.inputButton, { paddingLeft: 5, paddingRight: 5 }]} 
                             disabled={error} 
-                            onPress={() => sendVerificationCode(value)}
+                            onPress={() => sendVerificationCode(getValues("email"))}
                           >
                             <Text style={error && styles.textDisabled}>인증번호 전송</Text>
                           </Pressable>
@@ -291,7 +297,7 @@ const JoinScreen = () => {
             />
           </View>
           
-          {sampleCode !== "" && verificationState !== "success" ? (
+          {emailState === "success" && verificationState !== "success" ? (
             <View style={[styles.inputWrap, { marginTop: 20 }]}>
               <Controller 
                 name="verification_code"
@@ -338,7 +344,7 @@ const JoinScreen = () => {
               />
               <Pressable 
                 style={[styles.primaryButton, verificationState === "timeout" && styles.buttonDisabled, { marginTop: 20, marginLeft: 0, width: "100%" }]} 
-                onPress={() => checkVerificationCode(getValues("verification_code"))}
+                onPress={() => checkVerificationCode(getValues("email"), getValues("verification_code"))}
                 disabled={verificationState === "timeout"}
               >
                 <Text style={verificationState === "timeout" ? styles.textDisabled : styles.primaryButtonText}>인증 하기</Text>
