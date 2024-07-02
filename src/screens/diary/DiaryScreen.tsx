@@ -1,16 +1,15 @@
-import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
-import timezone from 'dayjs/plugin/timezone';
-import utc from 'dayjs/plugin/utc';
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 import React, { useState } from "react";
-import {
-  FlatList,
-  Pressable,
-  StyleSheet,
-  View
-} from "react-native";
-import Toast from 'react-native-toast-message';
+import { FlatList, Pressable, StyleSheet, View } from "react-native";
+import Toast from "react-native-toast-message";
 import { CommentIcon, More, User, UserImage } from "../../assets/svg";
 import FloatingButton from "../../components/button/FloatingButton";
 import BottomModal from "../../components/modal/BottomModal";
@@ -32,19 +31,18 @@ const DairyScreen = () => {
   const queryClient = useQueryClient();
 
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
-  const [isVisibleMore, setIsVisibleMore] = useState<boolean>(false); //더보기 모달
+  const [isFirstVisibleMore, setIsFirstVisibleMore] = useState<boolean>(false); //더보기 모달
+  const [isSecondVisibleMore, setIsSecondVisibleMore] = useState<boolean>(false);
   const [isVisibleMenu, setIsVisibleMenu] = useState<boolean>(false); //플로팅버튼
   const [isVisibleComment, setIsVisibleComment] = useState<boolean>(false); //댓글
   const [deleteItemId, setDeleteItemId] = useState<number | null>(null);
-  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
 
   //일지 리스트
   //TODO: profile api 가져와서 profileId에 넣기
   const { data, fetchNextPage, isFetchingNextPage, hasNextPage } =
     useInfiniteQuery(
       [QueryKey.DIARY_LIST],
-      ({ pageParam = 1 }) =>
-        DiaryService.diary.list(1, pageParam, 5),
+      ({ pageParam = 1 }) => DiaryService.diary.list(1, pageParam, 5),
       {
         getNextPageParam: (lastPage, allPages) => {
           const totalCount = lastPage?.data?.data.totalCount;
@@ -63,25 +61,27 @@ const DairyScreen = () => {
   const { mutate } = useMutation(
     (diaryId: number) => DiaryService.diary.delete(diaryId),
     {
-      onSuccess: async data => {
+      onSuccess: async (data) => {
         if (data && data.status === 200) {
           Toast.show({
-            type: 'success',
-            text1: '삭제되었습니다.',
+            type: "success",
+            text1: "삭제되었습니다.",
           });
 
-          setIsVisibleMore(false);
+          setIsFirstVisibleMore(false);
+		  setIsSecondVisibleMore(false);
           await queryClient.invalidateQueries([QueryKey.DIARY_LIST]);
           //일지 목록 쿼리를 무효화함
         }
       },
       onError: (error) => {
-        console.error('Delete error:', error);
-      }
+        console.error("Delete error:", error);
+      },
     }
-  )
+  );
 
-  const diaryData = data?.pages.flatMap((page) => page?.data?.data.diaries) ?? [];
+  const diaryData =
+    data?.pages.flatMap((page) => page?.data?.data.diaries) ?? [];
 
   //더보기
   const toggleExpand = (itemId: number) => {
@@ -118,14 +118,17 @@ const DairyScreen = () => {
               style={{ marginBottom: 2 }}
             />
             <Title
-              text={dayjs.utc(item?.createdAt).utcOffset(9).format("YYYY.MM.DD HH:mm A")}
+              text={dayjs
+                .utc(item?.createdAt)
+                .utcOffset(9)
+                .format("YYYY.MM.DD HH:mm A")}
               color={Colors.AEAEAE}
             />
           </View>
           <Pressable
             onPress={() => {
-              setIsVisibleMore(true);
-              setDeleteItemId(item.diaryId)
+              setIsFirstVisibleMore(true);
+              setDeleteItemId(item.diaryId);
             }}
           >
             <More style={styles.moreIcon} />
@@ -181,12 +184,10 @@ const DairyScreen = () => {
           </View>
           <Pressable
             onPress={() => {
-              if (deleteItemId !== null) {
-                // mutate(deleteItemId);
-                setIsModalVisible(true);
-              }
+                setIsSecondVisibleMore(true);
             }}
-            style={styles.buttonContainer}>
+            style={styles.buttonContainer}
+          >
             <Title
               text={"삭제"}
               fontSize={16}
@@ -243,11 +244,17 @@ const DairyScreen = () => {
     fetchNextPage();
   };
 
+  const handleCancel = () => {
+    if (deleteItemId !== null) {
+      mutate(deleteItemId);
+    }
+  };
+
   return (
     <>
       <HeaderNavigation middletitle="일지" hasBackButton={false} />
       <FlatList
-        keyExtractor={(item) => `diary-${item?.diaryId}`}
+        keyExtractor={(item, index) => `diary-${item?.diaryId}-${index}`}
         data={diaryData}
         renderItem={renderItem}
         onEndReachedThreshold={0.6}
@@ -273,9 +280,9 @@ const DairyScreen = () => {
         />
         {/* 모달 */}
         <BottomModal
-          isVisible={isVisibleMore}
+          isVisible={isFirstVisibleMore}
           onClose={() => {
-            setIsVisibleMore(false);
+            setIsFirstVisibleMore(false);
           }}
           footer={footerMore}
         />
@@ -286,10 +293,15 @@ const DairyScreen = () => {
           }}
           footer={footerComment}
         />
-        <CenterModal
-          visible={isModalVisible}
-          onClose={() => setIsModalVisible(false)}
-        />
+        {deleteItemId !== null && (
+          <CenterModal
+            visible={isSecondVisibleMore}
+            title="게시물을 삭제하시겠어요?"
+            subTitle="삭제 이후에는 게시물이 영구적으로 삭제되며, 복원하실 수 없습니다."
+            onClose={() => setIsSecondVisibleMore(false)}
+            onCancle={handleCancel}
+          />
+        )}
       </View>
     </>
   );

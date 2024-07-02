@@ -5,7 +5,8 @@ export namespace DiaryService {
 	export const diary = {
 		list: async (profileId: number, page: number, size: number) => {
 			try {
-				const response = await AxiosContext.get(`/api/v1/diaries?profileId=${profileId}&page=${page}&size=${size}`);
+				const response = await AxiosContext.get
+				(`/api/v1/diaries?profileId=${profileId}&page=${page}&size=${size}`);
 				return { data: response.data, status: response.status };
 			} catch (error) {
 				console.error('DiaryService.diary.list:', error);

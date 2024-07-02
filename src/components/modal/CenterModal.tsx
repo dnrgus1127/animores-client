@@ -1,19 +1,26 @@
 import React from "react";
-import {
-  Modal,
-  StyleSheet,
-  Text,
-  View,
-  Pressable
-} from "react-native";
+import { Modal, StyleSheet, Text, View, Pressable } from "react-native";
 import { Colors } from "../../styles/Colors";
+import Title from "../text/Title";
+import { Dimensions } from "react-native";
 
 interface ModalComponentProps {
   visible: boolean;
+  title: string;
+  subTitle: string;
   onClose: () => void;
+  onCancle: () => void;
 }
 
-const CenterModal: React.FC<ModalComponentProps> = ({ visible, onClose }) => {
+const width = Dimensions.get("window").width;
+
+const CenterModal: React.FC<ModalComponentProps> = ({
+  visible,
+  title,
+  subTitle,
+  onClose,
+  onCancle,
+}) => {
   return (
     <Modal
       transparent={true}
@@ -23,9 +30,24 @@ const CenterModal: React.FC<ModalComponentProps> = ({ visible, onClose }) => {
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContainer}>
-          <Text style={styles.modalText}>Modal</Text>
-          <Pressable style={styles.closeButton} onPress={onClose}>
-            <Text style={styles.closeButtonText}>Close</Text>
+          <Title
+            text={title}
+            fontSize={16}
+            fontWeight="bold"
+            style={styles.modalText}
+          />
+          <Title
+            text={subTitle}
+            fontSize={14}
+            color={Colors.AEAEAE}
+            style={styles.modalSubText}
+          />
+          <Pressable style={styles.pressableButton} onPress={onCancle}>
+            <Title text="삭제" color={Colors.FF4040} fontSize={15} />
+          </Pressable>
+          <View style={styles.line} />
+          <Pressable style={styles.pressableButton} onPress={onClose}>
+            <Title text="취소" fontSize={15} />
           </Pressable>
         </View>
       </View>
@@ -41,25 +63,33 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
+    paddingHorizontal: 20,
   },
   modalContainer: {
-    width: 300,
-    padding: 20,
+    paddingTop: 44,
+    paddingBottom: 17,
     backgroundColor: Colors.White,
     borderRadius: 10,
     alignItems: "center",
   },
   modalText: {
-    fontSize: 18,
     marginBottom: 20,
+    paddingHorizontal: 40,
   },
-  closeButton: {
-    backgroundColor: Colors.FB3F7E,
-    padding: 10,
-    borderRadius: 5,
+  modalSubText: {
+    textAlign: "center",
+    marginBottom: 30,
+    paddingHorizontal: 40,
   },
-  closeButtonText: {
-    color: Colors.White,
-    fontSize: 16,
+  line: {
+    height: 1,
+    width: width - 80,
+    borderWidth: 0.8,
+    borderColor: Colors.DBDBDB,
+  },
+  pressableButton: {
+    paddingVertical: 16,
+    width: width - 80,
+    alignItems: "center",
   },
 });
