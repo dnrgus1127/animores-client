@@ -80,7 +80,7 @@ const CreateProfile = () => {
           type: 'success',
           text1: '프로필이 생성되었습니다!'
         });
-        navigation.navigate(ScreenName.Home, { id: '' });
+        navigation.navigate(ScreenName.BottomTab);
       },
       onError: (error) => {
         console.error('Error creating profile:', error);

@@ -15,4 +15,7 @@ export type RootStackParams = {
 	BreedType: undefined;
 	AddPet: undefined;
 	CreateProfile: undefined;
+	JoinCompleted: undefined;
+	Home: undefined;
+	EditProfile: undefined;
 };

@@ -14,11 +14,12 @@ import BreedType from "../screens/myPage/petManagement/BreedType";
 import PatManagementScreen from "../screens/myPage/petManagement/PatManagementScreen";
 import PetType from "../screens/myPage/petManagement/PetType";
 import CreateProfile from "../screens/myPage/profile/CreateProfile";
-import ProfileScreen from "../screens/myPage/profile/ProfileScreen";
+import ProfileScreen from "../screens/myPage/profile/ProfileManagementScreen";
 import ProfilesScreen from "../screens/myPage/profile/ProfilesScreen";
 import AddTodo from "../screens/todo/AddTodo";
 import { ScreenName } from "../statics/constants/ScreenName";
 import BottomTabStackNavigator from "./BottomTabStackNavigator";
+import EditProfileScreen from "../screens/myPage/profile/EditProfile";
 
 const RootStack = createNativeStackNavigator<RootStackParams>();
 
@@ -103,6 +104,11 @@ const AuthStackNavigation = () => {
         <RootStack.Screen
           name={ScreenName.CreateProfile}
           component={CreateProfile}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
+          name={ScreenName.EditProfile}
+          component={EditProfileScreen}
           options={{ headerShown: false }}
         />
       </RootStack.Navigator>

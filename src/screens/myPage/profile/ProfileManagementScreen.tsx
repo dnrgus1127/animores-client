@@ -1,8 +1,7 @@
+import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import React from "react";
-import { Image, Platform, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { Image, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { IProfile } from "../../../../types/Profile";
 import asset from "../../../assets/png";
 import Title from "../../../components/text/Title";
 import HeaderNavigation from "../../../navigation/HeaderNavigation";
@@ -10,7 +9,10 @@ import { ProfileService } from "../../../service/ProfileService";
 import { QueryKey } from "../../../statics/constants/Querykey";
 import { ScreenName } from "../../../statics/constants/ScreenName";
 import { Colors } from "../../../styles/Colors";
-const ProfileScreen = ({ navigation }: any) => {
+import { IProfile } from "../../../../types/Profile";
+import { EditIconBlack } from "../../../assets/icons";
+
+const ProfileManagementScreen = ({ navigation }: any) => {
   const baseURL = "https://animores-image.s3.ap-northeast-2.amazonaws.com";
 
   const { data: myProfileInfo } = useQuery({
@@ -19,7 +21,7 @@ const ProfileScreen = ({ navigation }: any) => {
   });
 
   const { data: profileList } = useQuery({
-    queryKey: [QueryKey.PROFILE],
+    queryKey: [QueryKey.PROFILE_LIST],
     queryFn: () => ProfileService.profile.list(),
   });
 
@@ -37,6 +39,8 @@ const ProfileScreen = ({ navigation }: any) => {
   const handlePress = async (item: IProfile) => {
     if (item.id === "add") {
       navigation.navigate(ScreenName.CreateProfile);
+    } else {
+      navigation.navigate(ScreenName.EditProfile);
     }
   };
 
@@ -45,79 +49,73 @@ const ProfileScreen = ({ navigation }: any) => {
       <ScrollView showsVerticalScrollIndicator={false}>
         <HeaderNavigation
           middletitle="프로필 관리"
-          rightTitle={"편집"}
           hasBackButton={true}
-          isBlack={true}
-          onPressBackButton={() => {
-            navigation.goBack();
-          }}
+          onPressBackButton={() => navigation.goBack()}
         />
         <View style={styles.profileTitleContainer}>
           <View style={styles.profileTitle}>
-            <Title text={"계정 기본 정보"} fontSize={16} />
+            <Title
+              text={"계정 기본 정보"}
+              fontSize={16} />
           </View>
         </View>
-        <View
-          style={{
-            flexDirection: "row",
-            marginTop: 34,
-          }}>
+        <View style={[styles.Row, { marginTop: 34 }]}>
           <Title
             text={"닉네임"}
             color={Colors.AEAEAE}
-            style={{ flex: 1, textAlign: "right", marginRight: 40 }}
+            style={styles.InfoTitle}
           />
-          <Title
-            text={myProfile.nickname}
-            fontSize={16}
-            style={{ flex: 1.5 }} />
+          <View style={styles.TextInputContainer}>
+            <TextInput
+              style={styles.input}
+              value={myProfile?.nickname}
+            />
+            <EditIconBlack style={{ alignSelf: "center" }} />
+          </View>
         </View>
-        <View
-          style={{
-            flexDirection: "row",
-            marginTop: 19,
-          }}
-        >
+        <View style={[styles.Row, { marginTop: 20 }]}>
           <Title
             text={"이메일"}
             color={Colors.AEAEAE}
-            style={{ flex: 1, textAlign: "right", marginRight: 40 }}
+            style={styles.InfoTitle}
           />
-          <Title text={myProfile.email} fontSize={16} style={{ flex: 1.5 }} />
+          <View style={styles.TextInputContainer}>
+            <Title
+              text={myProfile?.email}
+              fontSize={16} />
+          </View>
         </View>
-        <View
-          style={{
-            flexDirection: "row",
-            marginTop: 19,
-          }}
-        >
+        <View style={[styles.Row, { marginTop: 20 }]}>
           <Title
             text={"비밀번호"}
             color={Colors.AEAEAE}
             style={{ flex: 1, textAlign: "right", marginRight: 40 }}
           />
-          <Title text={"•••••••••••••••"} fontSize={16} style={{ flex: 1.5 }} />
+          <View style={styles.TextInputContainer}>
+            <Title
+              text={"•••••••••••••••"}
+              fontSize={16}
+              style={styles.input}/>
+            <EditIconBlack style={{ alignSelf: "center" }} />
+          </View>
         </View>
         <View style={[styles.profileTitleContainer, { marginTop: 80 }]}>
           <View style={styles.profileTitle}>
-            <Title text={"프로필 정보"} fontSize={16} />
+            <Title
+              text={"프로필 정보"}
+              fontSize={16} />
           </View>
         </View>
-        {profiles &&
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "center",
-              marginTop: 16,
-            }}
-          >
+        {profiles && (
+          <View style={{ flexDirection: "row", justifyContent: "center", marginTop: 16 }}>
             <View style={styles.profileGrid}>
               {profiles.map((item: IProfile) => {
                 return (
                   <Pressable
                     key={item.id}
                     onPress={() => handlePress(item)}
-                    style={styles.profileItem}>
+                    style={styles.profileItem}
+                  >
                     <Image
                       source={
                         item.id === "add"
@@ -126,21 +124,19 @@ const ProfileScreen = ({ navigation }: any) => {
                       }
                       style={styles.profileImage}
                     />
-                    {item.id === "add"
-                      ? <Title text={"프로필 추가"} />
-                      : <Title text={item.name} />}
+                    <Title text={item.id === "add" ? "프로필 추가" : item.name} />
                   </Pressable>
-                )
+                );
               })}
             </View>
           </View>
-        }
+        )}
       </ScrollView>
     </SafeAreaView>
   );
 };
 
-export default ProfileScreen;
+export default ProfileManagementScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -158,7 +154,6 @@ const styles = StyleSheet.create({
     borderRadius: 99,
     alignItems: "center",
     paddingVertical: 14,
-
     ...Platform.select({
       ios: {
         shadowColor: Colors.Black,
@@ -191,4 +186,29 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     marginBottom: 10,
   },
+  editIcon: {
+    position: "absolute",
+    top: 39,
+    width: 24,
+    height: 24,
+  },
+  input: {
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.Black,
+    fontSize: 16,
+    marginRight: 7
+  },
+  InfoTitle: {
+    flex: 1,
+    textAlign: "right",
+    marginRight: 40
+  },
+  TextInputContainer: {
+    flexDirection: 'row',
+    flex: 1.5
+  },
+  Row: {
+    flexDirection: "row",
+    alignItems: "center"
+  }
 });

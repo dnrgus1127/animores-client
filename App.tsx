@@ -43,7 +43,7 @@ const App = () => {
   if (isAuthenticated === null || isProfileSelected === null) {
     return null; //로딩 중일 때는 렌더링 하지 않음
   }
-
+console.log('isAuthenticated', isAuthenticated)
   return (
     <QueryClientProvider client={queryClient}>
       <NavigationContainer>

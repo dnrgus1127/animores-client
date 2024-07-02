@@ -17,8 +17,7 @@ interface IProps {
   onPressBackButton?: () => void;
   hasBackButton?: boolean;
   textStyle?: StyleProp<TextStyle>;
-  onPressRightButton?: () => void;
-  isBlack?: boolean;
+  onPress?: () => void;
   content?: string;
 }
 
@@ -29,8 +28,7 @@ const HeaderNavigation = (props: IProps) => {
     onPressBackButton,
     hasBackButton = true,
     textStyle,
-    onPressRightButton,
-    isBlack = false,
+    onPress,
     content,
   } = props;
 
@@ -51,22 +49,20 @@ const HeaderNavigation = (props: IProps) => {
         )}
         {middletitle && (
           <View style={styles.titleContainer}>
-            <Title text={middletitle} fontSize={18} style={styles.title} />
+            <Title
+              text={middletitle}
+              fontSize={18}
+              style={styles.title} />
           </View>
         )}
         {rightTitle && (
           <Pressable
-            onPress={isRightTitleDisabled ? undefined : onPressRightButton}
+            onPress={onPress}
             style={styles.rightTitleContainer}
           >
             <Title
               text={rightTitle}
               fontSize={18}
-              color={
-                isRightTitleDisabled || isBlack 
-                  ? Colors.DBDBDB
-                  : Colors.Black
-              }
               style={[styles.rightTitle, textStyle]}
             />
           </Pressable>
