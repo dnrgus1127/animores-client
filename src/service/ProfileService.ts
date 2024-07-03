@@ -1,4 +1,3 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import AxiosContext from "../screens/context/AxiosContext";
 
 export namespace ProfileService {
@@ -13,6 +12,7 @@ export namespace ProfileService {
 				return { data: null, status: error };
 			}
 		},
+		//프로필 목록 조회
 		list: async () => {
 			try {
 				const response = await AxiosContext.get(`/api/v1/profiles`);
@@ -22,6 +22,7 @@ export namespace ProfileService {
 				return { data: null, status: error };
 			}
 		},
+		//프로필 생성
 		create: async (formData: FormData) => {
 			try {
 				const response = await AxiosContext.post(`/api/v1/profiles`, formData, {
@@ -35,14 +36,25 @@ export namespace ProfileService {
 				return { data: null, status: error || error };
 			}
 		},
+		//프로필 수정
 		edit: async (formData: FormData) => {
-			console.log('formData', formData);
 			try {
 				const response = await AxiosContext.put(`/api/v1/profiles`, formData, {
 					headers: {
 						'Content-Type': 'multipart/form-data'
-					}
+					},
 				});
+				return { data: response.data, status: response.status };
+			} catch (error) {
+				console.error('ProfileService.Profile.edit:', error);
+				return { data: null, status: error || error };
+			}
+		},
+		//프로필 삭제
+		delete: async (profileId: string) => {
+			console.log('profileId', profileId);
+			try {
+				const response = await AxiosContext.delete(`/api/v1/profiles/${profileId}`);
 				return { data: response.data, status: response.status };
 			} catch (error) {
 				console.error('ProfileService.Profile.edit:', error);

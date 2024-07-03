@@ -22,7 +22,9 @@ import { Colors } from "../../../styles/Colors";
 const EditProfileScreen = () => {
     const route = useRoute();
     const { item } = route.params as { item: IProfile };
-    console.log("item", item);
+
+    const baseUrl = process.env.EXPO_PUBLIC_BASE_URL;
+
     const [textInput, onChangeText] = useState<string>("");
     const [profileImage, setProfileImage] = useState<string>("");
     const [isEdit, setIsEdit] = useState<boolean>(false);
@@ -33,13 +35,60 @@ const EditProfileScreen = () => {
         >();
 
     useEffect(() => {
-        onChangeText(item.name);
-    }, [item.name]);
+        onChangeText(item.name)
+    }, [item.name])
 
-    const { mutate } = useMutation({
+    useEffect(() => {
+        setIsEdit(textInput === item.name && !profileImage);
+    }, [textInput, profileImage]);
+
+    //프로필 수정
+    const { mutate: profileEdit } = useMutation({
         mutationFn: async (data: FormData) => {
-            const response = await ProfileService.profile.edit(data);
+            console.log("data@!!!!!!!!!!!!!", data)
+            try {
+                const response = await ProfileService.profile.edit(data);
+                return response.data;
+            } catch (error) {
+                console.error('Error edit profile:', error);
+                throw error;
+            }
+        },
+        onSuccess: () => {
+            Toast.show({
+                type: 'success',
+                text1: '프로필이 수정되었습니다!'
+            });
+            navigation.navigate(ScreenName.BottomTab);
+        },
+        onError: (error) => {
+            console.error('Error edit profile:', error);
+            Toast.show({
+                type: 'error',
+                text1: '프로필 수정을 실패했습니다.'
+            });
+        }
+    });
+
+    //프로필 삭제
+    const { mutate: profileDelete } = useMutation({
+        mutationFn: async () => {
+            const response = await ProfileService.profile.delete(item.id);
             return response.data;
+        },
+        onSuccess: () => {
+            Toast.show({
+                type: 'success',
+                text1: '프로필이 삭제되었습니다.'
+            });
+            navigation.navigate(ScreenName.BottomTab);
+        },
+        onError: (error) => {
+            console.error('Error delete profile:', error);
+            Toast.show({
+                type: 'error',
+                text1: '프로필 삭제를 실패했습니다.'
+            });
         }
     });
 
@@ -58,58 +107,57 @@ const EditProfileScreen = () => {
     }
 
     const handleProfileSubmit = async () => {
-        const formData = new FormData();
-        formData.append('request', JSON.stringify({ name: textInput }));
+        try {
+            const formData = new FormData();
 
-        if (profileImage) {
-            console.log('profileImage', profileImage);
+            const requestData = {
+                profileId: item.id,
+                name: textInput,
+                isUpdateImage: false
+            }
 
-            //이미지 파일을 Blob 형식으로 변환
-            const response = await fetch(profileImage);
-            const blob = await response.blob();
+            formData.append('request', JSON.stringify(requestData));
 
-            //파일을 formData에 추가
-            formData.append('profileImage', {
-                uri: profileImage,
-                type: blob.type,
-                name: 'profile.jpg'
-            });
-        }
+            if (profileImage) {
+                const response = await fetch(profileImage);
+                const blob = await response.blob();
 
-        mutate(formData, {
-            onSuccess: () => {
-                Toast.show({
-                    type: 'success',
-                    text1: '프로필이 수정되었습니다!'
-                });
-                navigation.navigate(ScreenName.BottomTab);
-            },
-            onError: (error) => {
-                console.error('Error creating profile:', error);
-                Toast.show({
-                    type: 'error',
-                    text1: '프로필 수정을 실패했습니다.'
+                formData.append('profileImage', {
+                    uri: profileImage,
+                    type: blob.type,
+                    name: 'profile.jpg'
                 });
             }
-        });
+
+            profileEdit(formData);
+        } catch (error) {
+            console.error('Error preparing formData:', error);
+            Toast.show({
+                type: 'error',
+                text1: '프로필 수정을 실패했습니다.',
+            });
+        }
     };
 
     return (
         <SafeAreaView style={styles.container}>
-            <HeaderNavigation middletitle={"프로필 수정"} />
-            <Pressable onPress={handleChoosePhoto}>
-                {profileImage ? (
+            <HeaderNavigation
+                middletitle={"프로필 수정"}
+                onPressBackButton={() => {
+                    navigation.goBack();
+                }} />
+            <Pressable
+                style={styles.profileImageContainer}
+                onPress={handleChoosePhoto}
+            >
+                {item.imageUrl !== "profile/default_profile.png" ? (
                     <Image
-                        source={{ uri: profileImage }}
+                        source={{ uri: `${baseUrl}/${item.imageUrl}` }}
                         style={styles.profileImage}
                     />
                 ) : (
                     <DefaultProfileImage
-                        style={{
-                            alignSelf: "center",
-                            marginTop: 70,
-                            marginBottom: 36
-                        }}
+                        style={styles.profileImage}
                     />
                 )}
             </Pressable>
@@ -141,11 +189,13 @@ const EditProfileScreen = () => {
                 style={{ marginTop: 20, marginHorizontal: 20 }}
             />
             <View style={styles.editButtonContainer}>
-                <Title
-                    text='프로필 삭제하기'
-                    color={Colors.AEAEAE}
-                    style={styles.deleteProfileButton}
-                />
+                <Pressable onPress={() => profileDelete()}>
+                    <Title
+                        text='프로필 삭제하기'
+                        color={Colors.AEAEAE}
+                        style={styles.deleteProfileButton}
+                    />
+                </Pressable>
                 <SingleButton
                     title={'수정완료'}
                     disabled={isEdit}
@@ -162,13 +212,18 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: Colors.White,
     },
-    profileImage: {
+    profileImageContainer: {
         alignSelf: "center",
         marginTop: 70,
         marginBottom: 36,
         width: 100,
         height: 100,
-        borderRadius: 50,
+    },
+    profileImage: {
+        alignSelf: "center",
+        width: 100,
+        height: 100,
+        borderRadius: 50
     },
     inputContainer: {
         flexDirection: "row",

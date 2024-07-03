@@ -1,19 +1,29 @@
-import React, { useState } from "react";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
 import { useQuery } from "@tanstack/react-query";
+import React, { useEffect, useState } from "react";
 import { Image, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { IProfile } from "../../../../types/Profile";
+import { EditIconBlack } from "../../../assets/icons";
 import asset from "../../../assets/png";
 import Title from "../../../components/text/Title";
 import HeaderNavigation from "../../../navigation/HeaderNavigation";
+import { RootStackParamList } from "../../../navigation/type";
 import { ProfileService } from "../../../service/ProfileService";
 import { QueryKey } from "../../../statics/constants/Querykey";
 import { ScreenName } from "../../../statics/constants/ScreenName";
 import { Colors } from "../../../styles/Colors";
-import { IProfile } from "../../../../types/Profile";
-import { EditIconBlack } from "../../../assets/icons";
 
-const ProfileManagementScreen = ({ navigation }: any) => {
-  const baseURL = "https://animores-image.s3.ap-northeast-2.amazonaws.com";
+const ProfileManagementScreen = () => {
+  const baseUrl = process.env.EXPO_PUBLIC_BASE_URL;
+
+  const navigation =
+    useNavigation<
+      StackNavigationProp<RootStackParamList, ScreenName.ProfileManagement>
+    >();
+
+  const [nickname, setNickname] = useState<string>('');
 
   const { data: myProfileInfo } = useQuery({
     queryKey: [QueryKey.MY_PROFILE],
@@ -44,6 +54,10 @@ const ProfileManagementScreen = ({ navigation }: any) => {
     }
   };
 
+  useEffect(() => {
+    setNickname(myProfile?.nickname)
+  }, [])
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -68,7 +82,8 @@ const ProfileManagementScreen = ({ navigation }: any) => {
           <View style={styles.TextInputContainer}>
             <TextInput
               style={styles.input}
-              value={myProfile?.nickname}
+              value={nickname}
+              onChangeText={setNickname}
             />
             <EditIconBlack style={{ alignSelf: "center" }} />
           </View>
@@ -91,13 +106,14 @@ const ProfileManagementScreen = ({ navigation }: any) => {
             color={Colors.AEAEAE}
             style={{ flex: 1, textAlign: "right", marginRight: 40 }}
           />
-          <View style={styles.TextInputContainer}>
+          {/* TODO: 비밀번호 변경 페이지로 이동 */}
+          <Pressable style={styles.TextInputContainer}>
             <Title
               text={"•••••••••••••••"}
               fontSize={16}
               style={styles.input} />
             <EditIconBlack style={{ alignSelf: "center" }} />
-          </View>
+          </Pressable>
         </View>
         <View style={[styles.profileTitleContainer, { marginTop: 80 }]}>
           <View style={styles.profileTitle}>
@@ -120,7 +136,7 @@ const ProfileManagementScreen = ({ navigation }: any) => {
                       source={
                         item.id === "add"
                           ? asset.petAdd
-                          : { uri: `${baseURL}/${item.imageUrl}` }
+                          : { uri: `${baseUrl}/${item.imageUrl}` }
                       }
                       style={styles.profileImage}
                     />

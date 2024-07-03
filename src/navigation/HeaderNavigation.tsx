@@ -15,6 +15,7 @@ interface IProps {
   middletitle: string;
   rightTitle?: string;
   onPressBackButton?: () => void;
+  onPressRightButton?: () => void;
   hasBackButton?: boolean;
   textStyle?: StyleProp<TextStyle>;
   onPress?: () => void;
@@ -26,6 +27,7 @@ const HeaderNavigation = (props: IProps) => {
     middletitle,
     rightTitle,
     onPressBackButton,
+    onPressRightButton,
     hasBackButton = true,
     textStyle,
     onPress,

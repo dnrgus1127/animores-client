@@ -2,6 +2,7 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useMutation } from "@tanstack/react-query";
 import * as ImagePicker from 'expo-image-picker';
+import React, { useState } from "react";
 import { Image, Pressable, StyleSheet, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
@@ -16,7 +17,6 @@ import { RootStackParamList } from "../../../navigation/type";
 import { ProfileService } from "../../../service/ProfileService";
 import { ScreenName } from "../../../statics/constants/ScreenName";
 import { Colors } from "../../../styles/Colors";
-import React, { useState } from "react";
 
 const CreateProfile = () => {
   const [textInput, onChangeText] = useState<string>("");
@@ -101,26 +101,18 @@ const CreateProfile = () => {
         }}
       />
       <View style={styles.paddingContainer}>
-        <Pressable onPress={handleChoosePhoto}>
+        <Pressable
+          style={styles.profileImageContainer}
+          onPress={handleChoosePhoto}
+        >
           {profileImage ? (
             <Image
               source={{ uri: profileImage }}
-              style={{
-                alignSelf: "center",
-                marginTop: 70,
-                marginBottom: 36,
-                width: 100,
-                height: 100,
-                borderRadius: 50,
-              }}
+              style={styles.profileImage}
             />
           ) : (
             <DefaultProfileImage
-              style={{
-                alignSelf: "center",
-                marginTop: 70,
-                marginBottom: 36
-              }}
+              style={styles.profileImage}
             />
           )}
         </Pressable>
@@ -154,7 +146,7 @@ const CreateProfile = () => {
           title="추가하기"
           disabled={!textInput}
           onPress={handleProfileSubmit}
-          style={{ marginTop: 70 }} 
+          style={{ marginTop: "auto" }}
         />
       </View>
     </SafeAreaView>
@@ -169,7 +161,15 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.White,
   },
   paddingContainer: {
+    flex: 1,
     paddingHorizontal: 20,
+  },
+  profileImageContainer: {
+    alignSelf: "center",
+    marginTop: 70,
+    marginBottom: 36,
+    width: 100,
+    height: 100,
   },
   inputContainer: {
     flexDirection: "row",
@@ -178,4 +178,10 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     alignItems: "center",
   },
+  profileImage: {
+    alignSelf: "center",
+    width: 100,
+    height: 100,
+    borderRadius: 50
+  }
 });
