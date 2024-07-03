@@ -40,7 +40,7 @@ const ProfileManagementScreen = ({ navigation }: any) => {
     if (item.id === "add") {
       navigation.navigate(ScreenName.CreateProfile);
     } else {
-      navigation.navigate(ScreenName.EditProfile);
+      navigation.navigate(ScreenName.EditProfile, { item });
     }
   };
 
@@ -95,7 +95,7 @@ const ProfileManagementScreen = ({ navigation }: any) => {
             <Title
               text={"•••••••••••••••"}
               fontSize={16}
-              style={styles.input}/>
+              style={styles.input} />
             <EditIconBlack style={{ alignSelf: "center" }} />
           </View>
         </View>

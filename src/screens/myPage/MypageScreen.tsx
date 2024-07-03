@@ -39,7 +39,7 @@ const MypageScreen = () => {
       id: 1,
       name: "프로필 및 계정 관리",
       image: ProfileIcon,
-      screen: ScreenName.Profile,
+      screen: ScreenName.ProfileManagement,
     },
     {
       id: 2,
@@ -56,7 +56,12 @@ const MypageScreen = () => {
   ];
 
   const myPageBottomList: IMypageList[] = [
-    { id: 4, name: "공지 사항", image: NoticeIcon, screen: ScreenName.Notice },
+    {
+      id: 4,
+      name: "공지 사항",
+      image: NoticeIcon,
+      screen: ScreenName.Notice
+    },
     {
       id: 5,
       name: "고객 센터",
@@ -74,7 +79,7 @@ const MypageScreen = () => {
   const handleLogout = async () => {
     try {
       await AsyncStorage.clear();
-      
+
       Toast.show({
         type: "success",
         text1: "로그아웃 성공",

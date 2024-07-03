@@ -23,16 +23,29 @@ export namespace ProfileService {
 			}
 		},
 		create: async (formData: FormData) => {
-			console.log('formData', formData);
-			try{
+			try {
 				const response = await AxiosContext.post(`/api/v1/profiles`, formData, {
-				  headers: {
-					'Content-Type': 'multipart/form-data'
-				  }
+					headers: {
+						'Content-Type': 'multipart/form-data'
+					}
 				});
 				return { data: response.data, status: response.status };
 			} catch (error) {
 				console.error('ProfileService.Profile.create:', error);
+				return { data: null, status: error || error };
+			}
+		},
+		edit: async (formData: FormData) => {
+			console.log('formData', formData);
+			try {
+				const response = await AxiosContext.put(`/api/v1/profiles`, formData, {
+					headers: {
+						'Content-Type': 'multipart/form-data'
+					}
+				});
+				return { data: response.data, status: response.status };
+			} catch (error) {
+				console.error('ProfileService.Profile.edit:', error);
 				return { data: null, status: error || error };
 			}
 		},

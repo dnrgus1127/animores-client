@@ -1,3 +1,5 @@
+import { IProfile } from "./Profile";
+
 export type RootStackParams = {
 	BottomTab: undefined;
 	Login: undefined;
@@ -17,5 +19,6 @@ export type RootStackParams = {
 	CreateProfile: undefined;
 	JoinCompleted: undefined;
 	Home: undefined;
-	EditProfile: undefined;
+	EditProfile: { item: IProfile };
+	ProfileManagement: undefined;
 };

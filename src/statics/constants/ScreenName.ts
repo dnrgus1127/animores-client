@@ -23,4 +23,5 @@ export enum ScreenName {
 	BreedType = 'BreedType',
 	AddPet = 'AddPet',
 	EditProfile = 'EditProfile',
+	ProfileManagement = 'ProfileManagement',
 }

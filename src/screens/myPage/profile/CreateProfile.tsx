@@ -154,6 +154,7 @@ const CreateProfile = () => {
           title="추가하기"
           disabled={!textInput}
           onPress={handleProfileSubmit}
+          style={{ marginTop: 70 }} 
         />
       </View>
     </SafeAreaView>
