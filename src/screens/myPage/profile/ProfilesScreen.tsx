@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useQuery } from "@tanstack/react-query";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Image, Pressable, SafeAreaView, StyleSheet, View } from "react-native";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 import asset from "../../../assets/png";
@@ -11,6 +11,7 @@ import { RootStackParamList } from "../../../navigation/type";
 import { ProfileService } from "../../../service/ProfileService";
 import { QueryKey } from "../../../statics/constants/Querykey";
 import { ScreenName } from "../../../statics/constants/ScreenName";
+import { IProfile } from "../../../../types/Profile";
 
 const ProfilesScreen = () => {
   const navigation =
@@ -25,7 +26,19 @@ const ProfilesScreen = () => {
     queryFn: () => ProfileService.profile.list(),
   });
 
-  const profiles = [...(profile?.data.data || [])];
+  useEffect(() => {
+    const saveLastScreen = async () => {
+      try {
+        await AsyncStorage.setItem("lastScreen", ScreenName.Profiles);
+      } catch (error) {
+        console.log("Error last screen", error)
+      }
+    }
+
+    saveLastScreen();
+  }, [])
+
+  const profiles = [...(profile?.data?.data || [])];
 
   if (profiles.length < 6) {
     profiles.push({
@@ -35,10 +48,11 @@ const ProfilesScreen = () => {
     });
   }
 
-  const handlePress = async (item) => {
+  const handlePress = async (item: IProfile) => {
     if (item.id === "add") {
-      await AsyncStorage.setItem("profiles", "true");
       navigation.navigate(ScreenName.CreateProfile);
+    } else {
+      navigation.navigate(ScreenName.BottomTab)
     }
   };
 
@@ -46,7 +60,7 @@ const ProfilesScreen = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.profileTitleContainer}>
         <View style={styles.profileGrid}>
-          {profiles.map((item) => {
+          {profiles.map((item: IProfile) => {
             return (
               <Pressable
                 key={item.id}

@@ -9,7 +9,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { LogBox } from "react-native";
 import AuthStackNavigation from "./src/navigation/AuthStackNavigation";
 import GuestStackNavigation from "./src/navigation/GuestStackNavigation";
-import ProfilesScreen from "./src/screens/myPage/profile/ProfilesScreen";
+import { ScreenName } from "./src/statics/constants/ScreenName";
 
 const queryClient = new QueryClient();
 
@@ -27,8 +27,8 @@ const App = () => {
         const token = await AsyncStorage.getItem("userToken");
         setIsAuthenticated(!!token);
 
-        const profileSelected = await AsyncStorage.getItem("profiles");
-        setIsProfileSelected(!!profileSelected);
+        const lastScreen = await AsyncStorage.getItem("lastScreen");
+        setIsProfileSelected(lastScreen === ScreenName.Profiles);
       } catch (error) {
         console.error("Error token:", error);
         setIsAuthenticated(false);
@@ -42,25 +42,15 @@ const App = () => {
   if (isAuthenticated === null || isProfileSelected === null) {
     return null; //로딩 중일 때는 렌더링 하지 않음
   }
-
+  console.log('isAuthenticated', isAuthenticated)
   return (
     <QueryClientProvider client={queryClient}>
       <NavigationContainer>
         <GestureHandlerRootView style={{ flex: 1 }}>
           {isAuthenticated ?
             <AuthStackNavigation />
-            :
-            <GuestStackNavigation />
+            : <GuestStackNavigation />
           }
-          {/* {isAuthenticated ? (
-            isProfileSelected ? (
-              <AuthStackNavigation />
-            ) : (
-              <ProfilesScreen />
-            )
-          ) : (
-            <GuestStackNavigation />
-          )} */}
           <Toast />
         </GestureHandlerRootView>
       </NavigationContainer>

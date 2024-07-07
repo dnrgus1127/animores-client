@@ -8,7 +8,13 @@ import LoginScreen from "../screens/auth/LoginScreen";
 import JoinCompleted from "../screens/auth/JoinCompleted";
 import { ScreenName } from "../statics/constants/ScreenName";
 import ProfilesScreen from "../screens/myPage/profile/ProfilesScreen";
+import HomeScreen from "../screens/home/HomeScreen";
 import CreateProfile from "../screens/myPage/profile/CreateProfile";
+import EditProfileScreen from "../screens/myPage/profile/EditProfile";
+import ProfileManagementScreen from "../screens/myPage/profile/ProfileManagementScreen";
+import ProfilesScreen from "../screens/myPage/profile/ProfilesScreen";
+import { ScreenName } from "../statics/constants/ScreenName";
+import BottomTabNavigator from "./BottomTabStackNavigator";
 
 const RootStack = createNativeStackNavigator<RootStackParams>();
 
@@ -43,6 +49,26 @@ const GuestStackNavigation = () => {
         <RootStack.Screen
           name={ScreenName.CreateProfile}
           component={CreateProfile}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
+          name={ScreenName.Home}
+          component={HomeScreen}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
+          name={ScreenName.BottomTab}
+          component={BottomTabNavigator}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
+          name={ScreenName.ProfileManagement}
+          component={ProfileManagementScreen}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
+          name={ScreenName.EditProfile}
+          component={EditProfileScreen}
           options={{ headerShown: false }}
         />
       </RootStack.Navigator>

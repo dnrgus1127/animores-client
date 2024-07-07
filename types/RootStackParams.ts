@@ -1,3 +1,5 @@
+import { IProfile } from "./Profile";
+
 export type RootStackParams = {
 	BottomTab: undefined;
 	Login: undefined;
@@ -15,4 +17,8 @@ export type RootStackParams = {
 	BreedType: undefined;
 	AddPet: undefined;
 	CreateProfile: undefined;
+	JoinCompleted: undefined;
+	Home: undefined;
+	EditProfile: { item: IProfile };
+	ProfileManagement: undefined;
 };

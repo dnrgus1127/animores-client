@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Pressable } from 'react-native';
+import { View, StyleSheet, Pressable, ViewStyle } from 'react-native';
 import Title from '../text/Title';
 import { Colors } from '../../styles/Colors';
 
@@ -7,16 +7,18 @@ interface IProps {
     title: string;
     disabled: boolean;
     onPress: () => void;
+    style?: ViewStyle;
 }
 
 const SingleButton = (props: IProps) => {
-    const { title, disabled, onPress } = props;
+    const { title, disabled, onPress, style } = props;
 
     return (
         <Pressable
             onPress={onPress}
             style={[
                 styles.nextButtonContainer,
+                style,
                 { backgroundColor: disabled ? Colors.DBDBDB : Colors.FB3F7E }
             ]}>
             <Title
@@ -32,7 +34,6 @@ const SingleButton = (props: IProps) => {
 const styles = StyleSheet.create({
     nextButtonContainer: {
         borderRadius: 20,
-        marginTop: 70,
         marginBottom: 30,
     },
 })

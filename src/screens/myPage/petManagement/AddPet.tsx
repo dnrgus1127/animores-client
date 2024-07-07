@@ -179,6 +179,7 @@ const AddPet = () => {
               console.log("navigation 이동");
             }
           }}
+          style={{ marginTop: 70 }} 
         />
       </ScrollView>
       <BottomModal

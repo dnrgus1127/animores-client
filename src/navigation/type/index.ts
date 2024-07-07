@@ -1,3 +1,4 @@
+import { IProfile } from "../../../types/Profile";
 import { ScreenName } from "../../statics/constants/ScreenName"
 
 export type RootStackParamList = {
@@ -14,4 +15,7 @@ export type RootStackParamList = {
 	[ScreenName.Home]: undefined;
 	[ScreenName.Profiles]: undefined;
 	[ScreenName.CreateProfile]: undefined;
+	[ScreenName.BottomTab]: undefined;
+	[ScreenName.EditProfile]: { item: IProfile };
+	[ScreenName.ProfileManagement]: undefined;
 }

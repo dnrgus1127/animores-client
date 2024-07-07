@@ -1,5 +1,5 @@
 import React from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { SvgProps } from "react-native-svg";
 import {
@@ -39,7 +39,7 @@ const MypageScreen = () => {
       id: 1,
       name: "프로필 및 계정 관리",
       image: ProfileIcon,
-      screen: ScreenName.Profile,
+      screen: ScreenName.ProfileManagement,
     },
     {
       id: 2,
@@ -56,7 +56,12 @@ const MypageScreen = () => {
   ];
 
   const myPageBottomList: IMypageList[] = [
-    { id: 4, name: "공지 사항", image: NoticeIcon, screen: ScreenName.Notice },
+    {
+      id: 4,
+      name: "공지 사항",
+      image: NoticeIcon,
+      screen: ScreenName.Notice
+    },
     {
       id: 5,
       name: "고객 센터",
@@ -74,98 +79,101 @@ const MypageScreen = () => {
   const handleLogout = async () => {
     try {
       await AsyncStorage.clear();
+
       Toast.show({
         type: "success",
         text1: "로그아웃 성공",
       });
-	  navigation.navigate(ScreenName.Login);
+      navigation.navigate(ScreenName.Login);
     } catch (e) {
-		Toast.show({
-			type: "error",
-			text1: "로그아웃 실패"
-		})
-	}
+      Toast.show({
+        type: "error",
+        text1: "로그아웃 실패"
+      })
+    }
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <HeaderNavigation
-        middletitle="마이페이지"
-        hasBackButton={true}
-        onPressBackButton={() => {
-          navigation.goBack();
-        }}
-      />
-      <View style={styles.topBackground}>
-        <View style={styles.grayBackground}>
-          {myPageTopList.map((m: IMypageList, index: number) => {
-            return (
-              <Pressable
-                key={m.id}
-                onPress={() => navigation.navigate(m.screen)}
-                style={[
-                  styles.myPageContainer,
-                  { paddingTop: index === 0 ? 30 : 0 },
-                ]}
-              >
-                <m.image />
-                <Title text={m.name} style={{ marginLeft: 10 }} />
-              </Pressable>
-            );
-          })}
-        </View>
-      </View>
-      <View style={styles.bottomBackground}>
-        <View style={styles.whiteBackground}>
-          {myPageBottomList.map((m: IMypageList, index: number) => {
-            return (
-              <Pressable
-                key={m.id}
-                onPress={() => navigation.navigate(m.screen)}
-                style={[
-                  styles.myPageContainer,
-                  { paddingTop: index === 0 ? 30 : 0 },
-                ]}
-              >
-                <m.image />
-                <Title text={m.name} style={{ marginLeft: 10 }} />
-              </Pressable>
-            );
-          })}
-          <View style={styles.versionInformationContainer}>
-            <View style={{ flexDirection: "row" }}>
-              <VersionIcon />
-              <Title text={"버전 정보"} style={{ marginLeft: 10 }} />
-            </View>
-            <Title text={"최신 버전 입니다"} color={Colors.AEAEAE} />
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <HeaderNavigation
+          middletitle="마이페이지"
+          hasBackButton={true}
+          onPressBackButton={() => {
+            navigation.goBack();
+          }}
+        />
+        <View style={styles.topBackground}>
+          <View style={styles.grayBackground}>
+            {myPageTopList.map((m: IMypageList, index: number) => {
+              return (
+                <Pressable
+                  key={m.id}
+                  onPress={() => navigation.navigate(m.screen)}
+                  style={[
+                    styles.myPageContainer,
+                    { paddingTop: index === 0 ? 30 : 0 },
+                  ]}
+                >
+                  <m.image />
+                  <Title text={m.name} style={{ marginLeft: 10 }} />
+                </Pressable>
+              );
+            })}
           </View>
         </View>
-        <View style={styles.logoutContainer}>
-          <Pressable onPress={handleLogout} style={styles.rowView}>
-            <LogoutIcon />
-            <Title
-              text={"로그아웃"}
-              color={Colors.AEAEAE}
-              style={{ marginLeft: 10 }}
+        <View style={styles.bottomBackground}>
+          <View style={styles.whiteBackground}>
+            {myPageBottomList.map((m: IMypageList, index: number) => {
+              return (
+                <Pressable
+                  key={m.id}
+                  onPress={() => navigation.navigate(m.screen)}
+                  style={[
+                    styles.myPageContainer,
+                    { paddingTop: index === 0 ? 30 : 0 },
+                  ]}
+                >
+                  <m.image />
+                  <Title text={m.name} style={{ marginLeft: 10 }} />
+                </Pressable>
+              );
+            })}
+            <View style={styles.versionInformationContainer}>
+              <View style={{ flexDirection: "row" }}>
+                <VersionIcon />
+                <Title text={"버전 정보"} style={{ marginLeft: 10 }} />
+              </View>
+              <Title text={"최신 버전 입니다"} color={Colors.AEAEAE} />
+            </View>
+          </View>
+          <View style={styles.logoutContainer}>
+            <Pressable onPress={handleLogout} style={styles.rowView}>
+              <LogoutIcon />
+              <Title
+                text={"로그아웃"}
+                color={Colors.AEAEAE}
+                style={{ marginLeft: 10 }}
+              />
+            </Pressable>
+            <View
+              style={{
+                borderWidth: 1.5,
+                borderColor: Colors.F4F4F4,
+                marginHorizontal: 18,
+              }}
             />
-          </Pressable>
-          <View
-            style={{
-              borderWidth: 1.5,
-              borderColor: Colors.F4F4F4,
-              marginHorizontal: 18,
-            }}
-          />
-          <Pressable style={styles.rowView}>
-            <WithdrawIcon />
-            <Title
-              text={"탈퇴하기"}
-              color={Colors.AEAEAE}
-              style={{ marginLeft: 10 }}
-            />
-          </Pressable>
+            <Pressable style={styles.rowView}>
+              <WithdrawIcon />
+              <Title
+                text={"탈퇴하기"}
+                color={Colors.AEAEAE}
+                style={{ marginLeft: 10 }}
+              />
+            </Pressable>
+          </View>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -175,7 +183,7 @@ export default MypageScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.White,
+    backgroundColor: Colors.F9F9FB
   },
   myPageContainer: {
     flexDirection: "row",
@@ -208,7 +216,7 @@ const styles = StyleSheet.create({
   logoutContainer: {
     flexDirection: "row",
     justifyContent: "center",
-    marginTop: 50,
+    marginTop: 50
   },
   versionInformationContainer: {
     flexDirection: "row",
