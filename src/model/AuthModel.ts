@@ -27,4 +27,12 @@ export namespace AuthModel {
 	export interface IEmailVerificationCodeModel {
 		email: string
 	}
+
+	export interface IJoinModel {
+		email: string;
+		password: string;
+		nickname: string;
+		isAdPermission: boolean;
+	}
+
 }
