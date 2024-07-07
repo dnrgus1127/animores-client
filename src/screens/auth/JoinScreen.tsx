@@ -12,16 +12,12 @@ import { AuthModel } from "../../model/AuthModel";
 import { AuthService } from "../../service/AuthService";
 import { DeleteIcon, SecureEyeIcon } from "../../assets/svg";
 import AgreementOnTerms from "./AgreementOnTerms";
-import { useNavigation } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { RootStackParamList } from "../../navigation/type";
 import { ScreenName } from "../../statics/constants/ScreenName";
 import Countdown from "../../components/Countdown";
 import axios from "axios";
 
-const JoinScreen = () => {
+const JoinScreen = ({ navigation }: any) => {
   const { control, handleSubmit, trigger, getValues, watch, formState:{errors} } = useForm({ mode: "onChange"})
-  const navigation = useNavigation<StackNavigationProp<RootStackParamList, ScreenName.Join>>();
   const baseURL = "http://180.229.5.21:8080";
   
   // 패스워드 보이기/가리기 상태
@@ -58,10 +54,6 @@ const JoinScreen = () => {
     checkPassword: false, // 비밀번호 확인
     agreements: false, // 약관 동의
   })
-
-  useEffect(() => {
-    console.log('-----', emailState, verificationState)
-  }, [emailState, verificationState])
 
   // Email - 입력 시
   const handleOnChangeEmail = (inputText:string) => {
@@ -224,8 +216,15 @@ const JoinScreen = () => {
     setValidation({...validation, agreements: valid})
   }
 
-  const onRegisterPressed = (data:any) => {
-    console.log(data)
+  const onRegisterPressed = (
+    email: string,
+    password: string,
+    nickname: string,
+    isAdPermission: boolean
+  ) => {
+    AuthService.Auth.emailVerificationCode(email, password, nickname, isAdPermission);
+
+    console.log(email, password, nickname, isAdPermission)
     navigation.navigate(ScreenName.JoinCompleted)
   }
 
@@ -461,14 +460,15 @@ const JoinScreen = () => {
           
           {Object.values(validation).every(item => item === true) ? (
             <Pressable
-              onPress={() => onRegisterPressed(validation)}
+              onPress={() => onRegisterPressed(getValues("email"), getValues("password"), getValues("nickname"), false)}
               style={[styles.primaryLargeButton]}
               children={<Text style={[styles.primaryButtonText]}>회원가입</Text>}
             >
             </Pressable>
           ) : (
             <Pressable
-              onPress={() => onRegisterPressed()}
+              disabled
+              //onPress={() => navigation.navigate(ScreenName.JoinCompleted)}
               style={[styles.primaryLargeButton, styles.buttonDisabled]}
               children={<Text style={[styles.primaryButtonText, styles.textDisabled]}>회원가입</Text>}
             >
