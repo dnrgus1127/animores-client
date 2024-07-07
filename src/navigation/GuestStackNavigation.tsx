@@ -5,6 +5,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { RootStackParams } from "../../types/RootStackParams";
 import JoinScreen from "../screens/auth/JoinScreen";
 import LoginScreen from "../screens/auth/LoginScreen";
+import JoinCompleted from "../screens/auth/JoinCompleted";
+import { ScreenName } from "../statics/constants/ScreenName";
+import ProfilesScreen from "../screens/myPage/profile/ProfilesScreen";
 import HomeScreen from "../screens/home/HomeScreen";
 import CreateProfile from "../screens/myPage/profile/CreateProfile";
 import EditProfileScreen from "../screens/myPage/profile/EditProfile";
@@ -32,6 +35,12 @@ const GuestStackNavigation = () => {
           component={JoinScreen}
           options={{ headerShown: false }}
         />
+        <RootStack.Screen
+          name={ScreenName.JoinCompleted}
+          component={JoinCompleted}
+          options={{ headerShown: false }}
+        />
+		{/* TODO: 해결 */}
         <RootStack.Screen
           name={ScreenName.Profiles}
           component={ProfilesScreen}
