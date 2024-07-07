@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, Pressable, Image } from "react-native";
-import { IconCheck } from '../assets/icons';
+import { IconCheck } from '../assets/svg';
 import { commonStyles } from '../styles/commonStyles';
 
 export interface CheckboxProps {
