@@ -3,6 +3,7 @@ import React from "react";
 import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { RootStackParams } from "../../types/RootStackParams";
+import JoinCompleted from "../screens/auth/JoinCompleted";
 import JoinScreen from "../screens/auth/JoinScreen";
 import LoginScreen from "../screens/auth/LoginScreen";
 import HomeScreen from "../screens/home/HomeScreen";
@@ -32,6 +33,12 @@ const GuestStackNavigation = () => {
           component={JoinScreen}
           options={{ headerShown: false }}
         />
+        <RootStack.Screen
+          name={ScreenName.JoinCompleted}
+          component={JoinCompleted}
+          options={{ headerShown: false }}
+        />
+		{/* TODO: 해결 */}
         <RootStack.Screen
           name={ScreenName.Profiles}
           component={ProfilesScreen}
