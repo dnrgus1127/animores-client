@@ -16,13 +16,19 @@ import BottomTabNavigator from "./BottomTabStackNavigator";
 
 const RootStack = createNativeStackNavigator<RootStackParams>();
 
-const GuestStackNavigation = () => {
+interface FullStackNavigationProps {
+  isAuthenticated: boolean;
+}
+
+const FullStackNavigation: React.FC<FullStackNavigationProps> = ({ isAuthenticated }) => {
   return (
     <SafeAreaView
       style={styles.container}
       edges={["left", "right", "bottom", "top"]}
     >
-      <RootStack.Navigator>
+      <RootStack.Navigator
+        initialRouteName={isAuthenticated ? ScreenName.Profiles : ScreenName.Login}
+      >
         <RootStack.Screen
           name={ScreenName.Login}
           component={LoginScreen}
@@ -38,7 +44,6 @@ const GuestStackNavigation = () => {
           component={JoinCompleted}
           options={{ headerShown: false }}
         />
-		{/* TODO: 해결 */}
         <RootStack.Screen
           name={ScreenName.Profiles}
           component={ProfilesScreen}
@@ -74,7 +79,7 @@ const GuestStackNavigation = () => {
   );
 };
 
-export default GuestStackNavigation;
+export default FullStackNavigation;
 
 const styles = StyleSheet.create({
   container: {
