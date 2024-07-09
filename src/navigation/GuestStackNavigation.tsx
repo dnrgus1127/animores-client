@@ -12,8 +12,6 @@ import HomeScreen from "../screens/home/HomeScreen";
 import CreateProfile from "../screens/myPage/profile/CreateProfile";
 import EditProfileScreen from "../screens/myPage/profile/EditProfile";
 import ProfileManagementScreen from "../screens/myPage/profile/ProfileManagementScreen";
-import ProfilesScreen from "../screens/myPage/profile/ProfilesScreen";
-import { ScreenName } from "../statics/constants/ScreenName";
 import BottomTabNavigator from "./BottomTabStackNavigator";
 
 const RootStack = createNativeStackNavigator<RootStackParams>();
