@@ -20,6 +20,7 @@ import { DiaryService } from "../../service/DiaryService";
 import { QueryKey } from "../../statics/constants/Querykey";
 import { Colors } from "../../styles/Colors";
 import CenterModal from "../../components/modal/CenterModal";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 dayjs.locale("ko");
 dayjs.extend(utc);
@@ -69,7 +70,7 @@ const DairyScreen = () => {
           });
 
           setIsFirstVisibleMore(false);
-		  setIsSecondVisibleMore(false);
+          setIsSecondVisibleMore(false);
           await queryClient.invalidateQueries([QueryKey.DIARY_LIST]);
           //일지 목록 쿼리를 무효화함
         }
@@ -184,7 +185,7 @@ const DairyScreen = () => {
           </View>
           <Pressable
             onPress={() => {
-                setIsSecondVisibleMore(true);
+              setIsSecondVisibleMore(true);
             }}
             style={styles.buttonContainer}
           >
@@ -244,9 +245,20 @@ const DairyScreen = () => {
     fetchNextPage();
   };
 
-  const handleCancel = () => {
-    if (deleteItemId !== null) {
-      mutate(deleteItemId);
+  const handleDelete = async () => {
+    try {
+      const userInfoStorage = await AsyncStorage.getItem("userInfo");
+    
+      if (userInfoStorage) {
+        const userInfo = JSON.parse(userInfoStorage);
+        const deleteItemId = userInfo.id;
+
+        if (deleteItemId !== null) {
+          mutate(deleteItemId);
+        }
+      }
+    } catch (error) {
+      console.log("Error retrieving userInfo", error);
     }
   };
 
@@ -299,7 +311,7 @@ const DairyScreen = () => {
             title="게시물을 삭제하시겠어요?"
             subTitle="삭제 이후에는 게시물이 영구적으로 삭제되며, 복원하실 수 없습니다."
             onClose={() => setIsSecondVisibleMore(false)}
-            onCancle={handleCancel}
+            onDelete={handleDelete}
           />
         )}
       </View>
