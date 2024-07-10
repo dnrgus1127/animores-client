@@ -6,11 +6,13 @@ import { RootStackParams } from "../../types/RootStackParams";
 import JoinCompleted from "../screens/auth/JoinCompleted";
 import JoinScreen from "../screens/auth/JoinScreen";
 import LoginScreen from "../screens/auth/LoginScreen";
+import CreateDiary from "../screens/diary/CreateDiary";
 import HomeScreen from "../screens/home/HomeScreen";
 import CreateProfile from "../screens/myPage/profile/CreateProfile";
 import EditProfileScreen from "../screens/myPage/profile/EditProfile";
 import ProfileManagementScreen from "../screens/myPage/profile/ProfileManagementScreen";
 import ProfilesScreen from "../screens/myPage/profile/ProfilesScreen";
+import AddTodo from "../screens/todo/AddTodo";
 import { ScreenName } from "../statics/constants/ScreenName";
 import BottomTabNavigator from "./BottomTabStackNavigator";
 
@@ -72,6 +74,16 @@ const FullStackNavigation: React.FC<FullStackNavigationProps> = ({ isAuthenticat
         <RootStack.Screen
           name={ScreenName.EditProfile}
           component={EditProfileScreen}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
+          name={ScreenName.CreateDiary}
+          component={CreateDiary}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
+          name={ScreenName.AddTodo}
+          component={AddTodo}
           options={{ headerShown: false }}
         />
       </RootStack.Navigator>
