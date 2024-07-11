@@ -3,7 +3,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { useMutation } from '@tanstack/react-query';
 import * as ImagePicker from 'expo-image-picker';
 import React, { useEffect, useState } from "react";
-import { Image, Pressable, StyleSheet, TextInput, View } from "react-native";
+import { Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from 'react-native-toast-message';
 import { IProfile } from '../../../../types/Profile';
@@ -146,62 +146,62 @@ const EditProfileScreen = () => {
                 onPressBackButton={() => {
                     navigation.goBack();
                 }} />
-            <Pressable
-                style={styles.profileImageContainer}
-                onPress={handleChoosePhoto}
-            >
-                {item.imageUrl !== "profile/default_profile.png" ? (
-                    <Image
-                        source={{ uri: `${baseUrl}/${item.imageUrl}` }}
-                        style={styles.profileImage}
-                    />
-                ) : (
-                    <DefaultProfileImage
-                        style={styles.profileImage}
-                    />
-                )}
-            </Pressable>
-            <View style={styles.inputContainer}>
-                <TextInput
-                    placeholder={"닉네임을 입력하세요"}
-                    placeholderTextColor={Colors.DBDBDB}
-                    value={textInput}
-                    defaultValue={item.name}
-                    onChangeText={onChangeText}
-                    style={{
-                        flex: 1,
-                        color: Colors.Black,
-                    }}
-                />
-                {textInput && (
                     <Pressable
-                        onPress={() => {
-                            onChangeText("");
-                        }}
+                        style={styles.profileImageContainer}
+                        onPress={handleChoosePhoto}
                     >
-                        <Cancle />
+                        {item.imageUrl !== "profile/default_profile.png" ? (
+                            <Image
+                                source={{ uri: `${baseUrl}/${item.imageUrl}` }}
+                                style={styles.profileImage}
+                            />
+                        ) : (
+                            <DefaultProfileImage
+                                style={styles.profileImage}
+                            />
+                        )}
                     </Pressable>
-                )}
-            </View>
-            <Title
-                text='한글/영어/숫자/띄어쓰기를 사용할 수 있습니다.'
-                color={Colors.AEAEAE}
-                style={{ marginTop: 20, marginHorizontal: 20 }}
-            />
-            <View style={styles.editButtonContainer}>
-                <Pressable onPress={() => profileDelete()}>
+                    <View style={styles.inputContainer}>
+                        <TextInput
+                            placeholder={"닉네임을 입력하세요"}
+                            placeholderTextColor={Colors.DBDBDB}
+                            value={textInput}
+                            defaultValue={item.name}
+                            onChangeText={onChangeText}
+                            style={{
+                                flex: 1,
+                                color: Colors.Black,
+                            }}
+                        />
+                        {textInput && (
+                            <Pressable
+                                onPress={() => {
+                                    onChangeText("");
+                                }}
+                            >
+                                <Cancle />
+                            </Pressable>
+                        )}
+                    </View>
                     <Title
-                        text='프로필 삭제하기'
+                        text='한글/영어/숫자/띄어쓰기를 사용할 수 있습니다.'
                         color={Colors.AEAEAE}
-                        style={styles.deleteProfileButton}
+                        style={{ marginTop: 20, marginHorizontal: 20 }}
                     />
-                </Pressable>
-                <SingleButton
-                    title={'수정완료'}
-                    disabled={isEdit}
-                    onPress={handleProfileSubmit} />
-            </View>
-        </SafeAreaView>
+                <View style={styles.editButtonContainer}>
+                    <Pressable onPress={() => profileDelete()}>
+                        <Title
+                            text='프로필 삭제하기'
+                            color={Colors.AEAEAE}
+                            style={styles.deleteProfileButton}
+                        />
+                    </Pressable>
+                    <SingleButton
+                        title={'수정완료'}
+                        disabled={isEdit}
+                        onPress={handleProfileSubmit} />
+                </View>
+        </SafeAreaView >
     );
 };
 

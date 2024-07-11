@@ -56,6 +56,10 @@ const ProfilesScreen = () => {
     }
   };
 
+  // useEffect(() => {
+  //   AsyncStorage.clear();
+  // }, [])
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.profileTitleContainer}>

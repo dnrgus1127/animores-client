@@ -467,8 +467,8 @@ const JoinScreen = ({ navigation }: any) => {
             </Pressable>
           ) : (
             <Pressable
-              disabled
-              //onPress={() => navigation.navigate(ScreenName.JoinCompleted)}
+              //disabled
+              onPress={() => navigation.navigate(ScreenName.JoinCompleted)}
               style={[styles.primaryLargeButton, styles.buttonDisabled]}
               children={<Text style={[styles.primaryButtonText, styles.textDisabled]}>회원가입</Text>}
             >

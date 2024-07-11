@@ -3,28 +3,35 @@ import React from "react";
 import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { RootStackParams } from "../../types/RootStackParams";
+import JoinCompleted from "../screens/auth/JoinCompleted";
 import JoinScreen from "../screens/auth/JoinScreen";
 import LoginScreen from "../screens/auth/LoginScreen";
-import JoinCompleted from "../screens/auth/JoinCompleted";
-import { ScreenName } from "../statics/constants/ScreenName";
-import ProfilesScreen from "../screens/myPage/profile/ProfilesScreen";
+import CreateDiary from "../screens/diary/CreateDiary";
 import HomeScreen from "../screens/home/HomeScreen";
 import CreateProfile from "../screens/myPage/profile/CreateProfile";
 import EditProfileScreen from "../screens/myPage/profile/EditProfile";
 import ProfileManagementScreen from "../screens/myPage/profile/ProfileManagementScreen";
 import ProfilesScreen from "../screens/myPage/profile/ProfilesScreen";
+import ResetPassword from "../screens/myPage/profile/ResetPassword";
+import AddTodo from "../screens/todo/AddTodo";
 import { ScreenName } from "../statics/constants/ScreenName";
 import BottomTabNavigator from "./BottomTabStackNavigator";
 
 const RootStack = createNativeStackNavigator<RootStackParams>();
 
-const GuestStackNavigation = () => {
+interface FullStackNavigationProps {
+  isAuthenticated: boolean;
+}
+
+const FullStackNavigation: React.FC<FullStackNavigationProps> = ({ isAuthenticated }) => {
   return (
     <SafeAreaView
       style={styles.container}
       edges={["left", "right", "bottom", "top"]}
     >
-      <RootStack.Navigator>
+      <RootStack.Navigator
+        initialRouteName={isAuthenticated ? ScreenName.Profiles : ScreenName.Login}
+      >
         <RootStack.Screen
           name={ScreenName.Login}
           component={LoginScreen}
@@ -40,7 +47,6 @@ const GuestStackNavigation = () => {
           component={JoinCompleted}
           options={{ headerShown: false }}
         />
-		{/* TODO: 해결 */}
         <RootStack.Screen
           name={ScreenName.Profiles}
           component={ProfilesScreen}
@@ -49,6 +55,11 @@ const GuestStackNavigation = () => {
         <RootStack.Screen
           name={ScreenName.CreateProfile}
           component={CreateProfile}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
+          name={ScreenName.ResetPassword}
+          component={ResetPassword}
           options={{ headerShown: false }}
         />
         <RootStack.Screen
@@ -71,12 +82,22 @@ const GuestStackNavigation = () => {
           component={EditProfileScreen}
           options={{ headerShown: false }}
         />
+        <RootStack.Screen
+          name={ScreenName.CreateDiary}
+          component={CreateDiary}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
+          name={ScreenName.AddTodo}
+          component={AddTodo}
+          options={{ headerShown: false }}
+        />
       </RootStack.Navigator>
     </SafeAreaView>
   );
 };
 
-export default GuestStackNavigation;
+export default FullStackNavigation;
 
 const styles = StyleSheet.create({
   container: {
