@@ -71,6 +71,7 @@ const PetType = () => {
                 navigation.navigate(ScreenName.BreedType);
               }
             }}
+            style={{ marginTop: 70 }} 
           />
         </View>
       </View>

@@ -31,6 +31,9 @@ import IconSnsApple from "./sns_apple.svg"
 import IconSnsFacebook from "./sns_facebook.svg"
 import IconSnsKakao from "./sns_kakao.svg"
 import IconSnsNaver from "./sns_naver.svg"
+import ProfileImage from "./ProfileImage.svg"
+import Cancle from "./cancle.svg"
+import IconComplete from "./Frame1206.svg"
 
 export {
 	BackButton,
@@ -66,4 +69,7 @@ export {
 	IconSnsFacebook,
 	IconSnsKakao,
 	IconSnsNaver,
+	ProfileImage,
+	Cancle,
+	IconComplete
 }

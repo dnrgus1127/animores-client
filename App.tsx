@@ -9,6 +9,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { LogBox } from "react-native";
 import AuthStackNavigation from "./src/navigation/AuthStackNavigation";
 import GuestStackNavigation from "./src/navigation/GuestStackNavigation";
+import { ScreenName } from "./src/statics/constants/ScreenName";
 
 const queryClient = new QueryClient();
 
@@ -16,33 +17,43 @@ LogBox.ignoreAllLogs();
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [isProfileSelected, setIsProfileSelected] = useState<boolean | null>(
+    null
+  );
 
-   useEffect(() => {
-     const checkToken = async () => {
-       try {
-         const token = await AsyncStorage.getItem("userToken");
-         setIsAuthenticated(!!token);
-       } catch (error) {
-         console.error("Error token:", error);
-         setIsAuthenticated(false);
-       }
-     };
+  useEffect(() => {
+    const checkToken = async () => {
+      try {
+        const token = await AsyncStorage.getItem("userToken");
+        setIsAuthenticated(!!token);
 
-     checkToken();
-   }, []);
+        const lastScreen = await AsyncStorage.getItem("lastScreen");
+        setIsProfileSelected(lastScreen === ScreenName.Profiles);
+      } catch (error) {
+        console.error("Error token:", error);
+        setIsAuthenticated(false);
+        setIsProfileSelected(false);
+      }
+    };
 
-  if (isAuthenticated === null) {
+    checkToken();
+  }, []);
+
+  if (isAuthenticated === null || isProfileSelected === null) {
     return null; //로딩 중일 때는 렌더링 하지 않음
   }
-
+  console.log('isAuthenticated', isAuthenticated)
   return (
     <QueryClientProvider client={queryClient}>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <NavigationContainer>
-          {isAuthenticated ? <AuthStackNavigation /> : <GuestStackNavigation />}
-        </NavigationContainer>
-        <Toast />
-      </GestureHandlerRootView>
+      <NavigationContainer>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          {isAuthenticated ?
+            <AuthStackNavigation />
+            : <GuestStackNavigation />
+          }
+          <Toast />
+        </GestureHandlerRootView>
+      </NavigationContainer>
     </QueryClientProvider>
   );
 };

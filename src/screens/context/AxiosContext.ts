@@ -8,9 +8,9 @@ const instance = axios.create({
 	withCredentials: false,
 	responseType: 'json',
 	headers: {
-		Accept: 'application/json',
+		'Content-Type': 'application/json',
 	},
-	baseURL: 'http://loadbalancer-e8b18c32a70f207a.elb.ap-northeast-2.amazonaws.com:8080',
+	baseURL: 'http://180.229.5.21:8080',
 } as AxiosRequestConfig);
 
 //요청 인터셉터

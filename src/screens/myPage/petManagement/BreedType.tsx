@@ -47,6 +47,7 @@ const BreedType = () => {
                                 navigation.navigate(ScreenName.AddPet);
                             }
                         }}
+                        style={{ marginTop: 70 }} 
                     />
                 </View>
             </View>
