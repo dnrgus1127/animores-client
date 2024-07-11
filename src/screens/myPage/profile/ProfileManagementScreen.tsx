@@ -55,8 +55,11 @@ const ProfileManagementScreen = () => {
   };
 
   useEffect(() => {
-    setNickname(myProfile?.nickname)
-  }, [])
+    if (myProfile?.nickname) {
+      setNickname(myProfile.nickname);
+    }
+  }, [myProfile]);
+  
 
   return (
     <SafeAreaView style={styles.container}>
