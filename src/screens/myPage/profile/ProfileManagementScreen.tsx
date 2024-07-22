@@ -110,7 +110,7 @@ const ProfileManagementScreen = () => {
             style={{ flex: 1, textAlign: "right", marginRight: 40 }}
           />
           {/* TODO: 비밀번호 변경 페이지로 이동 */}
-          <Pressable style={styles.TextInputContainer}>
+          <Pressable style={styles.TextInputContainer} onPress={() => navigation.navigate(ScreenName.ResetPassword)}>
             <Title
               text={"•••••••••••••••"}
               fontSize={16}

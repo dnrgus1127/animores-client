@@ -18,6 +18,7 @@ export enum ScreenName {
 	Profile = 'Profile',
 	Profiles = 'Profiles',
 	CreateProfile = 'CreateProfile',
+	ResetPassword = 'ResetPassword',
 	VersionInformation = 'VersionInformation',
 	PetType = 'PetType',
 	BreedType = 'BreedType',
