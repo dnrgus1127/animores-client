@@ -36,8 +36,9 @@ const DairyScreen = () => {
   const [isSecondVisibleMore, setIsSecondVisibleMore] = useState<boolean>(false);
   const [isVisibleMenu, setIsVisibleMenu] = useState<boolean>(false); //플로팅버튼
   const [isVisibleComment, setIsVisibleComment] = useState<boolean>(false); //댓글
-  const [deleteItemId, setDeleteItemId] = useState<number | null>(null);
-
+  const [deletedDiaryId, setDeletedDiaryId] = useState<number | null>(null);  //삭제 diary Id
+  const [deletedProfileId, setDeletedProfileId] = useState<number | null>(null);  //삭제 profile Id
+  console.log('deletedDiaryId', deletedDiaryId)
   //일지 리스트
   //TODO: profile api 가져와서 profileId에 넣기
   const { data, fetchNextPage, isFetchingNextPage, hasNextPage } =
@@ -60,7 +61,8 @@ const DairyScreen = () => {
 
   //일지 삭제
   const { mutate } = useMutation(
-    (diaryId: number) => DiaryService.diary.delete(diaryId),
+    ({ diaryId, profileId }: { diaryId: number, profileId: number }) =>
+      DiaryService.diary.delete(diaryId, profileId),
     {
       onSuccess: async (data) => {
         if (data && data.status === 200) {
@@ -129,7 +131,8 @@ const DairyScreen = () => {
           <Pressable
             onPress={() => {
               setIsFirstVisibleMore(true);
-              setDeleteItemId(item.diaryId);
+              setDeletedDiaryId(item.diaryId);
+              setDeletedProfileId(item.profileId);
             }}
           >
             <More style={styles.moreIcon} />
@@ -246,19 +249,10 @@ const DairyScreen = () => {
   };
 
   const handleDelete = async () => {
-    try {
-      const userInfoStorage = await AsyncStorage.getItem("userInfo");
-    
-      if (userInfoStorage) {
-        const userInfo = JSON.parse(userInfoStorage);
-        const deleteItemId = userInfo.id;
-
-        if (deleteItemId !== null) {
-          mutate(deleteItemId);
-        }
-      }
-    } catch (error) {
-      console.log("Error retrieving userInfo", error);
+    if (deletedDiaryId !== null && deletedProfileId !== null) {
+      mutate({ diaryId: deletedDiaryId, profileId: deletedProfileId });
+    } else {
+      console.log('diary deleted error')
     }
   };
 
@@ -305,7 +299,7 @@ const DairyScreen = () => {
           }}
           footer={footerComment}
         />
-        {deleteItemId !== null && (
+        {deletedDiaryId !== null && (
           <CenterModal
             visible={isSecondVisibleMore}
             title="게시물을 삭제하시겠어요?"
