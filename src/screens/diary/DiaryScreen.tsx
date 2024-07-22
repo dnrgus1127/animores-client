@@ -20,6 +20,7 @@ import { DiaryService } from "../../service/DiaryService";
 import { QueryKey } from "../../statics/constants/Querykey";
 import { Colors } from "../../styles/Colors";
 import CenterModal from "../../components/modal/CenterModal";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 dayjs.locale("ko");
 dayjs.extend(utc);
@@ -35,8 +36,9 @@ const DairyScreen = () => {
   const [isSecondVisibleMore, setIsSecondVisibleMore] = useState<boolean>(false);
   const [isVisibleMenu, setIsVisibleMenu] = useState<boolean>(false); //플로팅버튼
   const [isVisibleComment, setIsVisibleComment] = useState<boolean>(false); //댓글
-  const [deleteItemId, setDeleteItemId] = useState<number | null>(null);
-
+  const [deletedDiaryId, setDeletedDiaryId] = useState<number | null>(null);  //삭제 diary Id
+  const [deletedProfileId, setDeletedProfileId] = useState<number | null>(null);  //삭제 profile Id
+  console.log('deletedDiaryId', deletedDiaryId)
   //일지 리스트
   //TODO: profile api 가져와서 profileId에 넣기
   const { data, fetchNextPage, isFetchingNextPage, hasNextPage } =
@@ -59,7 +61,8 @@ const DairyScreen = () => {
 
   //일지 삭제
   const { mutate } = useMutation(
-    (diaryId: number) => DiaryService.diary.delete(diaryId),
+    ({ diaryId, profileId }: { diaryId: number, profileId: number }) =>
+      DiaryService.diary.delete(diaryId, profileId),
     {
       onSuccess: async (data) => {
         if (data && data.status === 200) {
@@ -69,7 +72,7 @@ const DairyScreen = () => {
           });
 
           setIsFirstVisibleMore(false);
-		  setIsSecondVisibleMore(false);
+          setIsSecondVisibleMore(false);
           await queryClient.invalidateQueries([QueryKey.DIARY_LIST]);
           //일지 목록 쿼리를 무효화함
         }
@@ -128,7 +131,8 @@ const DairyScreen = () => {
           <Pressable
             onPress={() => {
               setIsFirstVisibleMore(true);
-              setDeleteItemId(item.diaryId);
+              setDeletedDiaryId(item.diaryId);
+              setDeletedProfileId(item.profileId);
             }}
           >
             <More style={styles.moreIcon} />
@@ -184,7 +188,7 @@ const DairyScreen = () => {
           </View>
           <Pressable
             onPress={() => {
-                setIsSecondVisibleMore(true);
+              setIsSecondVisibleMore(true);
             }}
             style={styles.buttonContainer}
           >
@@ -244,9 +248,11 @@ const DairyScreen = () => {
     fetchNextPage();
   };
 
-  const handleCancel = () => {
-    if (deleteItemId !== null) {
-      mutate(deleteItemId);
+  const handleDelete = async () => {
+    if (deletedDiaryId !== null && deletedProfileId !== null) {
+      mutate({ diaryId: deletedDiaryId, profileId: deletedProfileId });
+    } else {
+      console.log('diary deleted error')
     }
   };
 
@@ -293,13 +299,13 @@ const DairyScreen = () => {
           }}
           footer={footerComment}
         />
-        {deleteItemId !== null && (
+        {deletedDiaryId !== null && (
           <CenterModal
             visible={isSecondVisibleMore}
             title="게시물을 삭제하시겠어요?"
             subTitle="삭제 이후에는 게시물이 영구적으로 삭제되며, 복원하실 수 없습니다."
             onClose={() => setIsSecondVisibleMore(false)}
-            onCancle={handleCancel}
+            onDelete={handleDelete}
           />
         )}
       </View>
