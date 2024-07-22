@@ -1,7 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useEffect, useState } from "react";
-import { Modal, Pressable, StyleSheet, View } from "react-native";
+import { Modal, Pressable, StyleSheet, View, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 import HeaderNavigation from "../../navigation/HeaderNavigation";
@@ -13,7 +13,8 @@ import { useQuery } from "@tanstack/react-query";
 import { QueryKey } from "../../statics/constants/Querykey";
 import Title from "../../components/text/Title";
 import ToDoType from "../../statics/constants/ToDoType";
-import { Controller, Form, FormProvider, useController, useFieldArray, useForm } from "react-hook-form";
+import { Controller, Form, FormProvider, set, useController, useFieldArray, useForm } from "react-hook-form";
+import { commonStyles } from "../../styles/commonStyles";
 
 interface IPet {
   id: number;
@@ -70,7 +71,7 @@ const AddTodo = () => {
     }
   })
 
-  const { control, handleSubmit, setValue} = methods;
+  const { control, handleSubmit, setValue, getValues} = methods;
   const onSubmit = (data: IAddTodo) => console.log(data);
 
   const { data: pet } = useQuery({
@@ -93,77 +94,109 @@ const AddTodo = () => {
       );
       const clickedPetsId = updatedPets.filter((pet) => pet.isPressed).map((pet) => pet.id);
       setValue('clickedPetsId', clickedPetsId);  // clickedPetsId 업데이트
+      console.log(clickedPetsId);
       return updatedPets;
     });
   };
 
+  const [isTagSelected, setTagSelected] = useState<boolean>(false);
+
+  const TagSelectedInput = () => {
+    return (
+      <Pressable>
+        <Text></Text>
+        <View>태그</View>
+      </Pressable>
+    );
+  }
 
   const [tagWindowSelected, setTagWindowSelected] = useState<boolean>(false);
 
   return (
     <SafeAreaView style={styles.container}>
-      <HeaderNavigation
-        middletitle="일정 추가"
-        rightTitle="완료"
-        hasBackButton={true}
-        onPressBackButton={() => {
-            navigation.goBack();
-          }}
-        onPressRightButton={handleSubmit(onSubmit)}
-      />
-      <FormProvider {...methods}>
-        <ScrollView>
-          <View style={styles.petSelectContainer}>
-            <Title text="펫 선택" />
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {pets.map(({ id, name, isPressed }) => (
-                <Pressable key={id} onPress={() => handlePetPress(id)}>
-                  <View style={ isPressed ? styles.selectedPet : styles.pet}>
-                  <Title text={name} />
-                  </View>
-                </Pressable>
-              ))}
-            </ScrollView>
-          </View>
-          <View style={styles.toDoSelectContainer}>
-            <Title text="할 일" />
-            <View style={styles.toDoTitleContainer}>
+      <ScrollView>
+        <HeaderNavigation
+          middletitle="일정 추가"
+          rightTitle="완료"
+          hasBackButton={true}
+          onPressBackButton={() => {
+              navigation.goBack();
+            }}
+          onPressRightButton={handleSubmit(onSubmit)}
+        />
+        <FormProvider {...methods}>
+          <View style={[commonStyles.container, {backgroundColor:"white"}]}>
+            <View style={[styles.inputWrap, { marginTop: 20 }]}>
+              <Text style={styles.label}>펫 선택</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.petSelectContainer}>
+                {pets.map(({ id, name, isPressed }) => (
+                  <Pressable key={id} onPress={() => handlePetPress(id)}>
+                    <View style={[styles.pet,  isPressed ? styles.selectedPet : styles.notSelectedPet]}>
+                      <Text style={{color: isPressed? "white" : "grey"}}>{name}</Text>
+                    </View>
+                  </Pressable>
+                ))}
+              </ScrollView>
+            </View>
+            <View style={styles.inputWrap}>
+              <Text style={styles.label}>할 일</Text>
+              <View style={styles.toDoTitleContainer}>
               <Controller
-              control={control}
-              render={({ field : { onChange , onBlur,  value} }) => (
-                <TextInput
-                onBlur={onBlur}
-                onChangeText={(text) => {
-                  onChange(text);
-                  setValue('tag', null);
-                }}
-                placeholder="태그 선택 또는 직접 입력"
-                value= {value || ''}
+                  control={control}
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    isTagSelected ? 
+                    <>
+                    <Pressable style={{"paddingRight": 200}} onPress={() => {
+                      setTagSelected(false);
+                      setValue('tag', null);
+                    }}>
+                      <Text>{getValues('tag')}</Text>
+                    </Pressable>
+                    <Pressable style={[styles.tagContainer, styles.selectedTag]} onPress={() => setTagWindowSelected(true)}>
+                      <Text style={{"color":"white"}}>태그</Text>
+                    </Pressable>
+                    </> :   
+                    <>
+                    <TextInput
+                      onBlur={onBlur}
+                      onChangeText={(text) => {
+                        onChange(text);
+                        setValue('tag', null);
+                      }}
+                      placeholder="태그 선택 또는 직접 입력"
+                      value={value || ''}
+                    />
+                    <Pressable style={[styles.tagContainer, styles.notSelectedTag]} onPress={() => setTagWindowSelected(true)}>
+                      <Text style={{"color":"white"}}>태그</Text>
+                    </Pressable>
+                    </>
+                  )}
+                  name="content"
                 />
-              )}
-              name="content"
-              />
-              <Pressable onPress={() => setTagWindowSelected(true)}>
-              <Title text="태그"/>
-              </Pressable>
-              <Modal
-              animationType="slide"
-              visible={tagWindowSelected}
-              onRequestClose={() => setTagWindowSelected(!tagWindowSelected)}>
-              {
-              Object.values(ToDoType).map((tag) => 
-                <Pressable key={tag} onPress={() => {
-                  setValue('tag',tag);
-                  setValue('content', null);
-                  }}>
-                  <Title text={tag}/>
-                </Pressable>)
-              }
-              </Modal>
+                <Modal
+                animationType="slide"
+                visible={tagWindowSelected}
+                onRequestClose={() => setTagWindowSelected(!tagWindowSelected)}>
+                {
+                Object.values(ToDoType).map((tag) => 
+                  <Pressable key={tag} onPress={() => {
+                    setValue('tag',tag);
+                    setValue('content', null);
+                    setTagWindowSelected(!tagWindowSelected);
+                    setTagSelected(true);
+                    }}>
+                    <Title text={tag}/>
+                  </Pressable>)
+                }
+                </Modal>
+              </View>
+            </View>
+            <View style={styles.inputWrap}>
+              <Text style={styles.label}>할 일</Text>
             </View>
           </View>
-        </ScrollView>
-      </FormProvider>
+        </FormProvider>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -175,20 +208,65 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.White,
   },
-  petSelectContainer: {
-    
-
+  inputWrap: {
+    flex: 1,
+    width: "100%",
+    marginTop: 40,
   },
-  toDoSelectContainer: {
+  label: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  petSelectContainer: {
+    flexDirection: 'row',
+    marginTop: 10,
   },
   toDoTitleContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
+    height: 50,
+    marginTop: 20,
+    marginRight: 10,
+    paddingLeft: 20,
+    paddingRight: 20,
+    borderWidth: 1,
+    borderRadius: 5,
+    borderColor: '#F1F1F1',
+  },
+  tagContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 60,
+    height: 30,
+    borderRadius: 15,
+  },
+  selectedTag: {
+    backgroundColor: "black",
+  },
+  notSelectedTag: {
+    backgroundColor: '#D8D8D8',
   },
   pet: {
-    backgroundColor: Colors.Black,
+    paddingLeft: 15,
+    paddingRight: 15,
+    height: 40,
+    borderRadius: 40,
+    marginTop: 0,
+    marginRight: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderColor: 'grey',
+    borderWidth: 1,
   },
   selectedPet: {
-    backgroundColor: Colors.Red
-  }
+    backgroundColor: "black",
+    borderWidth: 0,
+  },
+  notSelectedPet: {
+    backgroundColor: "white",
+  },
+  
+
 });
