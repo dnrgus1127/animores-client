@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
+import { RecoilRoot } from "recoil"
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
 
@@ -37,14 +38,16 @@ const App = () => {
 
   console.log('isAuthenticated', isAuthenticated)
   return (
-    <QueryClientProvider client={queryClient}>
-      <NavigationContainer>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <FullStackNavigation isAuthenticated={isAuthenticated} />
-          <Toast />
-        </GestureHandlerRootView>
-      </NavigationContainer>
-    </QueryClientProvider>
+    <RecoilRoot>
+      <QueryClientProvider client={queryClient}>
+        <NavigationContainer>
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <FullStackNavigation isAuthenticated={isAuthenticated} />
+            <Toast />
+          </GestureHandlerRootView>
+        </NavigationContainer>
+      </QueryClientProvider>
+    </RecoilRoot>
   );
 };
 
