@@ -16,7 +16,6 @@ import ToDoType from "../../statics/constants/ToDoType";
 import { Controller, Form, FormProvider, set, useController, useFieldArray, useForm } from "react-hook-form";
 import { commonStyles } from "../../styles/commonStyles";
 import { AlarmIcon, PaletteIcon, RepeatIcon, ScheduleIcon } from "../../assets/svg";
-// import DatePicker from 'react-native-date-picker';
 
 interface IPet {
   id: number;
@@ -51,6 +50,7 @@ interface IAddTodo {
   content: string | null;
   tag: ToDoType | null;
   date: string;
+  time: string;
   isAllDay: boolean;
   color: string;
   isUsingAlarm: boolean;
@@ -59,13 +59,16 @@ interface IAddTodo {
 
 const AddTodo = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList, ScreenName.AddTodo>>();
+  const dateString = new Date().toISOString().split('T')[0];
+  const timestring = new Date().toISOString().split('T')[1].split('.')[0];
 
   const methods = useForm<IAddTodo>({
     defaultValues: {
       clickedPetsId: [],
       content: null,
       tag: null,
-      date: '2024-07-22',
+      date: dateString,
+      time: timestring,
       isAllDay: false,
       color: '#ffffff',
       isUsingAlarm: true,
@@ -211,20 +214,24 @@ const AddTodo = () => {
                       />
                   </View>
                   <View style={styles.timeLineContainer}>
-                    {/* <Pressable onPress={() => setDatePickerOpen(true)}>
-                      <Text>{getValues('date')}</Text>
-                    </Pressable> */}
-                    {/* <DatePicker 
-                    modal
-                    mode="date"
-                    open={datePickerOpen}
-                    date={date}
-                    onConfirm={(date) => {
-                      setValue('date', date.toISOString());
-                      setDatePickerOpen(false);
-                    }}
-                    onCancel={() => setDatePickerOpen(false)}
-                    /> */}
+                    <Controller
+                      control={control}
+                      name="date"
+                      render={({ field: { onChange, onBlur, value } }) => (
+                        <Pressable style={styles.timeBox} onPress={() => console.log("date")}>
+                          <Text>{value}</Text>
+                        </Pressable>
+                      )}
+                    />
+                    <Controller
+                      control={control}
+                      name="time"
+                      render={({ field: { onChange, onBlur, value } }) => (
+                        <Pressable style={styles.timeBox} onPress={() => console.log("date")}>
+                          <Text>{value}</Text>
+                        </Pressable>
+                      )}
+                    />
                   </View>
                 </View>
                 <Separator/>
@@ -360,9 +367,18 @@ const styles = StyleSheet.create({
   },
   selectedPet: {
     backgroundColor: "black",
-    borderWidth: 0,
   },
   notSelectedPet: {
     backgroundColor: "white",
   },
+  timeBox: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '45%',
+    height: 50,
+    marginTop: 10,
+    backgroundColor: '#F4F4F4',
+    borderRadius: 10,
+  }
 });
