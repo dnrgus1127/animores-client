@@ -7,7 +7,7 @@ import { Colors } from "react-native/Libraries/NewAppScreen";
 import HeaderNavigation from "../../navigation/HeaderNavigation";
 import { RootStackParamList } from "../../navigation/type";
 import { ScreenName } from "../../statics/constants/ScreenName";
-import { ScrollView, TextInput } from "react-native-gesture-handler";
+import { ScrollView, Switch, TextInput } from "react-native-gesture-handler";
 import { PetService } from "../../service/PetService";
 import { useQuery } from "@tanstack/react-query";
 import { QueryKey } from "../../statics/constants/Querykey";
@@ -15,6 +15,8 @@ import Title from "../../components/text/Title";
 import ToDoType from "../../statics/constants/ToDoType";
 import { Controller, Form, FormProvider, set, useController, useFieldArray, useForm } from "react-hook-form";
 import { commonStyles } from "../../styles/commonStyles";
+import { AlarmIcon, PaletteIcon, RepeatIcon, ScheduleIcon } from "../../assets/svg";
+// import DatePicker from 'react-native-date-picker';
 
 interface IPet {
   id: number;
@@ -48,7 +50,7 @@ interface IAddTodo {
   clickedPetsId: number[];
   content: string | null;
   tag: ToDoType | null;
-  date: string | null;
+  date: string;
   isAllDay: boolean;
   color: string;
   isUsingAlarm: boolean;
@@ -63,7 +65,7 @@ const AddTodo = () => {
       clickedPetsId: [],
       content: null,
       tag: null,
-      date: null,
+      date: '2024-07-22',
       isAllDay: false,
       color: '#ffffff',
       isUsingAlarm: true,
@@ -101,6 +103,12 @@ const AddTodo = () => {
 
   const [isTagSelected, setTagSelected] = useState<boolean>(false);
   const [tagWindowSelected, setTagWindowSelected] = useState<boolean>(false);
+
+  const Separator = () => (
+    <View style={{flex:1, justifyContent: 'center', alignItems: 'center'}}>
+      <View style={styles.separator} />
+    </View>
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -183,8 +191,61 @@ const AddTodo = () => {
             </View>
             <View style={styles.inputWrap}>
               <Text style={styles.label}>날짜/시간</Text>
-              <View>
-
+              <View style={styles.timeContainer}>
+                <View style={styles.timeSectionContainer}>
+                  <View style={styles.timeLineContainer}>
+                    <View style={{flexDirection:"row"}}>
+                      <ScheduleIcon/><Text style={{ marginLeft: 10}}>하루종일</Text>
+                    </View>
+                    <Switch></Switch>
+                  </View>
+                  <View style={styles.timeLineContainer}>
+                    {/* <Pressable onPress={() => setDatePickerOpen(true)}>
+                      <Text>{getValues('date')}</Text>
+                    </Pressable> */}
+                    {/* <DatePicker 
+                    modal
+                    mode="date"
+                    open={datePickerOpen}
+                    date={date}
+                    onConfirm={(date) => {
+                      setValue('date', date.toISOString());
+                      setDatePickerOpen(false);
+                    }}
+                    onCancel={() => setDatePickerOpen(false)}
+                    /> */}
+                  </View>
+                </View>
+                <Separator/>
+                <View style={styles.timeSectionContainer}>
+                  <View style={styles.timeLineContainer}>
+                      <View style={{flexDirection:"row"}}>
+                        <PaletteIcon/>
+                        <Text style={{ marginLeft: 10}}>색상</Text>
+                      </View>
+                      <Switch></Switch>
+                    </View>
+                </View>
+                <Separator/>
+                <View style={styles.timeSectionContainer}>
+                  <View style={styles.timeLineContainer}>
+                    <View style={{flexDirection:"row"}}>
+                      <AlarmIcon/>
+                      <Text style={{ marginLeft: 10}}>알림</Text>
+                    </View>
+                    <Switch></Switch>
+                  </View>
+                </View>
+                <Separator/>
+                <View style={styles.timeSectionContainer}>
+                  <View style={styles.timeLineContainer}>
+                    <View style={{flexDirection:"row"}}>
+                      <RepeatIcon/>
+                      <Text style={{ marginLeft: 10}}>반복</Text>
+                    </View>
+                    <Switch></Switch>
+                  </View>
+                </View>
               </View>
             </View>
           </View>
@@ -210,6 +271,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
   },
+  separator: {
+    borderWidth: 0.5,
+    borderColor: '#D8D8D8',
+    borderStyle: 'dashed',
+    width: '95%',
+  },
   petSelectContainer: {
     flexDirection: 'row',
     marginTop: 10,
@@ -219,7 +286,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     height: 50,
-    marginTop: 20,
+    marginTop: 10,
     marginRight: 10,
     paddingLeft: 20,
     paddingRight: 20,
@@ -234,6 +301,24 @@ const styles = StyleSheet.create({
     width: 60,
     height: 30,
     borderRadius: 15,
+  },
+  timeContainer: {
+    marginTop: 10,
+    marginRight: 10,
+    paddingLeft: 15,
+    paddingRight: 15,
+    borderWidth: 1,
+    borderRadius: 5,
+    borderColor: '#F1F1F1',
+  },
+  timeSectionContainer: {
+    marginTop: 15,
+    marginBottom: 15,
+  },
+  timeLineContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   selectedTag: {
     backgroundColor: "black",
