@@ -194,10 +194,21 @@ const AddTodo = () => {
               <View style={styles.timeContainer}>
                 <View style={styles.timeSectionContainer}>
                   <View style={styles.timeLineContainer}>
-                    <View style={{flexDirection:"row"}}>
-                      <ScheduleIcon/><Text style={{ marginLeft: 10}}>하루종일</Text>
-                    </View>
-                    <Switch></Switch>
+                    <Controller 
+                      control={control}
+                      name='isAllDay'
+                      render={({ field: { value } }) => (
+                        <>
+                        <View style={{flexDirection:"row"}}>
+                          <ScheduleIcon/><Text style={{color: value ? "black" : "grey", marginLeft: 10}}>하루종일</Text>
+                        </View>
+                        <Switch 
+                        onChange={() => {
+                          setValue('isAllDay', !value);
+                        }}
+                        value={getValues('isAllDay')}></Switch>
+                        </>  )}
+                      />
                   </View>
                   <View style={styles.timeLineContainer}>
                     {/* <Pressable onPress={() => setDatePickerOpen(true)}>
@@ -229,11 +240,20 @@ const AddTodo = () => {
                 <Separator/>
                 <View style={styles.timeSectionContainer}>
                   <View style={styles.timeLineContainer}>
-                    <View style={{flexDirection:"row"}}>
-                      <AlarmIcon/>
-                      <Text style={{ marginLeft: 10}}>알림</Text>
-                    </View>
-                    <Switch></Switch>
+                    <Controller
+                      control={control}
+                      name="isUsingAlarm"
+                      render={({ field: { value } }) => (
+                        <>
+                        <View style={{flexDirection:"row"}}>
+                          <AlarmIcon/><Text style={{color: value? "black" : "grey" , marginLeft: 10}}>알람</Text>
+                        </View>
+                        <Switch 
+                        onChange={() => {
+                          setValue('isUsingAlarm', !value);
+                        }}
+                        value={value}></Switch>
+                        </> )} />
                   </View>
                 </View>
                 <Separator/>
