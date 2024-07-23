@@ -16,6 +16,7 @@ import ToDoType from "../../statics/constants/ToDoType";
 import { Controller, Form, FormProvider, set, useController, useFieldArray, useForm } from "react-hook-form";
 import { commonStyles } from "../../styles/commonStyles";
 import { AlarmIcon, PaletteIcon, RepeatIcon, ScheduleIcon } from "../../assets/svg";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 interface IPet {
   id: number;
@@ -59,16 +60,13 @@ interface IAddTodo {
 
 const AddTodo = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList, ScreenName.AddTodo>>();
-  const dateString = new Date().toISOString().split('T')[0];
-  const timestring = new Date().toISOString().split('T')[1].split('.')[0];
-
   const methods = useForm<IAddTodo>({
     defaultValues: {
       clickedPetsId: [],
       content: null,
       tag: null,
-      date: dateString,
-      time: timestring,
+      date: '',
+      time: '',
       isAllDay: false,
       color: '#ffffff',
       isUsingAlarm: true,
@@ -78,6 +76,19 @@ const AddTodo = () => {
 
   const { control, handleSubmit, setValue, getValues} = methods;
   const onSubmit = (data: IAddTodo) => console.log(data);
+
+  const [date, setDate] = useState<Date>(new Date());
+
+  useEffect(() => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hour = String(date.getHours()).padStart(2, '0');
+    const minute = String(date.getMinutes()).padStart(2, '0');
+    setValue('date',(`${year}-${month}-${day}`));
+    setValue('time',(`${hour}:${minute}`));
+  }, [date, setValue]);
+
 
   const { data: pet } = useQuery({
     queryKey: [QueryKey.PET_LIST],
@@ -112,6 +123,9 @@ const AddTodo = () => {
       <View style={styles.separator} />
     </View>
   );
+
+  const [mode,setMode] = useState<string>('date');
+  const [show, setShow] = useState<boolean>(false);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -218,7 +232,10 @@ const AddTodo = () => {
                       control={control}
                       name="date"
                       render={({ field: { onChange, onBlur, value } }) => (
-                        <Pressable style={styles.timeBox} onPress={() => console.log("date")}>
+                        <Pressable style={styles.timeBox} onPress={() => {
+                          setShow(true);
+                          setMode('date');
+                        }}>
                           <Text>{value}</Text>
                         </Pressable>
                       )}
@@ -227,11 +244,27 @@ const AddTodo = () => {
                       control={control}
                       name="time"
                       render={({ field: { onChange, onBlur, value } }) => (
-                        <Pressable style={styles.timeBox} onPress={() => console.log("date")}>
+                        <Pressable style={styles.timeBox} onPress={() =>{
+                          setShow(true);
+                          setMode('time');
+                        }}>
                           <Text>{value}</Text>
                         </Pressable>
                       )}
                     />
+                    {show && (
+                      <DateTimePicker
+                        value={date}
+                        mode={mode as any}
+                        is24Hour={true}
+                        display="default"
+                        onChange={(event, selectedDate) => {
+                          const currentDate = selectedDate || date;
+                          setShow(false);
+                          setDate(currentDate);
+                        }}
+                      />
+                    )}
                   </View>
                 </View>
                 <Separator/>
