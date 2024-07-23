@@ -1,15 +1,8 @@
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useMutation } from "@tanstack/react-query";
-import * as ImagePicker from 'expo-image-picker';
 import React, { useState } from "react";
 import { Image, Pressable, StyleSheet, TextInput, View, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Toast from "react-native-toast-message";
-import {
-  Cancle,
-  ProfileImage as DefaultProfileImage,
-} from "../../../assets/svg";
 import SingleButton from "../../../components/button/SingleButton";
 import Title from "../../../components/text/Title";
 import HeaderNavigation from "../../../navigation/HeaderNavigation";
@@ -18,7 +11,6 @@ import { ProfileService } from "../../../service/ProfileService";
 import { ScreenName } from "../../../statics/constants/ScreenName";
 import { Colors } from "../../../styles/Colors";
 import { SecureEyeIcon } from "../../../assets/svg";
-import Countdown from "../../../components/Countdown";
 
 const NewPassword = () => {
 
@@ -32,15 +24,6 @@ const NewPassword = () => {
     pw: true,
     checkPw: true
   })
-    
-  // 이메일 인증 카운트
-  const [resetCount, setResetCount] = useState(false)
-
-  // 카운트다운
-  const afterCountdown = () => {
-    //setVerificationState("timeout")
-    setResetCount(false)
-  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -64,7 +47,7 @@ const NewPassword = () => {
               style={[styles.inputBox, styles.textDisabled]}
               placeholder="8~30자리 영대・소문자, 숫자, 특수문자 조합"
               returnKeyType="done"
-              value={"abc@gamil.com"}
+              value={""}
               editable={false}
             />
             <Pressable 
@@ -95,12 +78,12 @@ const NewPassword = () => {
           <Text style={styles.errorText}>비밀번호가 일치하지 않습니다.</Text>
         </View>
 
-        <Pressable
-          onPress={() => console.log("비밀번호가 변경되었습니다.")}
-          style={[styles.primaryLargeButton]}
-          children={<Text style={[styles.primaryButtonText]}>변경하기</Text>}
-        >
-        </Pressable>
+        <View style={{ marginTop: "auto" }}>
+          <SingleButton
+            title={"변경하기"}
+            onPress={() => console.log("비밀번호가 변경되었습니다.")}
+          />
+        </View>
       </View>
     </SafeAreaView>
   )
@@ -145,21 +128,6 @@ const styles = StyleSheet.create({
   },
   textDisabled: {
     color: "#AEAEAE",
-  },
-  primaryLargeButton: {
-    marginTop: "auto",
-    height: 60,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 20,
-    backgroundColor: "#FB3F7E",
-  },
-  primaryButtonText: {
-    fontSize: 16,
-    color: "#FFF",
-  },
-  buttonDisabled: {
-    backgroundColor: "#F2F2F2",
   },
   secureEyeButton: {
     position: "absolute",
