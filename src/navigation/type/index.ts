@@ -15,6 +15,9 @@ export type RootStackParamList = {
 	[ScreenName.Home]: undefined;
 	[ScreenName.Profiles]: undefined;
 	[ScreenName.CreateProfile]: undefined;
+	[ScreenName.UserVerification]: undefined;
+	[ScreenName.ResetPassword]: undefined;
+	[ScreenName.NewPassword]: undefined;
 	[ScreenName.BottomTab]: undefined;
 	[ScreenName.EditProfile]: { item: IProfile };
 	[ScreenName.ProfileManagement]: undefined;

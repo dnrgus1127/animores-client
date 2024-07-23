@@ -21,7 +21,7 @@ export const AuthService = {
 		},
 		join: async (email: string, password: string, nickname: string, isAdPermission: boolean) => {
 			const response = await AxiosContext.post<AuthModel.IJoinModel>(
-				`/api/v1/account/sign-up`);
+				`/api/v1/account/sign-up`, { email, password, nickname, isAdPermission });
 			return response.data;
 		},
 	},

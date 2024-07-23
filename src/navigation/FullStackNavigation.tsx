@@ -8,6 +8,9 @@ import JoinScreen from "../screens/auth/JoinScreen";
 import LoginScreen from "../screens/auth/LoginScreen";
 import CreateDiary from "../screens/diary/CreateDiary";
 import HomeScreen from "../screens/home/HomeScreen";
+import NewPassword from "../screens/myPage/password/NewPassword";
+import ResetPassword from "../screens/myPage/password/ResetPassword";
+import UserVerification from "../screens/myPage/password/UserVerification";
 import CreateProfile from "../screens/myPage/profile/CreateProfile";
 import EditProfileScreen from "../screens/myPage/profile/EditProfile";
 import ProfileManagementScreen from "../screens/myPage/profile/ProfileManagementScreen";
@@ -54,6 +57,21 @@ const FullStackNavigation: React.FC<FullStackNavigationProps> = ({ isAuthenticat
         <RootStack.Screen
           name={ScreenName.CreateProfile}
           component={CreateProfile}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
+          name={ScreenName.UserVerification}
+          component={UserVerification}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
+          name={ScreenName.ResetPassword}
+          component={ResetPassword}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
+          name={ScreenName.NewPassword}
+          component={NewPassword}
           options={{ headerShown: false }}
         />
         <RootStack.Screen
