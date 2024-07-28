@@ -19,46 +19,8 @@ import { AlarmIcon, PaletteIcon, RepeatIcon, RightArrow, ScheduleIcon } from "..
 import DateTimePicker from "@react-native-community/datetimepicker";
 import BottomModal from "../../components/modal/BottomModal";
 import ToDoColors from "../../statics/constants/ToDoColors";
+import IAddTodo, { RepeatUnit } from "../../../types/AddToDo";
 
-interface IPet {
-  id: number;
-  name: string;
-  isPressed: boolean;
-}
-
-enum RepeatUnit {
-  DAY = 'DAY',
-  WEEK = 'WEEK',
-  MONTH = 'MONTH',
-}
-
-enum WeekDay {
-  MONDAY = 'MONDAY',
-  TUESDAY = 'TUESDAY',
-  WEDNESDAY = 'WEDNESDAY',
-  THURSDAY = 'THURSDAY',
-  FRIDAY = 'FRIDAY',
-  SATURDAY = 'SATURDAY',
-  SUNDAY = 'SUNDAY',
-}
-
-interface IRepeat {
-  unit: RepeatUnit;
-  interval: number;
-  weekDays: WeekDay[];
-}
-
-interface IAddTodo {
-  clickedPetsId: number[];
-  content: string | null;
-  tag: ToDoType | null;
-  date: string;
-  time: string;
-  isAllDay: boolean;
-  color: string;
-  isUsingAlarm: boolean;
-  repeat: IRepeat | null;
-}
 
 const AddTodo = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList, ScreenName.AddTodo>>();
@@ -77,14 +39,17 @@ const AddTodo = () => {
   })
 
   const { control, handleSubmit, setValue, getValues, watch} = methods;
-  const onSubmit = (data: IAddTodo) => console.log(data);
-
-  const [date, setDate] = useState<Date>(new Date());
-
+  
   const { data: pet } = useQuery({
     queryKey: [QueryKey.PET_LIST],
     queryFn: () => PetService.pet.list(),
   });
+
+  interface IPet {
+    id: number;
+    name: string;
+    isPressed: boolean;
+  }
 
   const [pets, setPets] = useState<IPet[]>(
     pet?.data?.data.map(({ id, name }: { id: number, name: string }) => ({
@@ -94,6 +59,7 @@ const AddTodo = () => {
     })) || []
   );
 
+  const [date, setDate] = useState<Date>(new Date());
   useEffect(() => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -103,9 +69,6 @@ const AddTodo = () => {
     setValue('date',(`${year}-${month}-${day}`));
     setValue('time',(`${hour}:${minute}`));
   }, [date, setValue, pets, getValues]);
-
-  const isAllDay = watch('isAllDay');
-  const selectedTag = watch('tag');
 
   const handlePetPress = (id: number) => {
     setPets((prevPets) => {
@@ -119,6 +82,8 @@ const AddTodo = () => {
     });
   };
   
+  const isAllDay = watch('isAllDay');
+  const selectedTag = watch('tag');
   const color = watch('color');
   const [tagWindowSelected, setTagWindowSelected] = useState<boolean>(false);
   const [colorWindowSelected, setColorWindowSelected] = useState<boolean>(false);
@@ -175,6 +140,40 @@ const AddTodo = () => {
     }
     return `오후 ${String(hourNum-12).padStart(2, '0')}:${String(minuteNum).padStart(2, '0')}`;
   }
+
+  const footerRepeat = (): React.ReactNode => {
+
+    const [selectedUnit, setSelectedUnit] = useState<string | null>(null);
+
+    const toggleUnit = (unit: string) => {
+      setSelectedUnit(selectedUnit === unit ? null : unit);
+    };
+
+    return (
+      <View style={styles.bottomModalContainer}>
+        <View style={styles.footerTopLine} />
+        <View>
+          {Object.entries(RepeatUnit).map(([key, unit]) => (
+            <View key={key} >
+              <View>
+                <Text>{unit.display}</Text>
+                <Pressable onPress={() => toggleUnit(key)}>
+                  <RightArrow />
+                </Pressable>
+              </View>
+              {selectedUnit === key && (
+                <View style={styles.popup}>
+                  <Text>This is a popup for {unit.display}</Text>
+                </View>
+              )}
+            </View>
+          ))}
+        </View>
+      </View>
+    );
+  };
+
+  const onSubmit = (data: IAddTodo) => console.log(data);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -333,7 +332,7 @@ const AddTodo = () => {
                       render={({ field: { value } }) => (
                         <>
                         <View style={{flexDirection:"row"}}>
-                          <AlarmIcon/><Text style={{color: value? "black" : "grey" , marginLeft: 10}}>알람</Text>
+                          <AlarmIcon/><Text style={{color: value? Colors.Black : Colors.Gray838383 , marginLeft: 10}}>알람</Text>
                         </View>
                         <Switch 
                         onChange={() => {
