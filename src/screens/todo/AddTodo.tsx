@@ -1,9 +1,9 @@
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useEffect, useState } from "react";
-import { Modal, Pressable, StyleSheet, View, Text } from "react-native";
+import { Pressable, StyleSheet, View, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Colors } from "react-native/Libraries/NewAppScreen";
+import { Colors } from "../../styles/Colors";
 import HeaderNavigation from "../../navigation/HeaderNavigation";
 import { RootStackParamList } from "../../navigation/type";
 import { ScreenName } from "../../statics/constants/ScreenName";
@@ -15,8 +15,10 @@ import Title from "../../components/text/Title";
 import ToDoType from "../../statics/constants/ToDoType";
 import { Controller, Form, FormProvider, set, useController, useFieldArray, useForm } from "react-hook-form";
 import { commonStyles } from "../../styles/commonStyles";
-import { AlarmIcon, PaletteIcon, RepeatIcon, ScheduleIcon } from "../../assets/svg";
+import { AlarmIcon, PaletteIcon, RepeatIcon, RightArrow, ScheduleIcon } from "../../assets/svg";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import BottomModal from "../../components/modal/BottomModal";
+import ToDoColors from "../../statics/constants/ToDoColors";
 
 interface IPet {
   id: number;
@@ -68,27 +70,16 @@ const AddTodo = () => {
       date: '',
       time: '',
       isAllDay: false,
-      color: '#ffffff',
+      color: ToDoColors.PURPLE,
       isUsingAlarm: true,
       repeat: null,
     }
   })
 
-  const { control, handleSubmit, setValue, getValues} = methods;
+  const { control, handleSubmit, setValue, getValues, watch} = methods;
   const onSubmit = (data: IAddTodo) => console.log(data);
 
   const [date, setDate] = useState<Date>(new Date());
-
-  useEffect(() => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const hour = String(date.getHours()).padStart(2, '0');
-    const minute = String(date.getMinutes()).padStart(2, '0');
-    setValue('date',(`${year}-${month}-${day}`));
-    setValue('time',(`${hour}:${minute}`));
-  }, [date, setValue]);
-
 
   const { data: pet } = useQuery({
     queryKey: [QueryKey.PET_LIST],
@@ -103,6 +94,19 @@ const AddTodo = () => {
     })) || []
   );
 
+  useEffect(() => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hour = String(date.getHours()).padStart(2, '0');
+    const minute = String(date.getMinutes()).padStart(2, '0');
+    setValue('date',(`${year}-${month}-${day}`));
+    setValue('time',(`${hour}:${minute}`));
+  }, [date, setValue, pets, getValues]);
+
+  const isAllDay = watch('isAllDay');
+  const selectedTag = watch('tag');
+
   const handlePetPress = (id: number) => {
     setPets((prevPets) => {
       const updatedPets = prevPets.map((pet) =>
@@ -114,9 +118,10 @@ const AddTodo = () => {
       return updatedPets;
     });
   };
-
-  const [isTagSelected, setTagSelected] = useState<boolean>(false);
+  
+  const color = watch('color');
   const [tagWindowSelected, setTagWindowSelected] = useState<boolean>(false);
+  const [colorWindowSelected, setColorWindowSelected] = useState<boolean>(false);
 
   const Separator = () => (
     <View style={{flex:1, justifyContent: 'center', alignItems: 'center'}}>
@@ -124,8 +129,52 @@ const AddTodo = () => {
     </View>
   );
 
-  const [mode,setMode] = useState<string>('date');
+  const [mode, setMode] = useState<string>('date');
   const [show, setShow] = useState<boolean>(false);
+
+  const footerTag = (): React.ReactNode => {
+    return (
+      <View style={styles.bottomModalContainer}>
+        <View style={styles.footerTopLine} />
+        <View style={styles.footerTagContainer}>
+          {Object.values(ToDoType).map((tag) => 
+            <Pressable key={tag} style={[styles.tagContainer ,tag == getValues('tag') ? styles.selectedTag : styles.notSelectedTag]} onPress={() => {
+              setValue('tag',tag);
+              setValue('content', null);
+              setTagWindowSelected(!tagWindowSelected);
+              }}>
+              <Title text={tag} color={tag == getValues('tag') ? "white" : "black"}/>
+          </Pressable>)}
+        </View>
+      </View>
+    )
+  };
+
+  const footerColor = (): React.ReactNode => {
+    return (
+      <View style={styles.bottomModalContainer}>
+        <View style={styles.footerTopLine} />
+        <View style={styles.footerCircleContainer}>
+          {Object.values(ToDoColors).map((color) => 
+            <Pressable key={color} style={{...styles.footerColorCircle, backgroundColor: color}} onPress={() => {
+              setValue('color',color);
+              setColorWindowSelected(!colorWindowSelected);
+              }}>
+          </Pressable>)}
+        </View>
+      </View>
+    )
+  };
+
+  const timeStringConverter = (time: string): string => {
+    const [hour, minute] = time.split(':');
+    const hourNum = Number(hour);
+    const minuteNum = Number(minute);
+    if (hourNum < 12) {
+      return `오전 ${String(hourNum).padStart(2, '0')}:${String(minuteNum).padStart(2, '0')}`;
+    }
+    return `오후 ${String(hourNum-12).padStart(2, '0')}:${String(minuteNum).padStart(2, '0')}`;
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -159,10 +208,9 @@ const AddTodo = () => {
               <Controller
                   control={control}
                   render={({ field: { onChange, onBlur, value } }) => (
-                    isTagSelected ? 
+                    selectedTag != null ? 
                     <>
                     <Pressable style={{"paddingRight": 200}} onPress={() => {
-                      setTagSelected(false);
                       setValue('tag', null);
                     }}>
                       <Text>{getValues('tag')}</Text>
@@ -188,22 +236,10 @@ const AddTodo = () => {
                   )}
                   name="content"
                 />
-                <Modal
-                animationType="slide"
-                visible={tagWindowSelected}
-                onRequestClose={() => setTagWindowSelected(!tagWindowSelected)}>
-                {
-                Object.values(ToDoType).map((tag) => 
-                  <Pressable key={tag} onPress={() => {
-                    setValue('tag',tag);
-                    setValue('content', null);
-                    setTagWindowSelected(!tagWindowSelected);
-                    setTagSelected(true);
-                    }}>
-                    <Title text={tag}/>
-                  </Pressable>)
-                }
-                </Modal>
+                <BottomModal
+                isVisible={tagWindowSelected}
+                onClose={() => setTagWindowSelected(!tagWindowSelected)}
+                footer={footerTag}/>
               </View>
             </View>
             <View style={styles.inputWrap}>
@@ -217,14 +253,14 @@ const AddTodo = () => {
                       render={({ field: { value } }) => (
                         <>
                         <View style={{flexDirection:"row"}}>
-                          <ScheduleIcon/><Text style={{color: value ? "black" : "grey", marginLeft: 10}}>하루종일</Text>
+                          <ScheduleIcon/><Text style={{marginLeft: 10}}>하루종일</Text>
                         </View>
                         <Switch 
                         onChange={() => {
                           setValue('isAllDay', !value);
                         }}
                         value={getValues('isAllDay')}></Switch>
-                        </>  )}
+                        </>)}
                       />
                   </View>
                   <View style={styles.timeLineContainer}>
@@ -247,8 +283,8 @@ const AddTodo = () => {
                         <Pressable style={styles.timeBox} onPress={() =>{
                           setShow(true);
                           setMode('time');
-                        }}>
-                          <Text>{value}</Text>
+                        }} disabled={isAllDay}>
+                          <Text style={{color: isAllDay ? Colors.Gray838383: Colors.Black}}>{timeStringConverter(value)}</Text>
                         </Pressable>
                       )}
                     />
@@ -269,14 +305,25 @@ const AddTodo = () => {
                 </View>
                 <Separator/>
                 <View style={styles.timeSectionContainer}>
-                  <View style={styles.timeLineContainer}>
-                      <View style={{flexDirection:"row"}}>
-                        <PaletteIcon/>
-                        <Text style={{ marginLeft: 10}}>색상</Text>
-                      </View>
-                      <Switch></Switch>
+                  <View style={styles.timeLineContainer}>                      
+                    <View style={{flexDirection:"row"}}>
+                      <PaletteIcon/>
+                      <Text style={{ marginLeft: 10}}>색상</Text>
                     </View>
+                    <View style={{flexDirection:"row", alignItems: "center"}}>
+                      <View style={[styles.colorCircle, {backgroundColor: color}]}/>                      
+                      <Pressable onPress={() => {
+                        setColorWindowSelected(true);
+                      }}>
+                        <RightArrow/>
+                      </Pressable>
+                    </View>
+                  </View>
                 </View>
+                <BottomModal
+                isVisible={colorWindowSelected}
+                onClose={() => setColorWindowSelected(!colorWindowSelected)}
+                footer={footerColor}/>
                 <Separator/>
                 <View style={styles.timeSectionContainer}>
                   <View style={styles.timeLineContainer}>
@@ -361,6 +408,16 @@ const styles = StyleSheet.create({
     width: 60,
     height: 30,
     borderRadius: 15,
+    marginLeft: 10,
+  },
+  footerTagContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    marginTop: 30,
+    marginLeft: 10,
+    marginRight: 10,
+    marginBottom: 50,
   },
   timeContainer: {
     marginTop: 10,
@@ -379,6 +436,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  bottomModalContainer: {
+    marginTop: 15,
+  },
+  footerCircleContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    paddingLeft: 30,
+    paddingRight: 30,
+    paddingTop: 30,
+    paddingBottom: 30,
   },
   selectedTag: {
     backgroundColor: "black",
@@ -413,5 +482,27 @@ const styles = StyleSheet.create({
     marginTop: 10,
     backgroundColor: '#F4F4F4',
     borderRadius: 10,
+  },
+  footerTopLine: {
+    backgroundColor: '#838383',
+    height: 1.5,
+    width: 50,
+    alignSelf: "center",
+  },
+  colorCircle: {
+    width: 20,
+    height: 20,
+    borderRadius: 20,
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  footerColorCircle: {
+    width: 50,
+    height: 50,
+    borderRadius: 50,
+    marginTop: 10,
+    marginBottom: 10,
+    marginRight: 10,
+    marginLeft: 10,
   }
 });
