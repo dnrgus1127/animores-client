@@ -1,13 +1,18 @@
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { useMutation } from "@tanstack/react-query";
 import React, { useState } from "react";
+import { useForm } from "react-hook-form";
 import { Image, Pressable, StyleSheet, TextInput, View, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
 import SingleButton from "../../../components/button/SingleButton";
 import Title from "../../../components/text/Title";
+import BasicInputBox from "../../../components/Input/BasicInputBox";
+import { AuthModel } from "../../../model/AuthModel";
+import { AuthService } from "../../../service/AuthService";
 import HeaderNavigation from "../../../navigation/HeaderNavigation";
 import { RootStackParamList } from "../../../navigation/type";
-import { ProfileService } from "../../../service/ProfileService";
 import { ScreenName } from "../../../statics/constants/ScreenName";
 import { Colors } from "../../../styles/Colors";
 import { DeleteIcon } from "../../../assets/svg";
@@ -25,6 +30,11 @@ const ResetPassword = () => {
       StackNavigationProp<RootStackParamList, ScreenName.ProfileManagement>
     >();
     
+  const { control, handleSubmit } = useForm<AuthModel.IResetPwModel>();
+
+  // Email 인증 상태
+  const [verificationState, setVerificationState] = useState<AuthModel.IVerificationModel["state"]>("none")
+
   // 이메일 인증 카운트
   const [resetCount, setResetCount] = useState(false)
 
@@ -35,6 +45,39 @@ const ResetPassword = () => {
     //setVerificationState("timeout")
     setResetCount(false)
   }
+
+  const { mutate } = useMutation<
+      Error,
+      AuthModel.IResetPwModel
+    >({
+    mutationFn: async (data: AuthModel.IResetPwModel) => {
+      return AuthService.Auth.verificationCodeCheck(data.code, data.email);
+    },
+    onSuccess: async (response: AuthModel.IResetPwModel) => {
+      console.log(response.data); // 여기를 안탐...
+      if (response.data) {
+        const { success, data } = response.data;
+		
+        // 인증이 완료되면 새 비밀번호 설정 페이지로 이동
+        navigation.navigate(ScreenName.NewPassword);
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "인증번호 불일치.",
+        });
+      }
+    },
+    onError: () => {
+      Toast.show({
+        type: "error",
+        text1: "인증번호 전송 실패.",
+      });
+    },
+  });
+
+  const onsubmit = (data:AuthModel.IResetPwModel) => {
+    mutate(data);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -52,13 +95,14 @@ const ResetPassword = () => {
           style={{ marginTop: 30, marginBottom: 60 }}
         />
         <View style={[styles.inputWrap, { marginTop: 20 }]}>
-          <Text style={[styles.label]}>이메일</Text>
-          <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
-            <TextInput 
-              style={[styles.inputBox, styles.textDisabled]}
+          <Text style={[styles.label]}>이메일</Text>  
+          <View style={{ flexDirection: "row", alignItems: "flex-end" }}>      
+            <BasicInputBox
+              name={"email"}
               placeholder="이메일을 입력해주세요"
-              returnKeyType="done"
-              value={userEmail}
+              control={control}
+              defaultValue={userEmail}
+              style={styles.textDisabled}
               editable={false}
             />
             <Pressable
@@ -69,16 +113,16 @@ const ResetPassword = () => {
               <Text>재전송</Text>
             </Pressable>
           </View>
-          <Text style={styles.successText}>인증이 완료된 이메일입니다.</Text>
+          {/* <Text style={styles.successText}>인증이 완료된 이메일입니다.</Text> */}
         </View>
 
         <View style={[styles.inputWrap, { marginTop: 20 }]}>
           <Text style={[styles.label]}>인증번호</Text>
           <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
-            <TextInput 
-              style={[styles.inputBox]}
+            <BasicInputBox
+              name={"code"}
               placeholder="인증번호를 입력해주세요"
-              returnKeyType="done"
+              control={control}
             />
             <View
               style={{ position: "absolute", bottom: 0, right: 0, flexDirection: "row", height: 30 }}
@@ -89,13 +133,15 @@ const ResetPassword = () => {
               </Pressable>
             </View>
           </View>
-          <Text style={styles.errorText}>인증번호가 일치하지 않습니다.</Text>
+          {verificationState === "timeout" && <Text style={styles.errorText}>인증시간이 초과되었습니다.</Text>}
+          {verificationState === "dismatch" && <Text style={styles.errorText}>인증번호가 일치하지 않습니다.</Text>}
+          
         </View>
 
         <View style={{ marginTop: "auto" }}>
           <SingleButton
-            title={"다음"}
-            onPress={() => navigation.navigate(ScreenName.NewPassword)}
+            title={"다음"}          
+            onPress={handleSubmit(onsubmit)}
           />
         </View>
       </View>
