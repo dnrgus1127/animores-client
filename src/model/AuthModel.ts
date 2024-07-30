@@ -12,7 +12,10 @@ export namespace AuthModel {
 		email: string
 		password: string
 	}
-
+	export interface IResetPwModel {
+		code: string
+		email: string
+	}
 	export interface ILoginResponseModel {
 		data: {
 			accessToken: string;
