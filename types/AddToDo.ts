@@ -1,23 +1,32 @@
 import ToDoType from "../src/statics/constants/ToDoType";
 
-export const RepeatUnit = {
-    HOURS: {name: 'HOURS', display: "매시간"},
-    DAY: {name: 'DAY', display: "매일"},
-    WEEK: {name:'WEEK', display: "매주"},
+type RepeatUnitType = {
+    [key: string]: {
+        name: string;
+        display: string;
+        intervalText: string;
+    };
+};
+
+
+export const RepeatUnit: RepeatUnitType = {
+    HOURS: {name: 'HOURS', display: "매시간", intervalText: "시간마다"},
+    DAY: {name: 'DAY', display: "매일", intervalText: "일마다"},
+    WEEK: {name:'WEEK', display: "매주", intervalText: "주마다"},
 }
 
-enum WeekDay {
-    MONDAY = 'MONDAY',
-    TUESDAY = 'TUESDAY',
-    WEDNESDAY = 'WEDNESDAY',
-    THURSDAY = 'THURSDAY',
-    FRIDAY = 'FRIDAY',
-    SATURDAY = 'SATURDAY',
-    SUNDAY = 'SUNDAY',
+export enum WeekDay {
+    MONDAY = '월',
+    TUESDAY = '화',
+    WEDNESDAY = '수',
+    THURSDAY = '목',
+    FRIDAY = '금',
+    SATURDAY = '토',
+    SUNDAY = '일',
 }
 
-interface IRepeat {
-    unit: typeof RepeatUnit;
+export interface IRepeat {
+    unit: string;
     interval: number;
     weekDays: WeekDay[];
 }
