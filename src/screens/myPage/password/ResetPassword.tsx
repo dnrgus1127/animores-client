@@ -42,8 +42,20 @@ const ResetPassword = () => {
 
   // 카운트다운
   const afterCountdown = () => {
-    //setVerificationState("timeout")
+    setVerificationState("timeout")
     setResetCount(false)
+  }
+
+  // 인증코드 재전송 클릭 시
+  const refreshVerificationCode = () => {
+    // 인증코드 입력필드, 에러 텍스트 초기화
+    setVerificationState("none")
+
+    // 새 인증번호 전송
+    AuthService.Auth.emailVerificationCode(userEmail);
+
+    // 카운트다운 재시작
+    setResetCount(true)
   }
 
   const { mutate } = useMutation<
@@ -53,18 +65,15 @@ const ResetPassword = () => {
     mutationFn: async (data: AuthModel.IResetPwModel) => {
       return AuthService.Auth.verificationCodeCheck(data.code, data.email);
     },
-    onSuccess: async (response: AuthModel.IResetPwModel) => {
-      console.log(response.data); // 여기를 안탐...
-      if (response.data) {
-        const { success, data } = response.data;
-		
+    onSuccess: async (data: AuthModel.IResetPwModel) => {
+      if (data.success) {		
+        console.log(data.success, data.data);
+        
         // 인증이 완료되면 새 비밀번호 설정 페이지로 이동
         navigation.navigate(ScreenName.NewPassword);
       } else {
-        Toast.show({
-          type: "error",
-          text1: "인증번호 불일치.",
-        });
+        console.log(data.success);
+        setVerificationState("dismatch");
       }
     },
     onError: () => {
@@ -108,7 +117,7 @@ const ResetPassword = () => {
             <Pressable
               style={[styles.inputButton]} 
               disabled={false}
-              onPress={() => console.log("pressed!")}
+              onPress={() => refreshVerificationCode()}
             >
               <Text>재전송</Text>
             </Pressable>
