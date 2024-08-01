@@ -29,5 +29,8 @@ export const AuthService = {
 				`/api/v1/account/sign-up`, { email, password, nickname, isAdPermission });
 			return response.data;
 		},
+		setNewPassword: async () => {
+			
+		}
 	},
 };
