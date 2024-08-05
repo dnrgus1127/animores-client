@@ -19,10 +19,18 @@ export const AuthService = {
 				`/api/v1/account/email-auth-create?email=${email}`, { email });
 			return response.data;
 		},
-		join: async (email: string, password: string, nickname: string, isAdPermission: boolean) => {
-			const response = await AxiosContext.post<AuthModel.IJoinModel>(
-				`/api/v1/account/sign-up`);
+		verificationCodeCheck: async (code: string, email: string) => {
+			const response = await AxiosContext.post<AuthModel.IResetPwModel>(
+				`/api/v1/account/email-auth-verify?email=${email}&code=${code}`, { code, email });
 			return response.data;
 		},
+		join: async (email: string, password: string, nickname: string, isAdPermission: boolean) => {
+			const response = await AxiosContext.post<AuthModel.IJoinModel>(
+				`/api/v1/account/sign-up`, { email, password, nickname, isAdPermission });
+			return response.data;
+		},
+		setNewPassword: async () => {
+			
+		}
 	},
 };

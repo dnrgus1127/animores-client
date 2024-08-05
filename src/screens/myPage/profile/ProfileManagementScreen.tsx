@@ -55,8 +55,11 @@ const ProfileManagementScreen = () => {
   };
 
   useEffect(() => {
-    setNickname(myProfile?.nickname)
-  }, [])
+    if (myProfile?.nickname) {
+      setNickname(myProfile.nickname);
+    }
+  }, [myProfile]);
+  
 
   return (
     <SafeAreaView style={styles.container}>
@@ -107,7 +110,7 @@ const ProfileManagementScreen = () => {
             style={{ flex: 1, textAlign: "right", marginRight: 40 }}
           />
           {/* TODO: 비밀번호 변경 페이지로 이동 */}
-          <Pressable style={styles.TextInputContainer} onPress={() => navigation.navigate(ScreenName.ResetPassword)}>
+          <Pressable style={styles.TextInputContainer} onPress={() => navigation.navigate(ScreenName.UserVerification)}>
             <Title
               text={"•••••••••••••••"}
               fontSize={16}

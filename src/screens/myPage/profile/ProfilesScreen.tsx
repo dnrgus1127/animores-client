@@ -52,9 +52,14 @@ const ProfilesScreen = () => {
     if (item.id === "add") {
       navigation.navigate(ScreenName.CreateProfile);
     } else {
-      navigation.navigate(ScreenName.BottomTab)
+      await AsyncStorage.setItem("userInfo", JSON.stringify(item));
+      navigation.navigate(ScreenName.BottomTab);
     }
   };
+
+  // useEffect(() => {
+  //   AsyncStorage.clear();
+  // }, [])
 
   return (
     <SafeAreaView style={styles.container}>

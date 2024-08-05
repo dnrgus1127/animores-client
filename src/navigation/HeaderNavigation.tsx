@@ -18,7 +18,6 @@ interface IProps {
   onPressRightButton?: () => void;
   hasBackButton?: boolean;
   textStyle?: StyleProp<TextStyle>;
-  onPress?: () => void;
   content?: string;
 }
 
@@ -30,7 +29,6 @@ const HeaderNavigation = (props: IProps) => {
     onPressRightButton,
     hasBackButton = true,
     textStyle,
-    onPress,
     content,
   } = props;
 
@@ -59,7 +57,7 @@ const HeaderNavigation = (props: IProps) => {
         )}
         {rightTitle && (
           <Pressable
-            onPress={onPress}
+            onPress={onPressRightButton}
             style={styles.rightTitleContainer}
           >
             <Title
