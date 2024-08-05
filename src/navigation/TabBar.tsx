@@ -110,10 +110,13 @@ export default TabBar;
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
+        marginTop: -20,
         paddingHorizontal: 28,
-        paddingBottom: 12,
+        paddingBottom: 18,
         justifyContent: "space-between",
         backgroundColor: Colors.White,
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
     },
     focusedTab: {
         borderTopWidth: 2,
