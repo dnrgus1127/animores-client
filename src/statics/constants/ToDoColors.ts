@@ -10,7 +10,6 @@ enum ToDoColors {
     ROSE = '#FF7777',
     GRAY = '#E1E1E1',
     BLACK = '#1E1E1E',
-    WHITE = '#FFFFFF',
 }
 
 export default ToDoColors;

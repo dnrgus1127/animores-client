@@ -1,7 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import React, { useEffect, useState } from "react";
-import { Pressable, StyleSheet, View, Text } from "react-native";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { Pressable, StyleSheet, View, Text, Modal } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "../../styles/Colors";
 import HeaderNavigation from "../../navigation/HeaderNavigation";
@@ -21,7 +21,7 @@ import BottomModal from "../../components/modal/BottomModal";
 import ToDoColors from "../../statics/constants/ToDoColors";
 import IAddTodo, { RepeatUnit, WeekDay } from "../../../types/AddToDo";
 import { IconCheck } from "../../assets/icons";
-
+import ColorPicker from 'react-native-wheel-color-picker';
 
 const AddTodo = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList, ScreenName.AddTodo>>();
@@ -52,7 +52,6 @@ const AddTodo = () => {
     isPressed: boolean;
   }
 
-  const [pets, setPets] = useState<IPet[]>([]);
   useEffect(() => {
     if (petData?.data?.data) {
       setPets(
@@ -65,8 +64,9 @@ const AddTodo = () => {
     }
   }, [petData]);
 
-
+  const [pets, setPets] = useState<IPet[]>([]);
   const [date, setDate] = useState<Date>(new Date());
+
   useEffect(() => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -75,71 +75,138 @@ const AddTodo = () => {
     const minute = String(date.getMinutes()).padStart(2, '0');
     setValue('date',(`${year}-${month}-${day}`));
     setValue('time',(`${hour}:${minute}`));
-  }, [date, setValue, pets, getValues]);
+  }, [date, pets]);
 
-  const handlePetPress = (id: number) => {
-    setPets((prevPets) => {
-      const updatedPets = prevPets.map((pet) =>
-        pet.id === id ? { ...pet, isPressed: !pet.isPressed } : pet
-      );
-      const clickedPetsId = updatedPets.filter((pet) => pet.isPressed).map((pet) => pet.id);
-      setValue('clickedPetsId', clickedPetsId);  // clickedPetsId 업데이트
-      console.log(clickedPetsId);
-      return updatedPets;
-    });
-  };
-  
+  const handlePetPress = useCallback(
+    (id: number) => {
+      setPets((prevPets) => {
+        const updatedPets = prevPets.map((pet) =>
+          pet.id === id ? { ...pet, isPressed: !pet.isPressed } : pet
+        );
+        const clickedPetsId = updatedPets.filter((pet) => pet.isPressed).map((pet) => pet.id);
+        setValue('clickedPetsId', clickedPetsId);
+        console.log(clickedPetsId);
+        return updatedPets;
+      });
+    },[]);
+
   const isAllDay = watch('isAllDay');
-  const selectedTag = watch('tag');
-  const color = watch('color');
-  const Separator = () => (
-    <View style={{flex:1, justifyContent: 'center', alignItems: 'center'}}>
-      <View style={styles.separator} />
-    </View>
-  );
+  
+  const Separator = useMemo(
+    () => (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View style={styles.separator} />
+      </View>
+    ),[]);
 
   const [timePickerMode, setTimePickerMode] = useState<string>('date');
   const [timePickerSelected, setTimePickerSelected] = useState<boolean>(false);
-
   const [tagWindowSelected, setTagWindowSelected] = useState<boolean>(false);
-  const footerTag = (): React.ReactNode => {
+  const selectedTag = watch('tag');
+  const footerTag = useMemo(() => {
+    console.log('footerTag');
     return (
       <View style={styles.bottomModalContainer}>
         <View style={styles.footerTopLine} />
         <View style={styles.footerTagContainer}>
-          {Object.values(ToDoType).map((tag) => 
-            <Pressable key={tag} style={[styles.tagContainer ,tag == getValues('tag') ? styles.selectedTag : styles.notSelectedTag]} onPress={() => {
-              setValue('tag',tag);
-              setValue('content', null);
-              setTagWindowSelected(!tagWindowSelected);
-              }}>
-              <Title text={tag} color={tag == getValues('tag') ? "white" : "black"}/>
-          </Pressable>)}
+          {Object.values(ToDoType).map((tag) => (
+            <Pressable
+              key={tag}
+              style={[
+                styles.tagContainer,
+                tag == getValues('tag') ? styles.selectedTag : styles.notSelectedTag,
+              ]}
+              onPress={() => {
+                setValue('tag', tag);
+                setValue('content', null);
+                setTagWindowSelected((prev) => !prev);
+              }}
+            >
+              <Text style={tag == getValues('tag') ? { color: 'white' } : { color: Colors.Pink }}>
+                {tag}
+              </Text>
+            </Pressable>
+          ))}
         </View>
       </View>
-    )
-  };
+    );
+  }, [selectedTag]);
 
   const [colorWindowSelected, setColorWindowSelected] = useState<boolean>(false);
-  const footerColor = (): React.ReactNode => {
+  const [colorPickerWindowSelected, setColorPickerWindowSelected] = useState<boolean>(false);
+  const [useCustomColor, setUseCustomColor] = useState<boolean>(false);
+  const [customColor, setCustomColor] = useState<string>('#aabbcc');
+  console.log(colorPickerWindowSelected);
+  const ColorPickerModal = (props: {visible: boolean}): React.ReactNode => {
+    const {visible} = props;
+    return (
+      <Modal visible={visible}>
+        <View style={styles.colorSectionContainer}>
+          <ColorPicker
+            color={customColor}
+            onColorChange={(color) => setCustomColor(color)}
+            thumbSize={30}
+            sliderSize={30}
+            noSnap={true}
+            row={false}
+          />
+          <Pressable onPress={() => {
+            setColorPickerWindowSelected(false);
+            setUseCustomColor(true);
+            setValue('color', customColor);
+          }}>
+            <Title text="확인" color={Colors.Pink}/>
+          </Pressable>
+        </View>
+      </Modal>
+    )
+  }
+
+  const color = watch('color');
+  const footerColor = useMemo(() => {
+    console.log('footerColor');
     return (
       <View style={styles.bottomModalContainer}>
         <View style={styles.footerTopLine} />
         <View style={styles.footerCircleContainer}>
-          {Object.values(ToDoColors).map((color) =>  
-            <View style={{...styles.footerOuterCircle, borderColor: color == getValues('color') ? 'black' : 'white'}}>
-              <Pressable key={color} style={{...styles.footerColorCircle, backgroundColor: color}} onPress={() => {
-                setValue('color',color);
-                setColorWindowSelected(!colorWindowSelected);
-                }}>
-                {color == getValues('color') && <IconCheck/>}
+          {Object.values(ToDoColors).map((color) => (
+            <View
+              key={color}
+              style={{
+                ...styles.footerOuterCircle,
+                borderColor: color == getValues('color') ? 'black' : 'white',
+              }}
+            >
+              <Pressable
+                style={{ ...styles.footerColorCircle, backgroundColor: color }}
+                onPress={() => {
+                  setValue('color', color);
+                  setColorWindowSelected((prev) => !prev);
+                  setUseCustomColor(false);
+                }}
+              >
+                {color == getValues('color') && <Text>✔</Text>}
               </Pressable>
             </View>
-          )}
+          ))}
+          <View
+            style={{
+              ...styles.footerOuterCircle,
+              borderColor: useCustomColor ? 'black' : 'white',
+            }}
+          >
+            <Pressable
+              style={{ ...styles.footerColorCircle, backgroundColor: useCustomColor ? getValues('color') : Colors.White }}
+              onPress={() => {
+                // setColorWindowSelected(false);
+                setColorPickerWindowSelected(true);
+              }}
+            />
+          </View>
         </View>
       </View>
-    )
-  };
+    );
+  }, [color, useCustomColor]);
 
   const timeStringConverter = (time: string): string => {
     const [hour, minute] = time.split(':');
@@ -162,26 +229,23 @@ const AddTodo = () => {
   }
 
   const repeat = watch('repeat');
-  const footerRepeat = (): React.ReactNode => {
-    const [selectedUnit, setSelectedUnit] = useState<string | null>(null);
-    const [intervalValue, setIntervalValue] = useState<number>(1);
-    const [weekDays, setWeekDays] = useState<WeekDay[]>([]);
-    const [weekDayList, setWeekDayList] = useState<{day: WeekDay, isClicked: boolean}[]>([]);
 
-    useEffect(() => {
-      if(repeat == null) {
-        setWeekDayList(Object.values(WeekDay).map((day) => ({day, isClicked: false})));
-      } else {
-        const {unit, interval, weekDays} = repeat;
-        setSelectedUnit(unit);
-        setIntervalValue(interval);
-        setWeekDays(weekDays);
-        setWeekDayList(Object.values(WeekDay).map((day) => ({day, isClicked: weekDays.includes(day)})));
-      }
-      
-    }, [repeatWindowSelected]);
+  const [selectedUnit, setSelectedUnit] = useState<string | null>(null);
+  const [intervalValue, setIntervalValue] = useState<number>(1);
+  const [weekDays, setWeekDays] = useState<WeekDay[]>([]);
+  const [weekDayList, setWeekDayList] = useState<{day: WeekDay, isClicked: boolean}[]>([]);
 
-    
+  const footerRepeat = useMemo((): React.ReactNode => {
+    if(repeat == null) {
+      setWeekDayList(Object.values(WeekDay).map((day) => ({day, isClicked: false})));
+    } else {
+      const {unit, interval, weekDays} = repeat;
+      setSelectedUnit(unit);
+      setIntervalValue(interval);
+      setWeekDays(weekDays);
+      setWeekDayList(Object.values(WeekDay).map((day) => ({day, isClicked: weekDays.includes(day)})));
+    }
+
     const handleWeekDayPress = (day: WeekDay) => {
       setWeekDayList((prevWeekDayList) => {
         const updatedWeekDayList = prevWeekDayList.map((weekDay) =>
@@ -191,7 +255,7 @@ const AddTodo = () => {
         setWeekDays(clickedWeekDays);
         return updatedWeekDayList;
       });
-    }
+    };
 
     return (
       <View style={styles.bottomModalContainer}>
@@ -219,8 +283,8 @@ const AddTodo = () => {
                 </View>
                 {key === 'WEEK' && <View style={{...styles.footerRepeatLineContainer, justifyContent: 'center'}}>
                     {Object.values(weekDayList).map(({day,isClicked}) => (
-                      <Pressable style={{...styles.footerRepeatWeekDayContainer, borderColor: isClicked ? Colors.FB3F7E: Colors.Black}} onPress={() => handleWeekDayPress(day)}>
-                        <Text style={{color: isClicked ? Colors.FB3F7E: Colors.Black}}>{day}</Text>
+                      <Pressable style={{...styles.footerRepeatWeekDayContainer, borderColor: isClicked ? Colors.White: Colors.Pink, backgroundColor: isClicked ? Colors.Pink : Colors.White}} onPress={() => handleWeekDayPress(day)}>
+                        <Text style={{color: isClicked ? Colors.White: Colors.Pink}}>{day}</Text>
                       </Pressable>
                     ))}
                     </View>}
@@ -240,7 +304,7 @@ const AddTodo = () => {
         ))}
           <View style={{...styles.footerRepeatLineContainer, justifyContent: 'space-between', marginTop: 30}}>
             <Pressable style={styles.footerRepeatButton} onPress={() => setRepeatWindowSelected(false)}>
-              <Text>취소</Text>
+              <Text style={{color: "white"}}>취소</Text>
             </Pressable>
             <Pressable style={styles.footerRepeatButton} onPress={() => {
               if(selectedUnit != null) {
@@ -250,15 +314,15 @@ const AddTodo = () => {
               }
               setRepeatWindowSelected(false);
             }}>
-              <Text>확인</Text>
+              <Text style={{color: "white"}}>확인</Text>
             </Pressable>
           </View>
         </View>
       </View>
     );
-  };
+  },[repeat, setRepeatWindowSelected, setValue]);
 
-  const repeatText = repeat ? `${repeat.interval}${RepeatUnit[repeat.unit].intervalText} ${repeat.weekDays}` : '';
+  const repeatText = repeat ? `${repeat.interval}${RepeatUnit[repeat.unit].intervalText} ${repeat.weekDays} ` : '';
   const onSubmit = (data: IAddTodo) => console.log(data);
 
   return (
@@ -281,7 +345,7 @@ const AddTodo = () => {
                 {pets.map(({ id, name, isPressed }) => (
                   <Pressable key={id} onPress={() => handlePetPress(id)}>
                     <View style={[styles.pet,  isPressed ? styles.selectedPet : styles.notSelectedPet]}>
-                      <Text style={{color: isPressed? "white" : "grey"}}>{name}</Text>
+                      <Text style={{color: isPressed? Colors.White : Colors.Pink}}>{name}</Text>
                     </View>
                   </Pressable>
                 ))}
@@ -301,7 +365,7 @@ const AddTodo = () => {
                       <Text>{getValues('tag')}</Text>
                     </Pressable>
                     <Pressable style={[styles.tagContainer, styles.selectedTag]} onPress={() => setTagWindowSelected(true)}>
-                      <Text style={{"color":"white"}}>태그</Text>
+                      <Text style={{color:Colors.White}}>태그</Text>
                     </Pressable>
                     </> :   
                     <>
@@ -315,7 +379,7 @@ const AddTodo = () => {
                       value={value || ''}
                     />
                     <Pressable style={[styles.tagContainer, styles.notSelectedTag]} onPress={() => setTagWindowSelected(true)}>
-                      <Text style={{"color":"white"}}>태그</Text>
+                      <Text style={{color: Colors.Pink}}>태그</Text>
                     </Pressable>
                     </>
                   )}
@@ -324,7 +388,7 @@ const AddTodo = () => {
                 <BottomModal
                 isVisible={tagWindowSelected}
                 onClose={() => setTagWindowSelected(!tagWindowSelected)}
-                footer={footerTag}/>
+                footer={() => footerTag}/>
               </View>
             </View>
             <View style={styles.inputWrap}>
@@ -335,14 +399,15 @@ const AddTodo = () => {
                     <Controller 
                       control={control}
                       name='isAllDay'
-                      render={({ field: { value } }) => (
+                      render={({ field: { value, onChange } }) => (
                         <>
                         <View style={{flexDirection:"row"}}>
                           <ScheduleIcon/><Text style={{marginLeft: 10}}>하루종일</Text>
                         </View>
                         <Switch 
+                        thumbColor={value ? Colors.Pink : "#ededed"} trackColor={{false: "#b2b2b2", true: "#FE9CBD"}}
                         onChange={() => {
-                          setValue('isAllDay', !value);
+                          onChange(!value);
                         }}
                         value={getValues('isAllDay')}></Switch>
                         </>)}
@@ -388,9 +453,9 @@ const AddTodo = () => {
                     )}
                   </View>
                 </View>
-                <Separator/>
+                {Separator}
                 <View style={styles.timeSectionContainer}>
-                  <View style={styles.timeLineContainer}>                      
+                  <View style={{...styles.timeLineContainer, height: 30}}>                      
                     <View style={{flexDirection:"row"}}>
                       <PaletteIcon/>
                       <Text style={{ marginLeft: 10}}>색상</Text>
@@ -408,32 +473,32 @@ const AddTodo = () => {
                 <BottomModal
                 isVisible={colorWindowSelected}
                 onClose={() => setColorWindowSelected(!colorWindowSelected)}
-                footer={footerColor}/>
-                <Separator/>
+                footer={() => footerColor}/>
+                {Separator}
                 <View style={styles.timeSectionContainer}>
-                  <View style={styles.timeLineContainer}>
+                  <View style={{...styles.timeLineContainer, height: 30}}>
                     <Controller
                       control={control}
                       name="isUsingAlarm"
-                      render={({ field: { value } }) => (
+                      render={({ field: { value, onChange } }) => (
                         <>
                         <View style={{flexDirection:"row"}}>
-                          <AlarmIcon stroke={value ? Colors.Black : Colors.Gray838383}/><Text style={{color: value? Colors.Black : Colors.Gray838383 , marginLeft: 10}}>알람</Text>
+                          <AlarmIcon stroke={value ? Colors.Black : Colors.Gray838383}/>
+                          <Text style={{color: value? Colors.Black : Colors.Gray838383 , marginLeft: 10}}>알람</Text>
                         </View>
-                        <Switch 
-                        onChange={() => {
-                          setValue('isUsingAlarm', !value);
-                        }}
+                        <Switch
+                        thumbColor={value ? Colors.Pink : "#ededed"} trackColor={{false: "#b2b2b2", true: "#FE9CBD"}} 
+                        onChange={() => { onChange(!value);}}
                         value={value}></Switch>
                         </> )} />
                   </View>
                 </View>
-                <Separator/>
+                {Separator}
                 <View style={styles.timeSectionContainer}>
-                  <View style={styles.timeLineContainer}>
+                  <View style={{...styles.timeLineContainer, height: 30}}>
                     <View style={{flexDirection:"row"}}>
                       <RepeatIcon/>
-                      <Text style={{ marginLeft: 10}}>{repeatText} 반복</Text>
+                      <Text style={{ marginLeft: 10, color: repeat == null ? Colors.Gray838383 : Colors.Black}}>{repeatText}반복</Text>
                     </View>
                     <Pressable onPress={() => {
                       setRepeatWindowSelected(true);
@@ -443,7 +508,8 @@ const AddTodo = () => {
                     <BottomModal
                       isVisible={repeatWindowSelected}
                       onClose={() => setRepeatWindowSelected(!repeatWindowSelected)}
-                      footer={footerRepeat}/>
+                      footer={() => footerRepeat}/>
+                    <ColorPickerModal visible={colorPickerWindowSelected}/>
                   </View>
                 </View>
               </View>
@@ -532,6 +598,7 @@ const styles = StyleSheet.create({
   },
   bottomModalContainer: {
     marginTop: 15,
+    justifyContent: 'center',
   },
   footerCircleContainer: {
     flexDirection: 'row',
@@ -541,6 +608,8 @@ const styles = StyleSheet.create({
     paddingRight: 30,
     paddingTop: 30,
     paddingBottom: 30,
+    width: 480,
+    hegith: 140,
   },
   footerRepeatContainer: {
     marginTop: 30,
@@ -568,14 +637,20 @@ const styles = StyleSheet.create({
     marginRight: 10,
     marginTop: 30,
     marginBottom: 10,
-    borderColor: Colors.Black,
     borderWidth: 1,
   },
+  colorSectionContainer: {
+    marginTop: 70,
+    paddingHorizontal: 24,
+
+  },
   selectedTag: {
-    backgroundColor: "black",
+    backgroundColor: Colors.Pink,
   },
   notSelectedTag: {
-    backgroundColor: '#D8D8D8',
+    backgroundColor: Colors.White,
+    borderColor: Colors.Pink,
+    borderWidth: 1,
   },
   pet: {
     paddingLeft: 15,
@@ -586,14 +661,14 @@ const styles = StyleSheet.create({
     marginRight: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    borderColor: 'grey',
+    borderColor: Colors.Pink,
     borderWidth: 1,
   },
   selectedPet: {
-    backgroundColor: "black",
+    backgroundColor: Colors.Pink,
   },
   notSelectedPet: {
-    backgroundColor: "white",
+    backgroundColor: Colors.White,
   },
   timeBox: {
     flexDirection: 'row',
@@ -647,13 +722,13 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
     marginRight: 10,
-    borderColor : Colors.Gray838383,
+    borderColor : Colors.Pink,
   },
   radioInnerCircle: {
     width : 10,
     height : 10,
     borderRadius : 5,
-    backgroundColor : Colors.Gray838383,
+    backgroundColor : Colors.Pink,
   },
   footerRepeatButton: {
     flexDirection: 'row',
@@ -662,7 +737,7 @@ const styles = StyleSheet.create({
     width: '45%',
     height: 50,
     marginTop: 10,
-    backgroundColor: '#F4F4F4',
+    backgroundColor: Colors.Pink,
     borderRadius: 10,
   }
 });
