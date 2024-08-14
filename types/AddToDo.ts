@@ -32,7 +32,8 @@ export interface IRepeat {
 }
 
 interface IAddTodo {
-    clickedPetsId: number[];
+    profileId: number;
+    petIds: number[];
     content: string | null;
     tag: ToDoType | null;
     date: string;

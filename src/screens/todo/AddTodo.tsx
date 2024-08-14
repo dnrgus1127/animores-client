@@ -8,8 +8,7 @@ import HeaderNavigation from "../../navigation/HeaderNavigation";
 import { RootStackParamList } from "../../navigation/type";
 import { ScreenName } from "../../statics/constants/ScreenName";
 import { ScrollView, Switch, TextInput } from "react-native-gesture-handler";
-import { PetService } from "../../service/PetService";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { QueryKey } from "../../statics/constants/Querykey";
 import Title from "../../components/text/Title";
 import ToDoType from "../../statics/constants/ToDoType";
@@ -20,14 +19,16 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import BottomModal from "../../components/modal/BottomModal";
 import ToDoColors from "../../statics/constants/ToDoColors";
 import IAddTodo, { RepeatUnit, WeekDay } from "../../../types/AddToDo";
-import { IconCheck } from "../../assets/icons";
 import ColorPicker from 'react-native-wheel-color-picker';
+import { PetService } from "../../service/PetService";
+import { ToDoService } from "../../service/ToDoService";
 
 const AddTodo = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList, ScreenName.AddTodo>>();
   const methods = useForm<IAddTodo>({
     defaultValues: {
-      clickedPetsId: [],
+      profileId: 1,
+      petIds: [],
       content: null,
       tag: null,
       date: '',
@@ -39,7 +40,7 @@ const AddTodo = () => {
     }
   })
 
-  const { control, handleSubmit, setValue, getValues, watch} = methods;
+  const { control, handleSubmit, setValue, getValues, watch, setError, formState: { errors }} = methods;
   
   const { data: petData } = useQuery({
     queryKey: [QueryKey.PET_LIST],
@@ -84,8 +85,7 @@ const AddTodo = () => {
           pet.id === id ? { ...pet, isPressed: !pet.isPressed } : pet
         );
         const clickedPetsId = updatedPets.filter((pet) => pet.isPressed).map((pet) => pet.id);
-        setValue('clickedPetsId', clickedPetsId);
-        console.log(clickedPetsId);
+        setValue('petIds', clickedPetsId);
         return updatedPets;
       });
     },[]);
@@ -104,7 +104,6 @@ const AddTodo = () => {
   const [tagWindowSelected, setTagWindowSelected] = useState<boolean>(false);
   const selectedTag = watch('tag');
   const footerTag = useMemo(() => {
-    console.log('footerTag');
     return (
       <View style={styles.bottomModalContainer}>
         <View style={styles.footerTopLine} />
@@ -136,11 +135,9 @@ const AddTodo = () => {
   const [colorPickerWindowSelected, setColorPickerWindowSelected] = useState<boolean>(false);
   const [useCustomColor, setUseCustomColor] = useState<boolean>(false);
   const [customColor, setCustomColor] = useState<string>('#aabbcc');
-  console.log(colorPickerWindowSelected);
-  const ColorPickerModal = (props: {visible: boolean}): React.ReactNode => {
-    const {visible} = props;
+  const ColorPickerModal = useMemo((): React.ReactNode => {
     return (
-      <Modal visible={visible}>
+      <Modal visible={colorPickerWindowSelected}>
         <View style={styles.colorSectionContainer}>
           <ColorPicker
             color={customColor}
@@ -150,21 +147,24 @@ const AddTodo = () => {
             noSnap={true}
             row={false}
           />
+          <Pressable onPress={() => setColorPickerWindowSelected(false)}>
+            <Title text="취소" color={Colors.Pink}/>
+          </Pressable>
           <Pressable onPress={() => {
             setColorPickerWindowSelected(false);
             setUseCustomColor(true);
             setValue('color', customColor);
+            setColorWindowSelected(false);
           }}>
             <Title text="확인" color={Colors.Pink}/>
           </Pressable>
         </View>
       </Modal>
     )
-  }
+  },[colorPickerWindowSelected, customColor]);
 
   const color = watch('color');
   const footerColor = useMemo(() => {
-    console.log('footerColor');
     return (
       <View style={styles.bottomModalContainer}>
         <View style={styles.footerTopLine} />
@@ -192,16 +192,18 @@ const AddTodo = () => {
           <View
             style={{
               ...styles.footerOuterCircle,
-              borderColor: useCustomColor ? 'black' : 'white',
+              borderStyle: useCustomColor ? 'solid' : 'dashed',
+              borderColor: 'black' ,
             }}
           >
             <Pressable
               style={{ ...styles.footerColorCircle, backgroundColor: useCustomColor ? getValues('color') : Colors.White }}
               onPress={() => {
-                // setColorWindowSelected(false);
                 setColorPickerWindowSelected(true);
               }}
-            />
+            >
+              {useCustomColor ? <Text>✔</Text> : <Text>+</Text>}
+            </Pressable>
           </View>
         </View>
       </View>
@@ -229,23 +231,11 @@ const AddTodo = () => {
   }
 
   const repeat = watch('repeat');
-
-  const [selectedUnit, setSelectedUnit] = useState<string | null>(null);
-  const [intervalValue, setIntervalValue] = useState<number>(1);
-  const [weekDays, setWeekDays] = useState<WeekDay[]>([]);
-  const [weekDayList, setWeekDayList] = useState<{day: WeekDay, isClicked: boolean}[]>([]);
-
+  const [selectedUnit, setSelectedUnit] = useState<string | null>(repeat == null ? null : repeat.unit);
+  const [intervalValue, setIntervalValue] = useState<number>(repeat == null ? 1 : repeat.interval);
+  const [weekDays, setWeekDays] = useState<WeekDay[]>(repeat == null ? [] : repeat.weekDays); 
+  const [weekDayList, setWeekDayList] = useState<{day: WeekDay, isClicked: boolean}[]>(Object.values(WeekDay).map((day) => ({day, isClicked: false})));
   const footerRepeat = useMemo((): React.ReactNode => {
-    if(repeat == null) {
-      setWeekDayList(Object.values(WeekDay).map((day) => ({day, isClicked: false})));
-    } else {
-      const {unit, interval, weekDays} = repeat;
-      setSelectedUnit(unit);
-      setIntervalValue(interval);
-      setWeekDays(weekDays);
-      setWeekDayList(Object.values(WeekDay).map((day) => ({day, isClicked: weekDays.includes(day)})));
-    }
-
     const handleWeekDayPress = (day: WeekDay) => {
       setWeekDayList((prevWeekDayList) => {
         const updatedWeekDayList = prevWeekDayList.map((weekDay) =>
@@ -320,10 +310,32 @@ const AddTodo = () => {
         </View>
       </View>
     );
-  },[repeat, setRepeatWindowSelected, setValue]);
+  },[repeat, selectedUnit, intervalValue, weekDays, weekDayList]);
 
   const repeatText = repeat ? `${repeat.interval}${RepeatUnit[repeat.unit].intervalText} ${repeat.weekDays} ` : '';
-  const onSubmit = (data: IAddTodo) => console.log(data);
+  
+  const { mutate } = useMutation({
+    mutationFn: (data: IAddTodo) => ToDoService.todo.create(data),
+    onSuccess: () => {
+      navigation.goBack();
+    },
+    onError: (error) => {
+      console.error(error);
+    }
+  });
+
+  const onSubmit = (data: IAddTodo) => {
+    console.log(data);
+    if (data.petIds.length === 0) {
+      setError('petIds', { type: 'required', message: '펫을 선택해주세요' });
+    }
+
+    if (data.tag == null && data.content == null) {
+      setError('content', { type: 'required', message: '할 일을 입력하거나 태그를 선택해주세요' });
+    }
+    
+    mutate(data);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -509,7 +521,7 @@ const AddTodo = () => {
                       isVisible={repeatWindowSelected}
                       onClose={() => setRepeatWindowSelected(!repeatWindowSelected)}
                       footer={() => footerRepeat}/>
-                    <ColorPickerModal visible={colorPickerWindowSelected}/>
+                    {ColorPickerModal}
                   </View>
                 </View>
               </View>
