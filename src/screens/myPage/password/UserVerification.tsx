@@ -1,29 +1,51 @@
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useMutation } from "@tanstack/react-query";
-import * as ImagePicker from 'expo-image-picker';
 import React, { useState } from "react";
 import { Image, Pressable, StyleSheet, TextInput, View, Text } from "react-native";
+import { Control, Controller, FieldError, FieldValues, RegisterOptions, useForm } from "react-hook-form";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Toast from "react-native-toast-message";
-import {
-  Cancle,
-  ProfileImage as DefaultProfileImage,
-} from "../../../assets/svg";
-import SingleButton from "../../../components/button/SingleButton";
 import Title from "../../../components/text/Title";
 import HeaderNavigation from "../../../navigation/HeaderNavigation";
+import { emailRegex, nicknameRegex, pwRegex } from "../../../js/util";
+import { AuthModel } from "../../../model/AuthModel";
+import { AuthService } from "../../../service/AuthService";
 import { RootStackParamList } from "../../../navigation/type";
 import { ProfileService } from "../../../service/ProfileService";
 import { ScreenName } from "../../../statics/constants/ScreenName";
 import { Colors } from "../../../styles/Colors";
+import { useRecoilState } from "recoil";
+import { UserEmailAtom } from "../../../recoil/AuthAtom";
 
 const UserVerification = () => {
+  const { control, handleSubmit, trigger, getValues, watch, formState:{errors} } = useForm({ mode: "onChange"})
+  const baseUrl = process.env.EXPO_PUBLIC_BASE_URL;
 
   const navigation =
     useNavigation<
       StackNavigationProp<RootStackParamList, ScreenName.ProfileManagement>
     >();
+
+  // Email 인증 상태
+  const [verificationState, setVerificationState] = useState<AuthModel.IVerificationModel["state"]>("none")
+  const [userEmail, setUserEmail] = useRecoilState(UserEmailAtom);
+
+  // Email - 입력 시
+  const handleOnChangeEmail = (inputText:string) => {
+    const matchEmail = inputText.match(emailRegex)
+  }
+
+  // Email -  인증번호 전송 클릭 시
+  const sendVerificationCode = async (email: string) => {
+    // 인증번호 생성
+    AuthService.Auth.emailVerificationCode(getValues("email"));
+    navigation.navigate(ScreenName.ResetPassword);
+
+    // Atom에 email 저장
+    setUserEmail(email);
+  }
+
+
+  const watchEmail = watch("email", false);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -40,24 +62,62 @@ const UserVerification = () => {
           fontWeight="bold"
           style={{ marginTop: 30, marginBottom: 60 }}
         />
+        
+
         <View style={[styles.inputWrap, { marginTop: 20 }]}>
-          <Text style={[styles.label]}>이메일</Text>
-          <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
-            <TextInput 
-              style={[styles.inputBox]}
-              placeholder="이메일을 입력해주세요"
-              returnKeyType="done"
+            <Controller 
+              name="email"
+              control={control}
+              rules={{
+                required: "이메일을 입력해주세요.", 
+                pattern: {
+                value: emailRegex,
+                message: "이메일 형식에 맞게 입력해주세요."
+              }}}
+              render={({ field: { onChange, onBlur, value }, fieldState: {error} }) => (
+                <>
+                  <Text style={[styles.label, error ? styles.errorText : null]}>이메일</Text>
+                  <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
+                    <TextInput 
+                      style={styles.inputBox}
+                      placeholder="이메일을 입력해주세요"
+                      onChangeText={(value) => {
+                        onChange(value);
+                        handleOnChangeEmail(value)
+                      }}
+                      returnKeyType="done"
+                    />
+                    {
+                      verificationState === "success" ?
+                      <Pressable style={[styles.inputButton, { paddingLeft: 5, paddingRight: 5 }]} disabled>
+                        <Text style={styles.textDisabled}>인증완료</Text>
+                      </Pressable>
+                      : (verificationState === "fail" ?
+                        <Pressable style={[styles.inputButton, { paddingLeft: 5, paddingRight: 5 }]} disabled>
+                          <Text style={styles.textDisabled}>인증실패</Text>
+                        </Pressable>
+                        : (verificationState === "none" ? 
+                          <Pressable 
+                            style={[styles.inputButton, { paddingLeft: 5, paddingRight: 5 }]} 
+                            disabled={error} 
+                            onPress={() => sendVerificationCode(getValues("email"))}
+                          >
+                            <Text style={error && styles.textDisabled}>인증번호 전송</Text>
+                          </Pressable>
+                          : 
+                          <Pressable style={[styles.inputButton, { paddingLeft: 5, paddingRight: 5 }]} disabled>
+                            <Text style={styles.textDisabled}>전송완료</Text>
+                          </Pressable>
+                        )
+                      )
+                    }
+                  </View>
+                  {error && <Text style={styles.errorText}>{error.message}</Text>}
+                  {verificationState === "success" && <Text style={styles.successText}>인증이 완료된 이메일입니다.</Text>}
+                </>
+              )}
             />
-            <Pressable
-              style={[styles.inputButton]} 
-              disabled={false}
-              onPress={() => navigation.navigate(ScreenName.ResetPassword)}
-            >
-              <Text>인증번호 전송</Text>
-            </Pressable>
           </View>
-          <Text style={styles.successText}>인증이 완료된 이메일입니다.</Text>
-        </View>
       </View>
     </SafeAreaView>
   )

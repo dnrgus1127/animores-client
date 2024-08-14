@@ -1,15 +1,8 @@
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useMutation } from "@tanstack/react-query";
-import * as ImagePicker from 'expo-image-picker';
 import React, { useState } from "react";
 import { Image, Pressable, StyleSheet, TextInput, View, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Toast from "react-native-toast-message";
-import {
-  Cancle,
-  ProfileImage as DefaultProfileImage,
-} from "../../../assets/svg";
 import SingleButton from "../../../components/button/SingleButton";
 import Title from "../../../components/text/Title";
 import HeaderNavigation from "../../../navigation/HeaderNavigation";
@@ -19,9 +12,14 @@ import { ScreenName } from "../../../statics/constants/ScreenName";
 import { Colors } from "../../../styles/Colors";
 import { DeleteIcon } from "../../../assets/svg";
 import Countdown from "../../../components/Countdown";
+import { useRecoilValue } from "recoil";
+import { UserEmailAtom } from "../../../recoil/AuthAtom";
+
+interface IProps {
+  email: string
+}
 
 const ResetPassword = () => {
-
   const navigation =
     useNavigation<
       StackNavigationProp<RootStackParamList, ScreenName.ProfileManagement>
@@ -29,6 +27,8 @@ const ResetPassword = () => {
     
   // 이메일 인증 카운트
   const [resetCount, setResetCount] = useState(false)
+
+  const userEmail = useRecoilValue(UserEmailAtom);
 
   // 카운트다운
   const afterCountdown = () => {
@@ -58,7 +58,7 @@ const ResetPassword = () => {
               style={[styles.inputBox, styles.textDisabled]}
               placeholder="이메일을 입력해주세요"
               returnKeyType="done"
-              value={"abc@gamil.com"}
+              value={userEmail}
               editable={false}
             />
             <Pressable
@@ -92,12 +92,12 @@ const ResetPassword = () => {
           <Text style={styles.errorText}>인증번호가 일치하지 않습니다.</Text>
         </View>
 
-        <Pressable
-          onPress={() => navigation.navigate(ScreenName.NewPassword)}
-          style={[styles.primaryLargeButton]}
-          children={<Text style={[styles.primaryButtonText]}>다음</Text>}
-        >
-        </Pressable>
+        <View style={{ marginTop: "auto" }}>
+          <SingleButton
+            title={"다음"}
+            onPress={() => navigation.navigate(ScreenName.NewPassword)}
+          />
+        </View>
       </View>
     </SafeAreaView>
   )
@@ -142,21 +142,6 @@ const styles = StyleSheet.create({
   },
   textDisabled: {
     color: "#AEAEAE",
-  },
-  primaryLargeButton: {
-    marginTop: "auto",
-    height: 60,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 20,
-    backgroundColor: "#FB3F7E",
-  },
-  primaryButtonText: {
-    fontSize: 16,
-    color: "#FFF",
-  },
-  buttonDisabled: {
-    backgroundColor: "#F2F2F2",
   },
   errorText: {
     color: "#FF4040",
