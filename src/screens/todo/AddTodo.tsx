@@ -22,6 +22,8 @@ import IAddTodo, { RepeatUnit, WeekDay } from "../../../types/AddToDo";
 import ColorPicker from 'react-native-wheel-color-picker';
 import { PetService } from "../../service/PetService";
 import { ToDoService } from "../../service/ToDoService";
+import Toast from "react-native-toast-message";
+import axios from "axios";
 
 const AddTodo = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList, ScreenName.AddTodo>>();
@@ -40,8 +42,9 @@ const AddTodo = () => {
     }
   })
 
-  const { control, handleSubmit, setValue, getValues, watch, setError, formState: { errors }} = methods;
+  const { control, handleSubmit, setValue, getValues, watch} = methods;
   
+  //펫 정보 불러오기
   const { data: petData } = useQuery({
     queryKey: [QueryKey.PET_LIST],
     queryFn: () => PetService.pet.list(),
@@ -53,6 +56,7 @@ const AddTodo = () => {
     isPressed: boolean;
   }
 
+  // 펫 정보에다가 isPressed 추가
   useEffect(() => {
     if (petData?.data?.data) {
       setPets(
@@ -68,6 +72,7 @@ const AddTodo = () => {
   const [pets, setPets] = useState<IPet[]>([]);
   const [date, setDate] = useState<Date>(new Date());
 
+  // 현재 날짜와 시간을 형식에 맞춰 date, time 에 넣어주기
   useEffect(() => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -77,7 +82,19 @@ const AddTodo = () => {
     setValue('date',(`${year}-${month}-${day}`));
     setValue('time',(`${hour}:${minute}`));
   }, [date, pets]);
+  
+  // 시간을 오전/오후로 나누어 표시해주는 함수
+  const timeStringConverter = (time: string): string => {
+    const [hour, minute] = time.split(':');
+    const hourNum = Number(hour);
+    const minuteNum = Number(minute);
+    if (hourNum < 12) {
+      return `오전 ${String(hourNum).padStart(2, '0')}:${String(minuteNum).padStart(2, '0')}`;
+    }
+    return `오후 ${String(hourNum-12).padStart(2, '0')}:${String(minuteNum).padStart(2, '0')}`;
+  }
 
+  // 펫 선택시 해당 id 의 isPressed 값 변경 & petIds 에 id list 넣어주기
   const handlePetPress = useCallback(
     (id: number) => {
       setPets((prevPets) => {
@@ -99,6 +116,7 @@ const AddTodo = () => {
       </View>
     ),[]);
 
+  // time picker modal 관련
   const [timePickerMode, setTimePickerMode] = useState<string>('date');
   const [timePickerSelected, setTimePickerSelected] = useState<boolean>(false);
   const [tagWindowSelected, setTagWindowSelected] = useState<boolean>(false);
@@ -131,6 +149,7 @@ const AddTodo = () => {
     );
   }, [selectedTag]);
 
+  // color picker modal 관련
   const [colorWindowSelected, setColorWindowSelected] = useState<boolean>(false);
   const [colorPickerWindowSelected, setColorPickerWindowSelected] = useState<boolean>(false);
   const [useCustomColor, setUseCustomColor] = useState<boolean>(false);
@@ -163,6 +182,8 @@ const AddTodo = () => {
     )
   },[colorPickerWindowSelected, customColor]);
 
+  // color picker modal footer 관련
+  // custom color 선택시 color picker modal 띄우기
   const color = watch('color');
   const footerColor = useMemo(() => {
     return (
@@ -210,16 +231,7 @@ const AddTodo = () => {
     );
   }, [color, useCustomColor]);
 
-  const timeStringConverter = (time: string): string => {
-    const [hour, minute] = time.split(':');
-    const hourNum = Number(hour);
-    const minuteNum = Number(minute);
-    if (hourNum < 12) {
-      return `오전 ${String(hourNum).padStart(2, '0')}:${String(minuteNum).padStart(2, '0')}`;
-    }
-    return `오후 ${String(hourNum-12).padStart(2, '0')}:${String(minuteNum).padStart(2, '0')}`;
-  }
-
+  // repeat modal 관련
   const [repeatWindowSelected, setRepeatWindowSelected] = useState<boolean>(false);
   const RadioButton = (props : {isClicked:boolean}) => {
     const {isClicked} = props;
@@ -229,7 +241,6 @@ const AddTodo = () => {
       </View>
     )
   }
-
   const repeat = watch('repeat');
   const [selectedUnit, setSelectedUnit] = useState<string | null>(repeat == null ? null : repeat.unit);
   const [intervalValue, setIntervalValue] = useState<number>(repeat == null ? 1 : repeat.interval);
@@ -314,28 +325,56 @@ const AddTodo = () => {
 
   const repeatText = repeat ? `${repeat.interval}${RepeatUnit[repeat.unit].intervalText} ${repeat.weekDays} ` : '';
   
-  const { mutate } = useMutation({
+  // mutation 관련
+
+  const { mutate, isLoading } = useMutation({
     mutationFn: (data: IAddTodo) => ToDoService.todo.create(data),
     onSuccess: () => {
-      navigation.goBack();
+      Toast.show({
+        type: 'success',
+        text1: '일정이 추가되었습니다',
+      })
     },
     onError: (error) => {
-      console.error(error);
+      if(axios.isAxiosError(error)) {
+        if (error.response) {
+          Toast.show({
+            type: 'error',
+            text1: error.response.data,
+          })
+        }
+      }
     }
   });
 
   const onSubmit = (data: IAddTodo) => {
-    console.log(data);
-    if (data.petIds.length === 0) {
-      setError('petIds', { type: 'required', message: '펫을 선택해주세요' });
-    }
+    var isError = false;
+    var errorMessage = '';
 
     if (data.tag == null && data.content == null) {
-      setError('content', { type: 'required', message: '할 일을 입력하거나 태그를 선택해주세요' });
+      errorMessage = '할 일을 입력해주세요';
+      isError = true;
+    }
+
+    if (data.petIds.length === 0) {
+      errorMessage = '펫을 선택해주세요';
+      isError = true;
+      
+    }
+
+    if (isError) {
+      Toast.show({
+        type: 'error',
+        text1: errorMessage,
+      })
+      return;
     }
     
     mutate(data);
   };
+
+  useEffect(() => {
+  }, [isLoading]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -348,6 +387,7 @@ const AddTodo = () => {
               navigation.goBack();
             }}
           onPressRightButton={handleSubmit(onSubmit)}
+          buttonDisabled={isLoading}
         />
         <FormProvider {...methods}>
           <View style={[commonStyles.container, {backgroundColor:"white"}]}>
@@ -366,37 +406,37 @@ const AddTodo = () => {
             <View style={styles.inputWrap}>
               <Text style={styles.label}>할 일</Text>
               <View style={styles.toDoTitleContainer}>
-              <Controller
-                  control={control}
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    selectedTag != null ? 
-                    <>
-                    <Pressable style={{"paddingRight": 200}} onPress={() => {
-                      setValue('tag', null);
-                    }}>
-                      <Text>{getValues('tag')}</Text>
-                    </Pressable>
-                    <Pressable style={[styles.tagContainer, styles.selectedTag]} onPress={() => setTagWindowSelected(true)}>
-                      <Text style={{color:Colors.White}}>태그</Text>
-                    </Pressable>
-                    </> :   
-                    <>
-                    <TextInput
-                      onBlur={onBlur}
-                      onChangeText={(text) => {
-                        onChange(text);
+                <Controller
+                    control={control}
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      selectedTag != null ? 
+                      <>
+                      <Pressable style={{"paddingRight": 200}} onPress={() => {
                         setValue('tag', null);
-                      }}
-                      placeholder="태그 선택 또는 직접 입력"
-                      value={value || ''}
-                    />
-                    <Pressable style={[styles.tagContainer, styles.notSelectedTag]} onPress={() => setTagWindowSelected(true)}>
-                      <Text style={{color: Colors.Pink}}>태그</Text>
-                    </Pressable>
-                    </>
-                  )}
-                  name="content"
-                />
+                      }}>
+                        <Text>{getValues('tag')}</Text>
+                      </Pressable>
+                      <Pressable style={[styles.tagContainer, styles.selectedTag]} onPress={() => setTagWindowSelected(true)}>
+                        <Text style={{color:Colors.White}}>태그</Text>
+                      </Pressable>
+                      </> :   
+                      <>
+                      <TextInput
+                        onBlur={onBlur}
+                        onChangeText={(text) => {
+                          onChange(text);
+                          setValue('tag', null);
+                        }}
+                        placeholder="태그 선택 또는 직접 입력"
+                        value={value || ''}
+                      />
+                      <Pressable style={[styles.tagContainer, styles.notSelectedTag]} onPress={() => setTagWindowSelected(true)}>
+                        <Text style={{color: Colors.Pink}}>태그</Text>
+                      </Pressable>
+                      </>
+                    )}
+                    name="content"
+                  />
                 <BottomModal
                 isVisible={tagWindowSelected}
                 onClose={() => setTagWindowSelected(!tagWindowSelected)}
@@ -751,5 +791,5 @@ const styles = StyleSheet.create({
     marginTop: 10,
     backgroundColor: Colors.Pink,
     borderRadius: 10,
-  }
+  },
 });

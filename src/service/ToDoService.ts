@@ -1,3 +1,4 @@
+import axios from "axios";
 import IAddTodo from "../../types/AddToDo";
 import AxiosContext from "../screens/context/AxiosContext";
 
@@ -9,7 +10,14 @@ export namespace ToDoService {
                 return { data: response.data, status: response.status };
             } catch (error) {
                 console.error('ToDoService.todo.create:', error);
-                return { data: null, status: error || 500 };
+                if	(axios.isAxiosError(error)) {
+					if (error.response) {
+						console.error('ProfileService.Profile.list:', error.response.data);
+					} else {
+						console.error('ProfileService.Profile.list:', error.message);
+					}
+				}
+                throw error;
             }
         }    
     }
