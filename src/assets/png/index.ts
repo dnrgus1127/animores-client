@@ -32,7 +32,8 @@ const PngImage = {
 		bird,
 		cat,
 		fish,
-		rabbit
+		rabbit,
+		//homeTheme1,
 	},
 	petAdd: require('./petAdd.png'),
 	profile: require('./profile.png'),

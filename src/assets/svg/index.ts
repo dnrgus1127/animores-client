@@ -39,6 +39,8 @@ import PaletteIcon from './paletteIcon.svg'
 import AlarmIcon from './alarmIcon.svg'
 import RepeatIcon from './repeatIcon.svg'
 import RightArrow from './chevron-right.svg'
+import HomeAvatar1 from "./img_home_dog1.svg"
+
 
 export {
 	BackButton,
@@ -82,4 +84,5 @@ export {
 	AlarmIcon,
 	RepeatIcon,
 	RightArrow,
+	HomeAvatar1,
 }
