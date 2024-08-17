@@ -50,8 +50,7 @@ const CreateProfile = () => {
 
   const { mutate } = useMutation({
     mutationFn: async (data: FormData) => {
-      const response = await ProfileService.profile.create(data);
-      return response.data;
+      return ProfileService.profile.create(data).data;
     }
   });
 
