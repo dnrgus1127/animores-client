@@ -21,4 +21,5 @@ export type RootStackParamList = {
 	[ScreenName.BottomTab]: undefined;
 	[ScreenName.EditProfile]: { item: IProfile };
 	[ScreenName.ProfileManagement]: undefined;
+	[ScreenName.ToDoList]: undefined;
 }

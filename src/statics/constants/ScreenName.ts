@@ -27,4 +27,5 @@ export enum ScreenName {
 	AddPet = 'AddPet',
 	EditProfile = 'EditProfile',
 	ProfileManagement = 'ProfileManagement',
+	ToDoList = 'ToDoList',
 }
