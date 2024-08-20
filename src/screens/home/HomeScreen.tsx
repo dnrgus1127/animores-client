@@ -10,26 +10,38 @@ import TodayTodoItem from "./TodayTodoItem";
 import Swiper from 'react-native-swiper';
 import Slider from './Slider';
 
-export interface IimagesSlider {
+export interface IItemsSlider {
     image: string;
     title: string;
 }
-const ImagesSlider = [
+const ItemsSlider = [
     {
-        image: "https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=362&q=80",
-        title: "Dog 1"
+        title: "산책하기",
+        discription: "집 앞 공원 한바퀴 돌고 오기",
+        pet: ["심바"],
+        at: "AM",
+        time: "11:00",
     },
     {
-        image: "https://images.unsplash.com/photo-1543466835-00a7907e9de1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=774&q=80",
-        title: "Dog 2"
+        title: "밥주기",
+        discription: "영양제랑 사료 2:8 황금비율로 꼭 맞춰서 줄 것",
+        pet: ["호동이", "심바"],
+        at: "PM",
+        time: "12:00",
     },
     {
-        image: "https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=362&q=80",
-        title: "Dog 3"
+        title: "목욕시키기",
+        discription: "강아지 전용 샴푸 사용, 털 꼭 말려 주어야 함",
+        pet: ["심바"],
+        at: "PM",
+        time: "1:00",
     },
     {
-        image: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
-        title: "Dog 4"
+        title: "놀아주기",
+        discription: "던지고 물어오기 놀이 좋아함.",
+        pet: ["호동이"],
+        at: "PM",
+        time: "6:00",
     },
 ]
 
@@ -39,21 +51,7 @@ const HomeScreen = () => {
   return (
     <ImageBackground source={ HomeTheme1 } resizeMode="cover" style={styles.homeBackground}>
       <SafeAreaView style={styles.container}>
-        <Slider itemList={ImagesSlider} />
-         {/* <View style={{ height: 150, backgroundColor: '#fff', width: '100%' }}>
-            <Swiper showsButtons={true} bounces={true} loop={false} loadMinimal={true} style={{ overflow: 'visibility !important' }} containerStyle={{ backgroundColor: 'tomato'}}>
-               <View style={styles.slide1}>
-                  <TodayTodoItem />
-               </View>
-               <View style={styles.slide1}>
-                  <TodayTodoItem />
-               </View>
-               <View style={styles.slide1}>
-                  <TodayTodoItem />
-               </View>
-            </Swiper>
-         </View> */}
-
+        <Slider itemList={ItemsSlider} />
          {/* <View style={{ flex: 1 }}>
             <View style={{ flexDirection: "row", width: "100%" }}>
             <View style={{ width: '70%', transform: [{scaleX: 0.86}, {scaleY: 0.86}], opacity: 0.6 }}>

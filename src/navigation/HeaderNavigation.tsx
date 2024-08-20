@@ -19,6 +19,7 @@ interface IProps {
   hasBackButton?: boolean;
   textStyle?: StyleProp<TextStyle>;
   content?: string;
+  buttonDisabled?: boolean;
 }
 
 const HeaderNavigation = (props: IProps) => {
@@ -30,6 +31,7 @@ const HeaderNavigation = (props: IProps) => {
     hasBackButton = true,
     textStyle,
     content,
+    buttonDisabled,
   } = props;
 
   const HIT_SLOP = { top: 10, left: 10, right: 10, bottom: 10 };
@@ -59,6 +61,7 @@ const HeaderNavigation = (props: IProps) => {
           <Pressable
             onPress={onPressRightButton}
             style={styles.rightTitleContainer}
+            disabled={buttonDisabled}
           >
             <Title
               text={rightTitle}

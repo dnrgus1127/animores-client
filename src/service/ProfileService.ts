@@ -16,7 +16,7 @@ export namespace ProfileService {
 		list: async () => {
 			try {
 				const response = await AxiosContext.get(`/api/v1/profiles`);
-				return { data: response.data, status: response.status };
+				return { data: response.data };
 			} catch (error) {
 				console.error('ProfileService.Profile.list:', error);
 				return { data: null, status: error };
