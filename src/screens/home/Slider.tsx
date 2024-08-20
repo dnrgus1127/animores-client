@@ -1,47 +1,76 @@
 import React, {useRef, useState} from "react";
 import { ImageBackground, Image, Pressable, StyleSheet, View, Text, FlatList, Dimensions } from "react-native";
-import {IimagesSlider} from "./HomeScreen";
-import { useSharedValue } from "react-native-reanimated";
+import {IItemsSlider} from "./HomeScreen";
+import Animated, { useAnimatedScrollHandler, useSharedValue, SharedValue, useAnimatedStyle, interpolate, Extrapolation } from "react-native-reanimated";
+import TodayTodoItem from "./TodayTodoItem";
 
 interface ISliderItem {
-    item: IimagesSlider;
+    item: IItemslider;
     index: number;
+    scrollX: SharedValue<number>
 }
 
-interface IimageList {
-  itemList: IimagesSlider[]
+interface IImageList {
+  itemList: IItemsSlider[]
 }
 
 const { width } = Dimensions.get('screen');
 
-const Slider = ({itemList}: IimageList) => {
-  const scrollX = useSharedValue(0);
 
-  const SliderItem = ({item, index}: ISliderItem) => (
-      <View key={item.id} style={styles.item}>
-          <ImageBackground
-              style={styles.image} source={{ uri: item.image }}
+
+const SliderItem = ({item, index, scrollX}: ISliderItem) => {
+  const rnAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateX: interpolate(
+            scrollX.value,
+            [(index-1) * width, index * width, (index+1) * width],
+            [-width * 0.25, 0, width * 0.25],
+            Extrapolation.CLAMP
+          )
+        }
+      ]
+    }
+  });
+
+  return (
+    <Animated.View style={[styles.itemWrap, rnAnimatedStyle]}>
+      {/* <ImageBackground
+          style={styles.image} source={{ uri: item.image }}
+      >
+          <View
+              style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  paddingTop: 10
+              }}
           >
-              <View
-                  style={{
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      paddingTop: 10
-                  }}
-              >
-                  <Text style={styles.title}>{item.title}</Text>
-              </View>
+              <Text style={styles.title}>{item.title}</Text>
+          </View>
 
-          </ImageBackground>
+      </ImageBackground> */}
+      <View style={styles.item}>
+        <TodayTodoItem item={item} index={index} />
       </View>
-  );
+    </Animated.View>
+  )
+};
+
+const Slider = ({itemList}: IImageList) => {
+  const scrollX = useSharedValue(0);
+  const onScrollHandler = useAnimatedScrollHandler({
+      onScroll: (e) => {
+          scrollX.value = e.contentOffset.x;
+      }
+  })
 
   return (
     <View style={{ flex: 1 }}>
-      <FlatList
+      <Animated.FlatList
           data={itemList}
           renderItem={({item, index}) => (
-            <SliderItem item={item} index={index} />
+            <SliderItem item={item} index={index} scrollX={scrollX} />
           )}
           //keyExtractor={(item) => item.id}
           horizontal
@@ -51,6 +80,7 @@ const Slider = ({itemList}: IimageList) => {
           }}
           showsHorizontalScrollIndicator={false}
           pagingEnabled
+          onScroll={onScrollHandler}
       />
     </View>
   )
@@ -59,18 +89,14 @@ const Slider = ({itemList}: IimageList) => {
 export default Slider;
 
 const styles = StyleSheet.create({
-    item: {
+    itemWrap: {
         height: 200,
         width: width,
         alignItems: 'center',
         gap: 20,
         
     },
-    title: {
-        fontSize: 18,
-    },
-    image: {
-        //flex: 1,
+    item: {
         width: 300,
         height: "100%",
         borderRadius: 8,
