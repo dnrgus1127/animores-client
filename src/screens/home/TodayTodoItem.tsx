@@ -2,37 +2,38 @@ import React from "react";
 import { ImageBackground, Image, Pressable, StyleSheet, View, Text } from "react-native";
 import { Colors } from "../../styles/Colors";
 
+interface ITodayTodoItem {
+    item: IItemslider;
+    index: number;
+}
 
-const TodayTodoItem = () => {
+const TodayTodoItem = ({item, index}: ITodayTodoItem) => {
   return (
     <View style={styles.todayTodo}>
       <View style={{ flexDirection: "row", alignItems: "center"}}>
         <View style={{ flexDirection: "row", alignItems: "baseline", width: "45%" }}>
           <Text style={{ fontSize: 15 }}>
-            AM
+            {item.at}
           </Text>
           <Text style={{ fontSize: 30, fontWeight: "bold" }}>
-            11:00
+            {item.time}
           </Text>
         </View>
         <Text style={{ fontSize: 20, marginLeft: 20, width: "45%", marginLeft: "10%" }}>
-          산책하기
+          {item.title}
         </Text>
       </View>
       <View style={{ flexDirection: "row", alignItems: "center"}}>
         <View style={{ flexDirection: "row", alignItems: "baseline", width: "45%" }}>
-          <Text style={[styles.petTag, { backgroundColor: "#E1F0FF", color: "#80A5F1" }]}>
-            호동이
+        { item.pet.map((pet) => (
+          <Text style={[styles.petTag, { backgroundColor: "#E1F0FF", color: "#80A5F1", marginRight: 5 }]}>
+            {pet}
           </Text>
-          <Text style={[styles.petTag, { backgroundColor: "#E0F5E0", color: "#87D287", marginLeft: 5 }]}>
-            심바
-          </Text>
+        ))}
         </View>
-        <View>
-        <Text style={{ width: "45%", marginLeft: "10%", color: "#AEAEAE" }}>
-          영양제랑 사료 2:8 황금비율로 꼭 맞춰서...
+        <Text numberOfLines={2} ellipsizeMode="end" style={{ width: "45%", marginLeft: "10%", color: "#AEAEAE"}}>
+          {item.discription}
         </Text>
-        </View>
       </View>
     </View>
   )
@@ -43,10 +44,8 @@ export default TodayTodoItem;
 const styles = StyleSheet.create({
   todayTodo: {
     padding: 15,
-    width: "100%",
     backgroundColor: "#fff",
     borderRadius: 10,
-    marginHorizontal: "auto",
   },
   petTag: {
     fontSize: 15,
