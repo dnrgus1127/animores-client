@@ -40,6 +40,10 @@ import AlarmIcon from './alarmIcon.svg'
 import RepeatIcon from './repeatIcon.svg'
 import RightArrow from './chevron-right.svg'
 import HomeAvatar1 from "./img_home_dog1.svg"
+import HomeAvatar2 from "./img_home_dog2.svg"
+import HomeAvatar3 from "./img_home_dog3.svg"
+import HomeAvatar4 from "./img_home_dog4.svg"
+import HomeAvatar5 from "./img_home_dog5.svg"
 
 
 export {
@@ -85,4 +89,8 @@ export {
 	RepeatIcon,
 	RightArrow,
 	HomeAvatar1,
+	HomeAvatar2,
+	HomeAvatar3,
+	HomeAvatar4,
+	HomeAvatar5,
 }
