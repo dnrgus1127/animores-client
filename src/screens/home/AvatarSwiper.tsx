@@ -2,7 +2,8 @@ import React, {useRef, useState} from "react";
 import { ImageBackground, Image, Pressable, StyleSheet, View, Text, FlatList, Dimensions } from "react-native";
 import {IItemsSlider} from "./HomeScreen";
 import Animated, { useAnimatedScrollHandler, useSharedValue, SharedValue, useAnimatedStyle, interpolate, Extrapolation } from "react-native-reanimated";
-import TodayTodoItem from "./TodayTodoItem";
+import { WithLocalSvg } from "react-native-svg";
+import { HomeAvatar1 } from "../../assets/svg";
 
 interface ISliderItem {
     item: IItemslider;
@@ -26,7 +27,7 @@ const SliderItem = ({item, index, scrollX}: ISliderItem) => {
           translateX: interpolate(
             scrollX.value,
             [(index-1) * width, index * width, (index+1) * width],
-            [-width * 0.25, 0, width * 0.25],
+            [-width * 0, 0, width * 0],
             Extrapolation.CLAMP
           )
         }
@@ -37,13 +38,13 @@ const SliderItem = ({item, index, scrollX}: ISliderItem) => {
   return (
     <Animated.View style={[styles.itemWrap, rnAnimatedStyle]}>
       <View style={styles.item}>
-        <TodayTodoItem item={item} index={index} />
+        {item.image}
       </View>
     </Animated.View>
   )
 };
 
-const Slider = ({itemList}: IImageList) => {
+const AvatarSwiper = ({itemList}: IImageList) => {
   const scrollX = useSharedValue(0);
   const onScrollHandler = useAnimatedScrollHandler({
       onScroll: (e) => {
@@ -72,20 +73,22 @@ const Slider = ({itemList}: IImageList) => {
   )
 }
 
-export default Slider;
+export default AvatarSwiper;
 
 const styles = StyleSheet.create({
     itemWrap: {
-        height: 200,
+        height: 270,
         width: width,
-        alignItems: 'center',
+        alignItems: "center",
         gap: 20,
         
     },
     item: {
-        width: 300,
+        width: "100%",
         height: "100%",
         borderRadius: 8,
-        overflow: 'hidden',
+        overflow: "hidden",
+        justifyContent: "center",
+        alignItems: "center",
     },
 })
