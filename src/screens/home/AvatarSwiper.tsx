@@ -15,7 +15,7 @@ interface IImageList {
   itemList: IItemsSlider[]
 }
 
-const { width } = Dimensions.get('screen');
+const { width } = Dimensions.get("screen");
 
 
 
@@ -53,7 +53,7 @@ const AvatarSwiper = ({itemList}: IImageList) => {
   })
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 3 }}>
       <Animated.FlatList
           data={itemList}
           renderItem={({item, index}) => (
@@ -62,8 +62,8 @@ const AvatarSwiper = ({itemList}: IImageList) => {
           //keyExtractor={(item) => item.id}
           horizontal
           contentContainerStyle={{
-            justifyContent: 'center',
-            alignItems: 'center'
+            justifyContent: "center",
+            alignItems: "center"
           }}
           showsHorizontalScrollIndicator={false}
           pagingEnabled

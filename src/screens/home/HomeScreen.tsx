@@ -7,9 +7,9 @@ import { SvgProps } from "react-native-svg";
 import HomeTheme1 from "../../assets/png/bg_home_theme1.png";
 import { HomeAvatar1, HomeAvatar2, HomeAvatar3, HomeAvatar4, HomeAvatar5 } from "../../assets/svg";
 import TodayTodoItem from "./TodayTodoItem";
-import Swiper from 'react-native-swiper';
-import Slider from './Slider';
-import AvatarSwiper from './AvatarSwiper';
+import Swiper from "react-native-swiper";
+import TodoSwiper from "./TodoSwiper";
+import AvatarSwiper from "./AvatarSwiper";
 
 const ItemsSlider = [
     {
@@ -66,21 +66,8 @@ const HomeScreen = () => {
   return (
     <ImageBackground source={ HomeTheme1 } resizeMode="cover" style={styles.homeBackground}>
       <SafeAreaView style={styles.container}>
-        <Slider itemList={ItemsSlider} />
-         {/* <View style={{ flex: 1 }}>
-            <View style={{ flexDirection: "row", width: "100%" }}>
-            <View style={{ width: '70%', transform: [{scaleX: 0.86}, {scaleY: 0.86}], opacity: 0.6 }}>
-               <TodayTodoItem />
-            </View>
-            <View style={{ width: '70%', transform: [{scaleX: 1.05}, {scaleY: 1.05}] }}>
-               <TodayTodoItem />
-            </View>
-            <View style={{ width: '70%', transform: [{scaleX: 0.86}, {scaleY: 0.86}], opacity: 0.6 }}>
-               <TodayTodoItem />
-            </View>
-            </View>
-         </View> */}
-         <AvatarSwiper itemList={ItemsAvatar} />
+        <TodoSwiper itemList={ItemsSlider} />
+        <AvatarSwiper itemList={ItemsAvatar} />
          {/* <View style={{ flex: 1 }}>
             <View style={{ flex: 1 }}>
                <HomeAvatar1 />
@@ -99,22 +86,9 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    display: 'flex',
-    alignItems: "center",
-    marginTop: 50,
   },
   homeAvatar: {
     width: 50,
     height: 50,
-  },
-  slide1: {
-    flex: 1,
-    width: 330,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'aqua',
-    marginHorizontal: 'auto',
-    
-    paddingHorizontal: 8,
   },
 })
