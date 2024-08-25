@@ -14,7 +14,7 @@ interface IImageList {
   itemList: IItemsSlider[]
 }
 
-const { width } = Dimensions.get('screen');
+const { width } = Dimensions.get("screen");
 
 
 
@@ -25,12 +25,26 @@ const SliderItem = ({item, index, scrollX}: ISliderItem) => {
         {
           translateX: interpolate(
             scrollX.value,
-            [(index-1) * width, index * width, (index+1) * width],
+            [(index - 1) * width, index * width, (index + 1) * width],
             [-width * 0.25, 0, width * 0.25],
-            Extrapolation.CLAMP
-          )
-        }
-      ]
+            Extrapolation.CLAMP,
+          ),
+        },
+        {
+          scale: interpolate(
+            scrollX.value,
+            [(index - 1) * width, index * width, (index + 1) * width],
+            [0.9, 1.1, 0.9],
+            Extrapolation.CLAMP,
+          ),
+        },
+      ],
+      opacity: interpolate(
+        scrollX.value,
+        [(index - 1) * width, index * width, (index + 1) * width],
+        [0.6, 1, 0.6],
+        Extrapolation.CLAMP,
+      ),
     }
   });
 
@@ -43,7 +57,7 @@ const SliderItem = ({item, index, scrollX}: ISliderItem) => {
   )
 };
 
-const Slider = ({itemList}: IImageList) => {
+const TodoSwiper = ({itemList}: IImageList) => {
   const scrollX = useSharedValue(0);
   const onScrollHandler = useAnimatedScrollHandler({
       onScroll: (e) => {
@@ -54,38 +68,36 @@ const Slider = ({itemList}: IImageList) => {
   return (
     <View style={{ flex: 1 }}>
       <Animated.FlatList
-          data={itemList}
-          renderItem={({item, index}) => (
-            <SliderItem item={item} index={index} scrollX={scrollX} />
-          )}
-          //keyExtractor={(item) => item.id}
-          horizontal
-          contentContainerStyle={{
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}
-          showsHorizontalScrollIndicator={false}
-          pagingEnabled
-          onScroll={onScrollHandler}
+        data={itemList}
+        renderItem={({item, index}) => (
+          <SliderItem item={item} index={index} scrollX={scrollX} />
+        )}
+        //keyExtractor={(item) => item.id}
+        horizontal
+        contentContainerStyle={{
+          justifyContent: "center",
+          alignItems: "center"
+        }}
+        showsHorizontalScrollIndicator={false}
+        pagingEnabled
+        onScroll={onScrollHandler}
       />
     </View>
   )
 }
 
-export default Slider;
+export default TodoSwiper;
 
 const styles = StyleSheet.create({
     itemWrap: {
-        height: 200,
         width: width,
-        alignItems: 'center',
-        gap: 20,
+        alignItems: "center",
         
     },
     item: {
         width: 300,
-        height: "100%",
+        justifyContent: "center",
         borderRadius: 8,
-        overflow: 'hidden',
+        overflow: "hidden",
     },
 })
