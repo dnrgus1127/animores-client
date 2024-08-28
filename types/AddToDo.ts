@@ -31,7 +31,7 @@ export interface IRepeat {
     weekDays: WeekDay[];
 }
 
-interface IAddTodo {
+export interface IAddTodo {
     profileId: number;
     petIds: number[];
     content: string | null;
@@ -44,4 +44,10 @@ interface IAddTodo {
     repeat: IRepeat | null;
 }
 
-export default IAddTodo;
+export interface IListToDoParam {
+    done: boolean | undefined;
+    pets: number[] | undefined;
+    page: number;
+    size: number;
+}
+
