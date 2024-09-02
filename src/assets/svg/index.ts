@@ -44,7 +44,10 @@ import HomeAvatar2 from './img_home_dog2.svg'
 import HomeAvatar3 from './img_home_dog3.svg'
 import HomeAvatar4 from './img_home_dog4.svg'
 import HomeAvatar5 from './img_home_dog5.svg'
-import ZzzIcon from './icon_zzz.svg'
+import FeedIcon from './icon_feed.svg'
+import WalkIcon from './icon_walk.svg'
+import MedicineIcon from './icon_medicine.svg'
+import BathIcon from './icon_bath.svg'
 
 
 export {
@@ -94,5 +97,8 @@ export {
 	HomeAvatar3,
 	HomeAvatar4,
 	HomeAvatar5,
-	ZzzIcon,
+	FeedIcon,
+	WalkIcon,
+	MedicineIcon,
+	BathIcon,
 }
