@@ -5,7 +5,7 @@ import Title from "../../components/text/Title";
 import { Colors } from "../../styles/Colors";
 import { SvgProps } from "react-native-svg";
 import HomeTheme1 from "../../assets/png/bg_home_theme1.png";
-import { HomeAvatar1, HomeAvatar2, HomeAvatar3, HomeAvatar4, HomeAvatar5, ZzzIcon } from "../../assets/svg";
+import { HomeAvatar1, HomeAvatar2, HomeAvatar3, HomeAvatar4, HomeAvatar5, FeedIcon, WalkIcon, MedicineIcon, BathIcon } from "../../assets/svg";
 import TodayTodoItem from "./TodayTodoItem";
 import Swiper from "react-native-swiper";
 import TodoSwiper from "./TodoSwiper";
@@ -48,23 +48,23 @@ import { QueryKey } from "../../statics/constants/Querykey";
 const ItemsAvatar = [
     {
       image: <HomeAvatar1 />,
-      emotion: <ZzzIcon width="100" height="100" />,
+      emotion: <WalkIcon width="100" height="100" />,
     },
     {
       image: <HomeAvatar2 />,
-      emotion: <ZzzIcon width="100" height="100" />,
+      emotion: <FeedIcon width="100" height="100" />,
     },
     {
       image: <HomeAvatar3 />,
-      emotion: <ZzzIcon width="100" height="100" />,
+      emotion: <BathIcon width="100" height="100" />,
     },
     {
       image: <HomeAvatar4 />,
-      emotion: <ZzzIcon width="100" height="100" />,
+      emotion: <MedicineIcon width="100" height="100" />,
     },
     {
       image: <HomeAvatar5 />,
-      emotion: <ZzzIcon width="100" height="100" />,
+      emotion: <WalkIcon width="100" height="100" />,
     },
 ]
 
