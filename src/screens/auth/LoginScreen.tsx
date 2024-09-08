@@ -20,32 +20,27 @@ import { Colors } from "../../styles/Colors";
 import { commonStyles } from "../../styles/commonStyles";
 import { setTokens } from "../../utils/storage/Storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 
 const LoginScreen = ({ navigation }: any) => {
   const { control, handleSubmit } = useForm<AuthModel.ILoginModel>();
-
-  const { mutate } = useMutation<
-    AuthModel.ILoginResponseModel,
-    Error,
-    AuthModel.ILoginModel
-  >({
-    mutationFn: async (data: AuthModel.ILoginModel) => {
-      return AuthService.Auth.login(data.email, data.password);
-    },
-    onSuccess: async (response: AuthModel.ILoginResponseModel) => {
-      if (response.data) {
+  const loginFunction = async (input: AuthModel.ILoginModel): Promise<AuthModel.ILoginResponseModel> => {
+    const response = await AuthService.Auth.login(input.email, input.password);
+    return response;
+  };
+  
+  const { isLoading, mutate } = useMutation<AuthModel.ILoginResponseModel,Error,AuthModel.ILoginModel>(loginFunction,{
+    onSuccess: (response: AuthModel.ILoginResponseModel) => {
+      if (response.data.success) {
         const { accessToken, refreshToken } = response.data;
-
         if (accessToken && refreshToken) {
-          await setTokens(accessToken, refreshToken);
-          await AsyncStorage.setItem("userToken", accessToken);
+          setTokens(accessToken, refreshToken);
+          AsyncStorage.setItem("userToken", accessToken);
         }
-
         Toast.show({
           type: "success",
           text1: "로그인 성공",
         });
-		
         navigation.navigate(ScreenName.Profiles);
       } else {
         Toast.show({
@@ -54,7 +49,10 @@ const LoginScreen = ({ navigation }: any) => {
         });
       }
     },
-    onError: () => {
+    onError: (error: Error) => {
+      if(axios.isAxiosError(error)) {
+        console.log(error.response?.data);
+      }
       Toast.show({
         type: "error",
         text1: "로그인을 실패하셨습니다.",
@@ -100,8 +98,10 @@ const LoginScreen = ({ navigation }: any) => {
         </View>
         <Pressable
           onPress={handleSubmit(onsubmit)}
+          disabled={isLoading}
           style={styles.loginButton}
-          children={<Title text="로그인" color={Colors.White} />}
+          children={<Title text="로그인" color={Colors.White}
+          />}
         />
         <View style={[commonStyles.commonRowContainer, { marginTop: 68 }]}>
           <View style={commonStyles.separator} />
