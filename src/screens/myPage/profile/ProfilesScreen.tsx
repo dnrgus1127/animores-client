@@ -3,8 +3,9 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
-import { Image, Pressable, SafeAreaView, StyleSheet, View } from "react-native";
-import { Colors } from "react-native/Libraries/NewAppScreen";
+import { Image, Pressable, StyleSheet, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Colors } from "../../../styles/Colors";
 import asset from "../../../assets/png";
 import Title from "../../../components/text/Title";
 import { RootStackParamList } from "../../../navigation/type";
@@ -19,7 +20,7 @@ const ProfilesScreen = () => {
       StackNavigationProp<RootStackParamList, ScreenName.Profiles>
     >();
 
-  const baseURL = "https://animores-image.s3.ap-northeast-2.amazonaws.com";
+  const baseUrl = process.env.EXPO_PUBLIC_BASE_URL;
 
   const { data: profile } = useQuery({
     queryKey: [QueryKey.PROFILE],
@@ -38,7 +39,7 @@ const ProfilesScreen = () => {
     saveLastScreen();
   }, [])
 
-  const profiles = [...(profile?.data?.data || [])];
+  const profiles = Object.values(profile?.data.data) || [];
 
   if (profiles.length < 6) {
     profiles.push({
@@ -76,7 +77,7 @@ const ProfilesScreen = () => {
                   source={
                     item.id === "add"
                       ? asset.petAdd
-                      : { uri: `${baseURL}/${item.imageUrl}` }
+                      : { uri: `${baseUrl}/${item.imageUrl}` }
                   }
                   style={styles.profileImage}
                 />

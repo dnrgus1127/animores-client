@@ -18,7 +18,7 @@ import axios from "axios";
 
 const JoinScreen = ({ navigation }: any) => {
   const { control, handleSubmit, trigger, getValues, watch, formState:{errors} } = useForm({ mode: "onChange"})
-  const baseURL = "http://180.229.5.21:8080";
+  const baseUrl = process.env.EXPO_PUBLIC_BASE_URL;
   
   // 패스워드 보이기/가리기 상태
   const [secureText, setScureText] = useState({
@@ -91,7 +91,7 @@ const JoinScreen = ({ navigation }: any) => {
   // Email -  인증번호 전송 클릭 시
   const sendVerificationCode = async (email: string) => {
     // 중복 확인
-    await axios.get(`${baseURL}/api/v1/account/check-email/${email}`)
+    await axios.get(`${baseUrl}/api/v1/account/check-email/${email}`)
     .then((response) => {
         onSuccessCheckEmail({data: response.data.data, success: response.data.success});
     })
@@ -110,7 +110,7 @@ const JoinScreen = ({ navigation }: any) => {
   // Email -  인증번호 확인 요청
   const checkVerificationCode = async (email: string, code: string) => {
     // 인증코드 확인
-    await axios.post(`${baseURL}/api/v1/account/email-auth-verify?email=${email}&code=${code}`)
+    await axios.post(`${baseUrl}/api/v1/account/email-auth-verify?email=${email}&code=${code}`)
     .then((response) => {
         console.log('인증코드 : ', response.data)
         // 인증 실패 : 인증번호 불일치 시
@@ -169,7 +169,7 @@ const JoinScreen = ({ navigation }: any) => {
   // Nickname - 중복확인 클릭 시
   const checkNickname = async (nickname: string) => {
     // 중복이면 
-    await axios.get(`${baseURL}/api/v1/account/check-nickname/${nickname}`)
+    await axios.get(`${baseUrl}/api/v1/account/check-nickname/${nickname}`)
     .then((response) => {
         onSuccessCheckNickname({data: response.data.data, status: response.data.status});
     })
