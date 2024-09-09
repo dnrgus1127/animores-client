@@ -36,7 +36,7 @@ const ProfileManagementScreen = () => {
   });
 
   const myProfile = myProfileInfo?.data.data;
-  const profiles = [...(profileList?.data.data || [])];
+  const profiles = Object.values(profileList?.data.data) || [];
 
   if (profiles.length < 6) {
     profiles.push({
