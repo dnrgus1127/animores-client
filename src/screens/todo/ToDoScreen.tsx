@@ -50,19 +50,26 @@ const AllTodoScreen = () => {
   }, [clickedPetIds]);
 
   const PetListButton = () => {
+    var petListString =
+      queryParam.pets == undefined
+        ? "전체"
+        : queryParam.pets
+            .map((pet) => petList.find((petType) => petType.id === pet)?.name)
+            .join(", ");
+
+    if (petListString.length > 10 && queryParam.pets !== null && queryParam.pets.length > 1) {
+      const firstPet = petList.find((pet) => queryParam.pets && pet.id === queryParam.pets[0]);
+      if (firstPet) {
+        petListString = firstPet.name + " 외 " + (queryParam.pets.length - 1);
+      }
+    }
+
     return (
       <Pressable onPress={() => setUsePetListWindow(true)}>
         <Text
           style={{ fontSize: 18, alignItems: "center", textAlign: "center" }}
         >
-          {queryParam.pets == undefined
-            ? "전체"
-            : queryParam.pets
-                .map(
-                  (pet) => petList.find((petType) => petType.id === pet)?.name
-                )
-                .join(", ")}{" "}
-          V
+          {petListString} V
         </Text>
       </Pressable>
     );
@@ -86,7 +93,7 @@ const AllTodoScreen = () => {
 
   return (
     <SafeAreaView>
-      <HeaderNavigation middletitle={<PetListButton />} hasBackButton={false} />
+      <HeaderNavigation  middletitle={<PetListButton />} hasBackButton={true} />
       <ScrollView>
         {/* {Object.keys(groupedToDoList).map((date) => {
           return (
