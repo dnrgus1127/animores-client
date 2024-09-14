@@ -45,8 +45,8 @@ export interface IAddTodo {
 }
 
 export interface IListToDoParam {
-    done: boolean | undefined;
-    pets: number[] | undefined;
+    done: boolean | null;
+    pets: number[] | null;
     page: number;
     size: number;
 }
