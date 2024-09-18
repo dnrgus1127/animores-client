@@ -2,7 +2,7 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
-import { Image, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
+import { Image, Platform, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { IProfile } from "../../../../types/Profile";
 import { EditIconBlack } from "../../../assets/icons";
@@ -55,6 +55,7 @@ const ProfileManagementScreen = () => {
   };
 
   useEffect(() => {
+    //console.log(Object.values(profileList?.data.data));
     if (myProfile?.nickname) {
       setNickname(myProfile.nickname);
     }
@@ -82,14 +83,15 @@ const ProfileManagementScreen = () => {
             color={Colors.AEAEAE}
             style={styles.InfoTitle}
           />
-          <View style={styles.TextInputContainer}>
-            <TextInput
-              style={styles.input}
-              value={nickname}
-              onChangeText={setNickname}
+          {/* TODO: 닉네임 변경 페이지로 이동 */}
+          <Pressable style={styles.TextInputContainer} onPress={() => navigation.navigate(ScreenName.EditNickname)}>
+            <Title
+              text={nickname}
+              fontSize={16}
+              style={styles.input} 
             />
             <EditIconBlack style={{ alignSelf: "center" }} />
-          </View>
+          </Pressable>
         </View>
         <View style={[styles.Row, { marginTop: 20 }]}>
           <Title
@@ -212,10 +214,9 @@ const styles = StyleSheet.create({
     height: 24,
   },
   input: {
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.Black,
     fontSize: 16,
-    marginRight: 7
+    marginRight: 7,
+    textDecorationLine: "underline",
   },
   InfoTitle: {
     flex: 1,

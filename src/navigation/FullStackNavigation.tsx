@@ -10,6 +10,7 @@ import CreateDiary from "../screens/diary/CreateDiary";
 import HomeScreen from "../screens/home/HomeScreen";
 import NewPassword from "../screens/myPage/password/NewPassword";
 import ResetPassword from "../screens/myPage/password/ResetPassword";
+import EditNickname from "../screens/myPage/nickname/EditNickname";
 import UserVerification from "../screens/myPage/password/UserVerification";
 import CreateProfile from "../screens/myPage/profile/CreateProfile";
 import EditProfileScreen from "../screens/myPage/profile/EditProfile";
@@ -57,6 +58,11 @@ const FullStackNavigation: React.FC<FullStackNavigationProps> = ({ isAuthenticat
         <RootStack.Screen
           name={ScreenName.CreateProfile}
           component={CreateProfile}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
+          name={ScreenName.EditNickname}
+          component={EditNickname}
           options={{ headerShown: false }}
         />
         <RootStack.Screen
