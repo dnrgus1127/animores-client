@@ -28,7 +28,7 @@ const TodayTodoItem = ({item, index}: {item: TodosModel.ITodayListModel, index: 
           </Text>
         ))}
         </View>
-        <Text numberOfLines={2} ellipsizeMode="end" style={{ width: "45%", marginLeft: "10%", color: "#AEAEAE"}}>
+        <Text numberOfLines={2} ellipsizeMode="tail" style={{ width: "45%", marginLeft: "10%", color: "#AEAEAE"}}>
           {/* {item.discription} */}
           집 앞 공원 한바퀴 돌고 오기
         </Text>

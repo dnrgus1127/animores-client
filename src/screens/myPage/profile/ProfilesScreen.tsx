@@ -13,6 +13,8 @@ import { ProfileService } from "../../../service/ProfileService";
 import { QueryKey } from "../../../statics/constants/Querykey";
 import { ScreenName } from "../../../statics/constants/ScreenName";
 import { IProfile } from "../../../../types/Profile";
+import { useRecoilState } from "recoil";
+import { CurrentProfileAtom } from "../../../recoil/AuthAtom";
 
 const ProfilesScreen = () => {
   const navigation =
@@ -21,6 +23,8 @@ const ProfilesScreen = () => {
     >();
 
   const baseUrl = process.env.EXPO_PUBLIC_BASE_URL;
+
+  const [currentProfile, setCurrentProfile] = useRecoilState(CurrentProfileAtom);
 
   const { data: profile } = useQuery({
     queryKey: [QueryKey.PROFILE],
@@ -39,7 +43,7 @@ const ProfilesScreen = () => {
     saveLastScreen();
   }, [])
 
-  const profiles = Object.values(profile?.data.data) || [];
+  const profiles = profile?.data.data || [];
 
   if (profiles.length < 6) {
     profiles.push({
@@ -55,12 +59,15 @@ const ProfilesScreen = () => {
     } else {
       await AsyncStorage.setItem("userInfo", JSON.stringify(item));
       navigation.navigate(ScreenName.BottomTab);
+      
+      // Atom에 선택한 프로필 저장
+      setCurrentProfile(item.imageUrl);
     }
   };
 
-  // useEffect(() => {
-  //   AsyncStorage.clear();
-  // }, [])
+  useEffect(() => {
+    //AsyncStorage.clear();
+  }, [])
 
   return (
     <SafeAreaView style={styles.container}>
