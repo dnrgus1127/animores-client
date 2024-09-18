@@ -18,6 +18,7 @@ export enum ScreenName {
 	Profile = 'Profile',
 	Profiles = 'Profiles',
 	CreateProfile = 'CreateProfile',
+	EditNickname = 'EditNickname',
 	UserVerification = 'UserVerification',
 	ResetPassword = 'ResetPassword',
 	NewPassword = 'NewPassword',
