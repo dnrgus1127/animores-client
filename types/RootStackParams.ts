@@ -21,7 +21,6 @@ export type RootStackParams = {
 	Home: undefined;
 	EditProfile: { item: IProfile };
 	ProfileManagement: undefined;
-	EditNickname: undefined;
 	UserVerification: undefined;
 	ResetPassword: undefined;
 	NewPassword: undefined;
