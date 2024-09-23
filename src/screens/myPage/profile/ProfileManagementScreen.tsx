@@ -79,13 +79,12 @@ const ProfileManagementScreen = () => {
     await axios.get(`${baseUrl}/api/v1/account/check-nickname/${nickname}`)
     .then((response) => {
       if (!response.data.data){
-        console.log('사용가능')
+        setNicknameState('success');
 
         // 카운트 시작 3:00
       } else {
         // 중복일 경우
-        setEmailState("fail")
-        console.log("이미 사용중인 닉네임")
+        setNicknameState('fail');
       }
     })
     .catch(function (error) {
@@ -103,7 +102,6 @@ const ProfileManagementScreen = () => {
   };
 
   useEffect(() => {
-    //console.log(Object.values(profileList?.data.data));
     if (myProfile?.nickname) {
       setNickname(myProfile.nickname);
     }
@@ -134,7 +132,7 @@ const ProfileManagementScreen = () => {
                 />
                 <Pressable
                   style={[styles.inputButton]} 
-                  //disabled={error}
+                  disabled={error}
                   onPress={() => checkNickname(value)}
                 >
                   <Text style={error && styles.textDisabled}>중복확인</Text>
@@ -390,6 +388,12 @@ const styles = StyleSheet.create({
   },
   textDisabled: {
     color: "#AEAEAE",
+  },
+  errorText: {
+    color: "#FF4040",
+  },
+  successText: {
+    color: '#00B01C',
   },
   buttonContainer: {
     backgroundColor: Colors.FB3F7E,
