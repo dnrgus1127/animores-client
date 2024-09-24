@@ -18,6 +18,10 @@ import ProfilesScreen from "../screens/myPage/profile/ProfilesScreen";
 import AddTodo from "../screens/todo/AddTodo";
 import { ScreenName } from "../statics/constants/ScreenName";
 import BottomTabNavigator from "./BottomTabStackNavigator";
+import AddPet from "../screens/myPage/petManagement/AddPet";
+import BreedType from "../screens/myPage/petManagement/BreedType";
+import PatManagementScreen from "../screens/myPage/petManagement/PatManagementScreen";
+import PetType from "../screens/myPage/petManagement/PetType";
 
 const RootStack = createNativeStackNavigator<RootStackParams>();
 
@@ -102,6 +106,26 @@ const FullStackNavigation: React.FC<FullStackNavigationProps> = ({ isAuthenticat
         <RootStack.Screen
           name={ScreenName.AddTodo}
           component={AddTodo}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
+          name={ScreenName.PatManagement}
+          component={PatManagementScreen}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
+          name={ScreenName.PetType}
+          component={PetType}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
+          name={ScreenName.BreedType}
+          component={BreedType}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
+          name={ScreenName.AddPet}
+          component={AddPet}
           options={{ headerShown: false }}
         />
       </RootStack.Navigator>
