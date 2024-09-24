@@ -23,7 +23,7 @@ const EditProfileScreen = () => {
     const route = useRoute();
     const { item } = route.params as { item: IProfile };
 
-    const baseUrl = process.env.EXPO_PUBLIC_BASE_URL;
+    const baseUrl = "https://animores-image.s3.ap-northeast-2.amazonaws.com";
 
     const [textInput, onChangeText] = useState<string>("");
     const [profileImage, setProfileImage] = useState<string>("");

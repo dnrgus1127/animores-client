@@ -21,7 +21,7 @@ import { AuthModel } from "../../../model/AuthModel";
 import axios from "axios";
 
 const ProfileManagementScreen = () => {
-  const baseUrl = process.env.EXPO_PUBLIC_BASE_URL;
+  const baseUrl = "https://animores-image.s3.ap-northeast-2.amazonaws.com";
 
   const navigation =
     useNavigation<

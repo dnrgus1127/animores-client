@@ -40,7 +40,7 @@ const ItemsAvatar = [
 ]
 
 const HomeScreen = () => {
-  const baseUrl = process.env.EXPO_PUBLIC_BASE_URL;
+  const baseUrl = "https://animores-image.s3.ap-northeast-2.amazonaws.com";
   
   const currentProfile = useRecoilValue(CurrentProfileAtom);
 
