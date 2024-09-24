@@ -22,7 +22,7 @@ const ProfilesScreen = () => {
       StackNavigationProp<RootStackParamList, ScreenName.Profiles>
     >();
 
-  const baseUrl = process.env.EXPO_PUBLIC_BASE_URL;
+  const baseUrl = "https://animores-image.s3.ap-northeast-2.amazonaws.com"
 
   const [currentProfile, setCurrentProfile] = useRecoilState(CurrentProfileAtom);
 
