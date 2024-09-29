@@ -38,7 +38,7 @@ const DairyScreen = () => {
   const [isVisibleComment, setIsVisibleComment] = useState<boolean>(false); //댓글
   const [deletedDiaryId, setDeletedDiaryId] = useState<number | null>(null);  //삭제 diary Id
   const [deletedProfileId, setDeletedProfileId] = useState<number | null>(null);  //삭제 profile Id
-  console.log('deletedDiaryId', deletedDiaryId)
+  //console.log('deletedDiaryId', deletedDiaryId)
   //일지 리스트
   //TODO: profile api 가져와서 profileId에 넣기
   const { data, fetchNextPage, isFetchingNextPage, hasNextPage } =
@@ -188,6 +188,7 @@ const DairyScreen = () => {
           </View>
           <Pressable
             onPress={() => {
+              console.log(deletedDiaryId, isSecondVisibleMore);
               setIsSecondVisibleMore(true);
             }}
             style={styles.buttonContainer}
@@ -291,6 +292,13 @@ const DairyScreen = () => {
             setIsFirstVisibleMore(false);
           }}
           footer={footerMore}
+
+          // 중첩 모달
+          _isVisible={isSecondVisibleMore}
+          _onClose={() => setIsSecondVisibleMore(false)}
+          _title="게시물을 삭제하시겠어요?"
+          _subTitle="삭제 이후에는 게시물이 영구적으로 삭제되며, 복원하실 수 없습니다."
+          _onDelete={handleDelete}
         />
         <BottomModal
           isVisible={isVisibleComment}
@@ -299,15 +307,15 @@ const DairyScreen = () => {
           }}
           footer={footerComment}
         />
-        {deletedDiaryId !== null && (
+        {/* {deletedDiaryId !== null && (
           <CenterModal
-            visible={isSecondVisibleMore}
+            isVisible={isSecondVisibleMore}
             title="게시물을 삭제하시겠어요?"
             subTitle="삭제 이후에는 게시물이 영구적으로 삭제되며, 복원하실 수 없습니다."
             onClose={() => setIsSecondVisibleMore(false)}
             onDelete={handleDelete}
           />
-        )}
+        )} */}
       </View>
     </>
   );

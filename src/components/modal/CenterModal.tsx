@@ -1,8 +1,7 @@
 import React from "react";
-import { Modal, StyleSheet, Text, View, Pressable } from "react-native";
+import { Modal, StyleSheet, Text, View, Pressable, Dimensions } from "react-native";
 import { Colors } from "../../styles/Colors";
 import Title from "../text/Title";
-import { Dimensions } from "react-native";
 
 interface ModalComponentProps {
   visible: boolean;
@@ -15,7 +14,7 @@ interface ModalComponentProps {
 const width = Dimensions.get("window").width;
 
 const CenterModal: React.FC<ModalComponentProps> = ({
-  visible,
+  isVisible,
   title,
   subTitle,
   onClose,
@@ -24,7 +23,7 @@ const CenterModal: React.FC<ModalComponentProps> = ({
   return (
     <Modal
       transparent={true}
-      visible={visible}
+      isVisible={isVisible}
       animationType="fade"
       onRequestClose={onClose}
     >
