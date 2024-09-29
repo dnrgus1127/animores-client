@@ -18,6 +18,7 @@ import { IToDo } from "../../../types/ToDo";
 import { IPetTypes } from "../../../types/PetTypes";
 import { PetListAtom } from "../../recoil/PetAtom";
 import PetListModal from "./modal/PetListModal";
+import ToDoCard from "./ToDoCard";
 
 const AllTodoScreen = () => {
   const navigation =
@@ -75,9 +76,6 @@ const AllTodoScreen = () => {
     );
   };
 
-  // const [toDoList, setToDoList] = useState<IToDo[]>(toDoData?.data?.toDoList || []);
-  // const groupedToDoList= Object.groupBy(toDoList, ({date}) => date);
-
   interface IToDoListResponse {
     curPage: number;
     size: number;
@@ -86,30 +84,36 @@ const AllTodoScreen = () => {
     toDoList: IToDo[];
   }
 
-  const { data: toDoData } = useQuery({
+  const { isLoading, data: toDoData } = useQuery({
     queryKey: [QueryKey.TODO_LIST, queryParam],
     queryFn: () => ToDoService.todo.list(queryParam),
   });
+
+  const pageResonse: IToDoListResponse = toDoData?.data;
+  const [toDoList, setToDoList] = useState<IToDo[]>([]);
+  useEffect(() => {
+    setToDoList(pageResonse?.toDoList || []);
+  }, [toDoData]);
+
+  const [time, setTime] = useState(new Date());
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTime(new Date());
+    }, 60000);
+    return () => clearInterval(interval);
+  }
+  , []);
 
   return (
     <SafeAreaView>
       <HeaderNavigation  middletitle={<PetListButton />} hasBackButton={true} />
       <ScrollView>
-        {/* {Object.keys(groupedToDoList).map((date) => {
-          return (
-            <View key={date}>
-              <Text>{date}</Text>
-              {groupedToDoList[date]?.map((toDo) => {
-                return (
-                  <View key={toDo.id}>
-                    <Text>{toDo.title}</Text>
-                  </View>
-                )
-              })}
-            </View>
-          )
-        }
-        )} */}
+        <View style={{display: 'flex', alignItems: 'center'}}>
+        {isLoading ? <Text>Loading...</Text> : toDoList.length === 0 && <Text>할 일이 없습니다.</Text>}
+        {toDoList.map((toDo) => (
+          <ToDoCard todo={toDo} curTime={time}/>
+        ))}
+        </View>
       </ScrollView>
       {usePetListWindow && (
         <PetListModal

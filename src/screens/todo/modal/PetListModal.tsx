@@ -52,7 +52,6 @@ const PetListModal = (props: any) => {
           <View style={{flexDirection: "row", justifyContent: "space-between", marginHorizontal: 10}}>
             <Pressable onPress={() => {
                 setUsePetListWindow(false);
-                setClickedPetIds(pressedPetsId);
               }} style={styles.confirmButton}>
               <Text style={{color: Colors.White}}>닫기</Text>
             </Pressable>

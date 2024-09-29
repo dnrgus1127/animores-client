@@ -12,9 +12,9 @@ export namespace ToDoService {
                 console.error('ToDoService.todo.create:', error);
                 if	(axios.isAxiosError(error)) {
 					if (error.response) {
-						console.error('ProfileService.Profile.list:', error.response.data);
+						console.error('ProfileService.Profile.create:', error.response.data);
 					} else {
-						console.error('ProfileService.Profile.list:', error.message);
+						console.error('ProfileService.Profile.create:', error.message);
 					}
 				}
                 throw error;
@@ -27,12 +27,21 @@ export namespace ToDoService {
                     queryString += `&done=${params.done}`;
                 }
                 if(params.pets !== null) {
-                    queryString += `pets=${params.pets}`;
+                    for(const pet of params.pets) {
+                        queryString += `&pets=${pet}`;
+                    }
                 }
                 const response = await AxiosContext.get(queryString);
-                return { data: response.data, status: response.status };
+                return response.data;
             } catch (error) {
                 console.error('ToDoService.todo.list:', error);
+                if	(axios.isAxiosError(error)) {
+					if (error.response) {
+						console.error('ProfileService.Profile.list:', error.response.data);
+					} else {
+						console.error('ProfileService.Profile.list:', error.message);
+					}
+				}
             }
         },
     }
