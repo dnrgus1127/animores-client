@@ -5,4 +5,5 @@ export enum QueryKey {
     MY_PROFILE = 'MY_PROFILE',
     PET_LIST = 'PET_LIST',
     ADD_TODO = "ADD_TODO",
+    TODO_LIST = "TODO_LIST",
 }

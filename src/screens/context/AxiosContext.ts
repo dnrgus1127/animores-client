@@ -32,28 +32,34 @@ instance.interceptors.response.use(
 	(response) => response,
 	async (error) => {
 		const originRequest = error.config;
-
+		console.log('AxiosContext.interceptors.response:', error);
 		if (error.response.status === 401 && !originRequest._retry) {
 			originRequest._retry = true;
-
 			const refreshToken = await AsyncStorage.getItem('refreshToken');
-	
 			if (refreshToken) {
-				const response = await AuthService.Auth.refreshToken(refreshToken);
-		
-				if (response && response.data.success) {
-					const { accessToken } = response.data;
+				try {
+					const response = await AuthService.Auth.refreshToken(refreshToken);
+					console.log('AxiosContext.interceptors.response:', response);
+					if (response && response.data.success) {
+						const { accessToken } = response.data;
 
-					await AsyncStorage.setItem('accessToken', accessToken);
-					originRequest.headers.Authorization = `Bearer ${accessToken}`;
+						await AsyncStorage.setItem('accessToken', accessToken);
+						originRequest.headers.Authorization = `Bearer ${accessToken}`;
 
-					return instance(originRequest);
+						return instance(originRequest);
+					} else {
+						await AsyncStorage.removeItem('accessToken');
+						await AsyncStorage.removeItem('refreshToken');
+					}
+				} catch (error) {
+					await AsyncStorage.removeItem('accessToken');
+					await AsyncStorage.removeItem('refreshToken');
 				}
 			}
 		}
-
 		return Promise.reject(error);
 	}
 )
 
 export default instance;
+

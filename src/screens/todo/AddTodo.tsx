@@ -18,7 +18,7 @@ import { AlarmIcon, PaletteIcon, RepeatIcon, RightArrow, ScheduleIcon } from "..
 import DateTimePicker from "@react-native-community/datetimepicker";
 import BottomModal from "../../components/modal/BottomModal";
 import ToDoColors from "../../statics/constants/ToDoColors";
-import IAddTodo, { RepeatUnit, WeekDay } from "../../../types/AddToDo";
+import { IAddTodo, RepeatUnit, WeekDay } from "../../../types/AddToDo";
 import ColorPicker from 'react-native-wheel-color-picker';
 import { PetService } from "../../service/PetService";
 import { ToDoService } from "../../service/ToDoService";
@@ -340,7 +340,7 @@ const AddTodo = () => {
         if (error.response) {
           Toast.show({
             type: 'error',
-            text1: error.response.data,
+            text1: error.response.data.error.message,
           })
         }
       }
@@ -370,6 +370,7 @@ const AddTodo = () => {
       return;
     }
     
+    console.log(data);
     mutate(data);
   };
 
