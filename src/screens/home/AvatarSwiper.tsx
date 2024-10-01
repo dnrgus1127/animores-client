@@ -1,18 +1,18 @@
 import React, {useRef, useState} from "react";
 import { ImageBackground, Image, Pressable, StyleSheet, View, Text, FlatList, Dimensions } from "react-native";
-import {IItemsSlider} from "./HomeScreen";
 import Animated, { useAnimatedScrollHandler, useSharedValue, SharedValue, useAnimatedStyle, interpolate, Extrapolation } from "react-native-reanimated";
-import { WithLocalSvg } from "react-native-svg";
-import { HomeAvatar1 } from "../../assets/svg";
 
 interface ISliderItem {
-    item: IItemslider;
+    item: IImageList;
     index: number;
-    scrollX: SharedValue<number>
+    scrollX: SharedValue<number>;
 }
 
 interface IImageList {
-  itemList: IItemsSlider[]
+  itemList: {
+    image: React.FC<SvgProps>;
+    emotion: React.FC<SvgProps>;
+  }
 }
 
 const { width } = Dimensions.get("screen");
@@ -37,6 +37,9 @@ const SliderItem = ({item, index, scrollX}: ISliderItem) => {
 
   return (
     <Animated.View style={[styles.itemWrap, rnAnimatedStyle]}>
+      <View style={styles.petState}>
+        {item.emotion}
+      </View>
       <View style={styles.item}>
         {item.image}
       </View>
@@ -76,19 +79,17 @@ const AvatarSwiper = ({itemList}: IImageList) => {
 export default AvatarSwiper;
 
 const styles = StyleSheet.create({
-    itemWrap: {
-        height: 270,
-        width: width,
-        alignItems: "center",
-        gap: 20,
-        
-    },
-    item: {
-        width: "100%",
-        height: "100%",
-        borderRadius: 8,
-        overflow: "hidden",
-        justifyContent: "center",
-        alignItems: "center",
-    },
+  itemWrap: {
+    height: 270,
+    width: width,
+    alignItems: "center",
+  },
+  item: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 8,
+    overflow: "hidden",
+    justifyContent: "center",
+    alignItems: "center",
+  },
 })

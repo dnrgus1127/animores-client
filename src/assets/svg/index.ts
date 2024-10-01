@@ -1,4 +1,4 @@
-import BackButton from './Frame29.svg';
+import BackButton from './Frame29.svg'
 import UserImage from './image570.svg'
 import More from './Frame1198.svg'
 import CommentIcon from './Icon.svg' 
@@ -27,23 +27,27 @@ import CalanderIcon from './calander.svg'
 import ImagePickerIcon from './imagePicker.svg' 
 import CameraIcon from './camera.svg' 
 import EmptyCircleIcon from './circle.svg'
-import IconSnsApple from "./sns_apple.svg"
-import IconSnsFacebook from "./sns_facebook.svg"
-import IconSnsKakao from "./sns_kakao.svg"
-import IconSnsNaver from "./sns_naver.svg"
-import ProfileImage from "./ProfileImage.svg"
-import Cancle from "./cancle.svg"
-import IconComplete from "./Frame1206.svg"
+import IconSnsApple from './sns_apple.svg'
+import IconSnsFacebook from './sns_facebook.svg'
+import IconSnsKakao from './sns_kakao.svg'
+import IconSnsNaver from './sns_naver.svg'
+import ProfileImage from './ProfileImage.svg'
+import Cancle from './cancle.svg'
+import IconComplete from './Frame1206.svg'
 import ScheduleIcon from './scheduleIcon.svg'
 import PaletteIcon from './paletteIcon.svg'
 import AlarmIcon from './alarmIcon.svg'
 import RepeatIcon from './repeatIcon.svg'
 import RightArrow from './chevron-right.svg'
-import HomeAvatar1 from "./img_home_dog1.svg"
-import HomeAvatar2 from "./img_home_dog2.svg"
-import HomeAvatar3 from "./img_home_dog3.svg"
-import HomeAvatar4 from "./img_home_dog4.svg"
-import HomeAvatar5 from "./img_home_dog5.svg"
+import HomeAvatar1 from './img_home_dog1.svg'
+import HomeAvatar2 from './img_home_dog2.svg'
+import HomeAvatar3 from './img_home_dog3.svg'
+import HomeAvatar4 from './img_home_dog4.svg'
+import HomeAvatar5 from './img_home_dog5.svg'
+import FeedIcon from './icon_feed.svg'
+import WalkIcon from './icon_walk.svg'
+import MedicineIcon from './icon_medicine.svg'
+import BathIcon from './icon_bath.svg'
 
 
 export {
@@ -93,4 +97,8 @@ export {
 	HomeAvatar3,
 	HomeAvatar4,
 	HomeAvatar5,
+	FeedIcon,
+	WalkIcon,
+	MedicineIcon,
+	BathIcon,
 }

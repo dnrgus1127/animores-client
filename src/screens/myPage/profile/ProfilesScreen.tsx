@@ -3,8 +3,9 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
-import { Image, Pressable, SafeAreaView, StyleSheet, View } from "react-native";
-import { Colors } from "react-native/Libraries/NewAppScreen";
+import { Image, Pressable, StyleSheet, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Colors } from "../../../styles/Colors";
 import asset from "../../../assets/png";
 import Title from "../../../components/text/Title";
 import { RootStackParamList } from "../../../navigation/type";
@@ -12,6 +13,8 @@ import { ProfileService } from "../../../service/ProfileService";
 import { QueryKey } from "../../../statics/constants/Querykey";
 import { ScreenName } from "../../../statics/constants/ScreenName";
 import { IProfile } from "../../../../types/Profile";
+import { useRecoilState } from "recoil";
+import { CurrentProfileAtom } from "../../../recoil/AuthAtom";
 
 const ProfilesScreen = () => {
   const navigation =
@@ -19,7 +22,9 @@ const ProfilesScreen = () => {
       StackNavigationProp<RootStackParamList, ScreenName.Profiles>
     >();
 
-  const baseURL = "https://animores-image.s3.ap-northeast-2.amazonaws.com";
+  const baseUrl = "https://animores-image.s3.ap-northeast-2.amazonaws.com"
+
+  const [currentProfile, setCurrentProfile] = useRecoilState(CurrentProfileAtom);
 
   const { data: profile } = useQuery({
     queryKey: [QueryKey.PROFILE],
@@ -38,7 +43,7 @@ const ProfilesScreen = () => {
     saveLastScreen();
   }, [])
 
-  const profiles = [...(profile?.data?.data || [])];
+  const profiles = profile?.data.data || [];
 
   if (profiles.length < 6) {
     profiles.push({
@@ -54,12 +59,15 @@ const ProfilesScreen = () => {
     } else {
       await AsyncStorage.setItem("userInfo", JSON.stringify(item));
       navigation.navigate(ScreenName.BottomTab);
+      
+      // Atom에 선택한 프로필 저장
+      setCurrentProfile(item.imageUrl);
     }
   };
 
-  // useEffect(() => {
-  //   AsyncStorage.clear();
-  // }, [])
+  useEffect(() => {
+    //AsyncStorage.clear();
+  }, [])
 
   return (
     <SafeAreaView style={styles.container}>
@@ -76,7 +84,7 @@ const ProfilesScreen = () => {
                   source={
                     item.id === "add"
                       ? asset.petAdd
-                      : { uri: `${baseURL}/${item.imageUrl}` }
+                      : { uri: `${baseUrl}/${item.imageUrl}` }
                   }
                   style={styles.profileImage}
                 />

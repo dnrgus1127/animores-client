@@ -44,5 +44,14 @@ export namespace ToDoService {
 				}
             }
         },
+        today: async (page: number, size: number) => {
+            try {
+                const response = await AxiosContext.get(`/api/v1/todos/today?page=${page}&size=${size}`);
+                return { data: response.data, status: response.status };
+            } catch (error) {
+                console.error('ToDoService.todo.today:', error);
+                return { data: null, status: error || 500 };
+            }
+        },
     }
 }
