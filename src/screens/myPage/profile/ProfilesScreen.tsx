@@ -22,7 +22,7 @@ const ProfilesScreen = () => {
       StackNavigationProp<RootStackParamList, ScreenName.Profiles>
     >();
 
-  const baseUrl = "https://animores-image.s3.ap-northeast-2.amazonaws.com"
+  const baseUrl = process.env.IMAGE_BASE_URL;
 
   const [currentProfile, setCurrentProfile] = useRecoilState(CurrentProfileAtom);
 
@@ -84,7 +84,7 @@ const ProfilesScreen = () => {
                   source={
                     item.id === "add"
                       ? asset.petAdd
-                      : { uri: `${baseUrl}/${item.imageUrl}` }
+                      : { uri: `${process.env.IMAGE_BASE_URL}/${item.imageUrl}` }
                   }
                   style={styles.profileImage}
                 />

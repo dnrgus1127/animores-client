@@ -8,13 +8,14 @@ import Animated, {
     useSharedValue, 
     withTiming  
   } from 'react-native-reanimated';
+import { FontAwesome } from "@expo/vector-icons";
 
 
   const { width } = Dimensions.get('window');
   const HIDDEN_MENU_WIDTH = 70;
   const TIMING_DURATION = 500;
 
-  const imageBaseURL = "https://animores-image.s3.ap-northeast-2.amazonaws.com";
+  const imageBaseURL = process.env.IMAGE_BASE_URL ?? '';
 
 const ToDoCard = ({ todo, curTime }: { todo: IToDo, curTime: Date}) => {
     //TODO: pet_colors를 어떻게 처리할지 고민해보기
@@ -85,7 +86,7 @@ const ToDoCard = ({ todo, curTime }: { todo: IToDo, curTime: Date}) => {
                 <Animated.View style={[styles.card, animatedStyle]}>
                     <View>
                         <View style={{flexDirection: "row"}}>
-                            <Text>시계</Text>
+                            <FontAwesome name="clock-o" size={300} color={'#ffffff'} />
                             <Text style={{fontSize: 25, color: isPast(curTime, todo.time) ? "red" : "black", marginHorizontal: 10}}>{formatTime(todo.time)}</Text>
                         </View>
                         <View style={{flexDirection: 'row', alignItems: 'center'}}>
