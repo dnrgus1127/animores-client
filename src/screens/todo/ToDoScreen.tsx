@@ -20,6 +20,7 @@ import PetListModal from "./modal/PetListModal";
 import ToDoCard from "./ToDoCard";
 import FloatingButton from "../../components/button/FloatingButton";
 import styled from "styled-components/native";
+import CenterModal from "../../components/modal/CenterModal";
 
 const AllTodoScreen = () => {
   const navigation =
@@ -106,26 +107,26 @@ const AllTodoScreen = () => {
   , []);
 
   const [isVisibleMenu, setIsVisibleMenu] = useState<boolean>(false); //플로팅버튼
-
+  const [todoIdToDelete, setTodoIdToDelete] = useState<number | null>(null); //삭제할 todo id
   return (
     <>
       <HeaderNavigation  middletitle={<PetListButton />} hasBackButton={false} />
-      <ScrollView>
-        <View style={{display: 'flex', alignItems: 'center'}}>
+      <View style={{display: 'flex', alignItems: 'center'}}>
         {isLoading ? <Text>Loading...</Text> : toDoList.length === 0 && <Text>할 일이 없습니다.</Text>}
-        
         <FlatList
           data={toDoList}
           renderItem={({ item }) => (
             <ToDoCard
               todo={item}
               curTime={time}
+              onDelete={() => {
+                setTodoIdToDelete(item.id)
+              }}
             />
           )}
           keyExtractor={(item) => `todo-${item.id}`}
         />
-        </View>
-      </ScrollView>
+      </View>
       <FloatingButtonContainer isVisibleMenu={isVisibleMenu}>
         <FloatingButton
           isVisibleMenu={isVisibleMenu}
@@ -140,6 +141,19 @@ const AllTodoScreen = () => {
           setUsePetListWindow={setUsePetListWindow}
         />
       )}
+      <CenterModal
+        visible={todoIdToDelete != null}
+        title="할 일을 삭제하시겠어요?"
+        subTitle="삭제 이후에는 할 일이 영구적으로 삭제되며, 복원하실 수 없습니다."
+        onClose={() => setTodoIdToDelete(null)}
+        onDelete={() => {
+          if (todoIdToDelete === null) return;
+          ToDoService.todo.delete(todoIdToDelete);
+          setToDoList(toDoList.filter((todo) => todo.id !== todoIdToDelete));
+          setTodoIdToDelete(null);
+        }}
+      />
+
     </>
   );
 };

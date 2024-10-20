@@ -66,6 +66,19 @@ export namespace ToDoService {
                     }
                 }
             }
+        },
+        delete: async (id: number) => {
+            try {
+                const response = await AxiosContext.delete(`/api/v1/todos/${id}`);
+                return { data: response.data, status: response.status };
+            } catch (error) {
+                console.error('ToDoService.todo.delete:', error);
+                if	(axios.isAxiosError(error)) {
+                    if (error.response) {
+                        console.error('ProfileService.Profile.delete:', error.response.data);
+                    }
+                }
+            }
         }
     }
 }

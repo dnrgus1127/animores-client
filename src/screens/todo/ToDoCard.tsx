@@ -16,7 +16,7 @@ import { ToDoService } from "../../service/ToDoService";
   const HIDDEN_MENU_WIDTH = 70;
   const TIMING_DURATION = 500;
 
-const ToDoCard = ({ todo, curTime }: { todo: IToDo, curTime: Date}) => {
+const ToDoCard = ({ todo, curTime, onDelete }: { todo: IToDo, curTime: Date, onDelete: () => void}) => {
     //TODO: pet_colors를 어떻게 처리할지 고민해보기
     const pet_colors = ["#FFD700", "#FF69B4", "#00FF00", "#1E90FF", "#FF4500", "#FF6347", "#8A2BE2", "#FF1493", "#FF8C00", "#FF00FF", "#00FFFF", "#00FF7F", "#FF0000", "#0000FF", "#FF00FF", "#FFD700", "#FF69B4", "#00FF00", "#1E90FF", "#FF4500", "#FF6347", "#8A2BE2", "#FF1493", "#FF8C00", "#FF00FF", "#00FFFF", "#00FF7F", "#FF0000", "#0000FF", "#FF00FF", "#FFD700", "#FF69B4", "#00FF00", "#1E90FF", "#FF4500", "#FF6347", "#8A2BE2", "#FF1493", "#FF8C00", "#FF00FF", "#00FFFF", "#00FF7F", "#FF0000", "#0000FF", "#FF00FF", "#FFD700", "#FF69B4", "#00FF00", "#1E90FF", "#FF4500", "#FF6347", "#8A2BE2", "#FF1493", "#FF8C00", "#FF00FF", "#00FFFF", "#00FF7F", "#FF0000", "#0000FF", "#FF00FF", "#FFD700", "#FF69B4", "#00FF00", "#1E90FF", "#FF4500", "#FF6347", "#8A2BE2", "#FF1493", "#FF8C00", "#FF00FF", "#00FFFF", "#00FF7F", "#FF0000", "#0000FF", "#FF00FF", "#FFD700", "#FF69B4", "#00FF00", "#1E90FF", "#FF4500", "#FF6347", "#8A2BE2", "#FF1493", "#FF8C00", "#FF00FF", "#00FFFF", "#00FF7F", "#FF0000", "#0000FF", "#FF00FF", "#FFD700", "#FF69B4", "#00FF00", "#1E"];
     const formatTime = (time: string) => {
@@ -114,7 +114,9 @@ const ToDoCard = ({ todo, curTime }: { todo: IToDo, curTime: Date}) => {
                 </Animated.View>
             </GestureDetector>
             <View style={styles.hidden_card}>
-                <Pressable onPress = {() => checkToDo(todo.id)}>
+                <Pressable onPress = {() => 
+                    onDelete()
+                }>
                     <Text style={styles.hiddenMenuText}>삭제</Text>
                 </Pressable>
                 <Separator/>
