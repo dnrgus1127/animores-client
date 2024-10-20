@@ -19,6 +19,8 @@ import { IPetTypes } from "../../../types/PetTypes";
 import { PetListAtom } from "../../recoil/PetAtom";
 import PetListModal from "./modal/PetListModal";
 import ToDoCard from "./ToDoCard";
+import FloatingButton from "../../components/button/FloatingButton";
+import styled from "styled-components/native";
 
 const AllTodoScreen = () => {
   const navigation =
@@ -104,6 +106,8 @@ const AllTodoScreen = () => {
   }
   , []);
 
+  const [isVisibleMenu, setIsVisibleMenu] = useState<boolean>(false); //플로팅버튼
+
   return (
     <SafeAreaView>
       <HeaderNavigation  middletitle={<PetListButton />} hasBackButton={true} />
@@ -115,6 +119,13 @@ const AllTodoScreen = () => {
         ))}
         </View>
       </ScrollView>
+      <FloatingButtonContainer>
+        <FloatingButton
+          isVisibleMenu={isVisibleMenu}
+          onPressCancel={() => setIsVisibleMenu(false)}
+          onPressFloating={() => setIsVisibleMenu(!isVisibleMenu)}
+          />
+      </FloatingButtonContainer>
       {usePetListWindow && (
         <PetListModal
           queryIdList={queryParam.pets || []}
@@ -127,3 +138,13 @@ const AllTodoScreen = () => {
 };
 
 export default AllTodoScreen;
+
+const FloatingButtonContainer = styled.View`
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  background-color: ${(isVisibleMenu) => (isVisibleMenu ? "rgba(0, 0, 0, 0.5)" : "transparent")};
+  z-index:${(isVisibleMenu) => (isVisibleMenu ?  1 : 0)};
+  top:${(isVisibleMenu) => (isVisibleMenu ? 0 : null)};
+`;

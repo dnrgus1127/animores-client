@@ -8,14 +8,13 @@ import Animated, {
     useSharedValue, 
     withTiming  
   } from 'react-native-reanimated';
-import { FontAwesome } from "@expo/vector-icons";
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { ToDoService } from "../../service/ToDoService";
 
 
   const { width } = Dimensions.get('window');
   const HIDDEN_MENU_WIDTH = 70;
   const TIMING_DURATION = 500;
-
-  const imageBaseURL = process.env.IMAGE_BASE_URL ?? '';
 
 const ToDoCard = ({ todo, curTime }: { todo: IToDo, curTime: Date}) => {
     //TODO: pet_colors를 어떻게 처리할지 고민해보기
@@ -47,7 +46,7 @@ const ToDoCard = ({ todo, curTime }: { todo: IToDo, curTime: Date}) => {
     }
 
     const checkToDo = (id: number) => {
-        console.log(id);
+        ToDoService.todo.check(id);
     }
 
   // xOffset은 카드의 X 좌표 위치
@@ -86,7 +85,7 @@ const ToDoCard = ({ todo, curTime }: { todo: IToDo, curTime: Date}) => {
                 <Animated.View style={[styles.card, animatedStyle]}>
                     <View>
                         <View style={{flexDirection: "row"}}>
-                            <FontAwesome name="clock-o" size={300} color={'#ffffff'} />
+                            <FontAwesome name="clock-o" size={24} color="black" />
                             <Text style={{fontSize: 25, color: isPast(curTime, todo.time) ? "red" : "black", marginHorizontal: 10}}>{formatTime(todo.time)}</Text>
                         </View>
                         <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -105,8 +104,8 @@ const ToDoCard = ({ todo, curTime }: { todo: IToDo, curTime: Date}) => {
                     <View>
                         {todo.completeProfileImage ? 
                         <View style={styles.profile}>
-                            <Image source={{uri: 'https://www.google.com/url?sa=i&url=http%3A%2F%2Fitempage3.auction.co.kr%2FDetailView.aspx%3Fitemno%3DB764188087&psig=AOvVaw3J-zsMEEP5PvlibTQI4zfR&ust=1727678366845000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCLDN18zF54gDFQAAAAAdAAAAABAE'}} style={{position: 'absolute', zIndex: 4}}/>
-                            <Image source={{uri: imageBaseURL+todo.completeProfileImage}} style={{position:'absolute', zIndex:3}}/>
+                            <Image source={require(`../../assets/images/2a820159-1f51-473a-a11c-764539054ca0.jpg`)} style={{position:'absolute' ,height: 30, width: 30, zIndex: 3}}/>
+                            <Image source={{uri:  `${process.env.IMAGE_BASE_URL}/${todo.completeProfileImage}`}} style={{height: 30, width: 30}}/>
                         </View>
                         :
                         <Pressable onPress={() => checkToDo(todo.id)} style={{...styles.profile, ...styles.check_box}}/>

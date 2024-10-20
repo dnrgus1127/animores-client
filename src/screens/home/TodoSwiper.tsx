@@ -5,7 +5,7 @@ import Animated, { useAnimatedScrollHandler, useSharedValue, SharedValue, useAni
 import TodayTodoItem from "./TodayTodoItem";
 
 interface ISliderItem {
-    item: IItemslider;
+    item: IItemsSlider;
     index: number;
     scrollX: SharedValue<number>
 }
@@ -51,7 +51,7 @@ const SliderItem = ({item, index, scrollX}: ISliderItem) => {
   return (
     <Animated.View style={[styles.itemWrap, rnAnimatedStyle]}>
       <View style={styles.item}>
-        <TodayTodoItem item={item} index={index} />
+        <TodayTodoItem key={index} item={item} index={index} />
       </View>
     </Animated.View>
   )

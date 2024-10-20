@@ -53,5 +53,19 @@ export namespace ToDoService {
                 return { data: null, status: error || 500 };
             }
         },
+        check: async (id: number) => {
+            try {
+                const response = await AxiosContext.post(`/api/v1/todos/${id}/check`);
+                console.log(response);
+                return { data: response.data, status: response.status };
+            } catch (error) {
+                console.error('ToDoService.todo.check:', error);
+                if	(axios.isAxiosError(error)) {
+                    if (error.response) {
+                        console.error('ProfileService.Profile.check:', error.response.data);
+                    }
+                }
+            }
+        }
     }
 }

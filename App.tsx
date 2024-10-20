@@ -30,9 +30,9 @@ const App = () => {
     const prepareApp = async () => {
       try {
         await checkAuth();
-        await Font.loadAsync({
-          ...Ionicons.font,...Entypo.font, ...FontAwesome.font
-        });
+        // await Font.loadAsync({
+        //   ...Ionicons.font,...Entypo.font, ...FontAwesome.font
+        // });
       } catch (error) {
         console.error("Error loading assets and fonts", error);
       } finally {
