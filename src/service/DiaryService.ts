@@ -46,6 +46,17 @@ export namespace DiaryService {
 				console.error('DiaryService.diary.delete:', error);
 				return { data: null, status: error || 500 };
 			}
-		}
+		},
+		commentList: async (diaryId: number, profileId: number, page: number, size: number) => {
+			try {
+				//console.log(`/api/v1/diaries/${diaryId}/comments?profileId=${profileId}&page=${page}&size=${size}`);
+				const response = await AxiosContext.get
+					(`/api/v1/diaries/${diaryId}/comments?profileId=${profileId}&page=${page}&size=${size}`);
+				return { data: response.data, status: response.status };
+			} catch (error) {
+				console.error('DiaryService.diary.commentList:', error);
+				return { data: null, status: error || 500 };
+			}
+		},
 	}
 }
