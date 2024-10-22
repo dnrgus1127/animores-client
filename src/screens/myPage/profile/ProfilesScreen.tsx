@@ -43,7 +43,7 @@ const ProfilesScreen = () => {
     saveLastScreen();
   }, [])
 
-  const profiles = profile?.data.data || [];
+  const profiles = profile?.data?.data || [];
 
   if (profiles.length < 6) {
     profiles.push({
@@ -73,25 +73,27 @@ const ProfilesScreen = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.profileTitleContainer}>
         <View style={styles.profileGrid}>
-          {profiles.map((item: IProfile) => {
-            return (
-              <Pressable
-                key={item.id}
-                onPress={() => handlePress(item)}
-                style={styles.profileItem}
-              >
-                <Image
-                  source={
-                    item.id === "add"
-                      ? asset.petAdd
-                      : { uri: `${baseUrl}/${item.imageUrl}` }
-                  }
-                  style={styles.profileImage}
-                />
-                <Title text={item.name} />
-              </Pressable>
-            );
-          })}
+          {profile && 
+            profiles.map((item: IProfile) => {
+              return (
+                <Pressable
+                  key={item.id}
+                  onPress={() => handlePress(item)}
+                  style={styles.profileItem}
+                >
+                  <Image
+                    source={
+                      item.id === "add"
+                        ? asset.petAdd
+                        : { uri: `${baseUrl}/${item.imageUrl}` }
+                    }
+                    style={styles.profileImage}
+                  />
+                  <Title text={item.name} />
+                </Pressable>
+              );
+            })
+          }
         </View>
       </View>
     </SafeAreaView>
