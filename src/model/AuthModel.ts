@@ -24,7 +24,6 @@ export namespace AuthModel {
 			expirationHours: string;
 			success: boolean;
 		};
-		status: number;
 	}
 
 	export interface IEmailVerificationCodeModel {
@@ -37,5 +36,4 @@ export namespace AuthModel {
 		nickname: string;
 		isAdPermission: boolean;
 	}
-
 }

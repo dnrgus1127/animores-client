@@ -1,14 +1,15 @@
 // src/service/AuthService.ts
 import { AuthModel } from '../model/AuthModel';
 import AxiosContext from '../screens/context/AxiosContext';
+import { AxiosResponse } from 'axios';
 
 export const AuthService = {
 	Auth: {
-		login: async (email: string, password: string) => {
-			const response = await AxiosContext.post<AuthModel.ILoginModel>(
+		login: async (email: string, password: string): Promise<AuthModel.ILoginResponseModel> => {
+			const response: AuthModel.ILoginResponseModel = await AxiosContext.post<AuthModel.ILoginModel, AuthModel.ILoginResponseModel>(
 				`/api/v1/account/sign-in`, { email, password });
-			return response.data;
-		},
+			return response;
+		},	
 		refreshToken: async (refreshToken: string) => {
 			const response = await AxiosContext.post<AuthModel.ILoginResponseModel>(
 				`/api/v1/account/refresh`, { refreshToken });
