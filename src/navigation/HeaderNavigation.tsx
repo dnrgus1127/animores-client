@@ -12,7 +12,7 @@ import Title from "../components/text/Title";
 import { Colors } from "../styles/Colors";
 
 interface IProps {
-  middletitle: string;
+  middletitle: any;
   rightTitle?: string;
   onPressBackButton?: () => void;
   onPressRightButton?: () => void;
@@ -51,10 +51,13 @@ const HeaderNavigation = (props: IProps) => {
         )}
         {middletitle && (
           <View style={styles.titleContainer}>
+            {typeof middletitle  === 'string' ? 
             <Title
               text={middletitle}
               fontSize={18}
-              style={styles.title} />
+              style={styles.title} />:
+              middletitle
+            }
           </View>
         )}
         {rightTitle && (
