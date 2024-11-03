@@ -10,6 +10,7 @@ import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import React, { useState, useEffect } from "react";
 import { FlatList, Pressable, StyleSheet, View, Image } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import { CommentIcon, More, User, UserImage, ProfileImage as DefaultProfileImage } from "../../assets/svg";
 import FloatingButton from "../../components/button/FloatingButton";
@@ -360,55 +361,57 @@ const DairyScreen = () => {
 
   return (
     <>
-      <HeaderNavigation middletitle="일지" hasBackButton={false} />
-      <FlatList
-        keyExtractor={(item, index) => `diary-${item?.diaryId}-${index}`}
-        data={diaryData}
-        renderItem={renderItem}
-        onEndReachedThreshold={0.6}
-        onEndReached={loadMoreData}
-      />
-      {/* 플로팅 버튼 */}
-      <View
-        style={[
-          styles.floatingButtonContainer,
-          {
-            backgroundColor: isVisibleMenu
-              ? "rgba(0, 0, 0, 0.5)"
-              : "transparent",
-            zIndex: isVisibleMenu ? 1 : 0,
-            top: isVisibleMenu ? 0 : null,
-          },
-        ]}
-      >
-        <FloatingButton
-          isVisibleMenu={isVisibleMenu}
-          onPressCancel={() => setIsVisibleMenu(false)}
-          onPressFloating={() => setIsVisibleMenu(!isVisibleMenu)}
-        />
-        {/* 모달 */}
-        <BottomModal
-          isVisible={isFirstVisibleMore}
-          onClose={() => {
-            setIsFirstVisibleMore(false);
-          }}
-          footer={footerMore}
+      <SafeAreaView style={styles.container}>
+          <HeaderNavigation middletitle="일지" hasBackButton={false} />
+          <FlatList
+            keyExtractor={(item, index) => `diary-${item?.diaryId}-${index}`}
+            data={diaryData}
+            renderItem={renderItem}
+            onEndReachedThreshold={0.6}
+            onEndReached={loadMoreData}
+          />
+          {/* 플로팅 버튼 */}
+          <View
+            style={[
+              styles.floatingButtonContainer,
+              {
+                backgroundColor: isVisibleMenu
+                  ? "rgba(0, 0, 0, 0.5)"
+                  : "transparent",
+                zIndex: isVisibleMenu ? 1 : 0,
+                top: isVisibleMenu ? 0 : null,
+              },
+            ]}
+          >
+            <FloatingButton
+              isVisibleMenu={isVisibleMenu}
+              onPressCancel={() => setIsVisibleMenu(false)}
+              onPressFloating={() => setIsVisibleMenu(!isVisibleMenu)}
+            />
+            {/* 모달 */}
+            <BottomModal
+              isVisible={isFirstVisibleMore}
+              onClose={() => {
+                setIsFirstVisibleMore(false);
+              }}
+              footer={footerMore}
 
-          // 중첩 모달
-          _isVisible={isSecondVisibleMore}
-          _onClose={() => setIsSecondVisibleMore(false)}
-          _title="게시물을 삭제하시겠어요?"
-          _subTitle="삭제 이후에는 게시물이 영구적으로 삭제되며, 복원하실 수 없습니다."
-          _onDelete={handleDelete}
-        />
-        <BottomModal
-          isVisible={isVisibleComment}
-          onClose={() => {
-            setIsVisibleComment(false);
-          }}
-          footer={footerComment}
-        />
-      </View>
+              // 중첩 모달
+              _isVisible={isSecondVisibleMore}
+              _onClose={() => setIsSecondVisibleMore(false)}
+              _title="게시물을 삭제하시겠어요?"
+              _subTitle="삭제 이후에는 게시물이 영구적으로 삭제되며, 복원하실 수 없습니다."
+              _onDelete={handleDelete}
+            />
+            <BottomModal
+              isVisible={isVisibleComment}
+              onClose={() => {
+                setIsVisibleComment(false);
+              }}
+              footer={footerComment}
+            />
+          </View>
+      </SafeAreaView>
     </>
   );
 };
@@ -510,7 +513,7 @@ const styles = StyleSheet.create({
   },
   floatingButtonContainer: {
     position: "absolute",
-    bottom: 0,
+    bottom: 70,
     right: 0,
     left: 0,
   },
