@@ -56,8 +56,8 @@ const AddComment = (props: CommentProps) => {
 
   // 댓글 등록
   const { mutate } = useMutation(
-    ({profileId, commentDiaryId, content}: {profileId: number, commentDiaryId: number, content: string}) =>
-      DiaryService.diary.addComment(2, 1, content),
+    ({profileId, diaryId, content}: {profileId: number, diaryId: number, content: string}) =>
+      DiaryService.diary.addComment(1, diaryId, content),
     {
       onSuccess: async (data) => {
         if (data && data.status === 200) {
@@ -83,8 +83,7 @@ const AddComment = (props: CommentProps) => {
       const profileId = parsedProfile.id
       const content = methods.getValues('comment');
 
-      mutate({profileId: profileId, diaryId: commentDiaryId, content: content}); // 여기서 왜 안넘어가는가?
-      //DiaryService.diary.addComment(2, 1, content);
+      mutate({profileId: profileId, diaryId: commentDiaryId, content: content});
       //console.log('data:', profileId, commentDiaryId, content);
     } else {
       console.error("comment error!");
