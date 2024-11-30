@@ -35,7 +35,7 @@ const BottomModal: React.FunctionComponent<IProps> = (props: IProps) => {
     swipeDirection = "down",
     BottomText,
     style,
-    footer,
+    footer : Footer,
     _isVisible,
     _onClose,
     _title,
@@ -57,7 +57,7 @@ const BottomModal: React.FunctionComponent<IProps> = (props: IProps) => {
       style={[style, styles.modalStyle]}
     >
       <View style={styles.modalContainer}>
-        {footer && footer()}
+        {Footer && <Footer/>}
         {/* 프로필 이미지: 기본 이미지로 할래요 */}
         {BottomText &&
           <Pressable>
