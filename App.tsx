@@ -22,7 +22,7 @@ const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [appIsReady, setAppIsReady] = useState(false);
   const checkAuth = async () => {
-    const token = await AsyncStorage.getItem("token");
+    const token = await AsyncStorage.getItem("accessToken");
     setIsAuthenticated(!!token);
   };
 
