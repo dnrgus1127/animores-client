@@ -32,7 +32,7 @@ const LoginScreen = ({ navigation }: any) => {
   const { isLoading, mutate } = useMutation<AuthModel.ILoginResponseModel,Error,AuthModel.ILoginModel>(loginFunction,{
     onSuccess: (response: AuthModel.ILoginResponseModel) => {
       if (response.data.success) {
-        const { accessToken, refreshToken } = response.data;
+        const { accessToken, refreshToken } = response.data.data;
         if (accessToken && refreshToken) {
           setTokens(accessToken, refreshToken);
           AsyncStorage.setItem("userToken", accessToken);

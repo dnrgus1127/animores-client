@@ -29,7 +29,7 @@ const PetListModal = (props: any) => {
       }
     };
 
-    const baseURL = "https://animores-image.s3.ap-northeast-2.amazonaws.com";
+    const baseURL = process.env.IMAGE_BASE_URL ?? '';
     const petListFooter = () => {
       return (
         <View style={styles.container}>

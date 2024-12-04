@@ -1,20 +1,15 @@
-import React, {useRef, useState} from "react";
-import { ImageBackground, Image, Pressable, StyleSheet, View, Text, FlatList } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import Title from "../../components/text/Title";
-import { Colors } from "../../styles/Colors";
-import { SvgProps } from "react-native-svg";
-import HomeTheme1 from "../../assets/png/bg_home_theme1.png";
-import { HomeAvatar1, HomeAvatar2, HomeAvatar3, HomeAvatar4, HomeAvatar5, FeedIcon, WalkIcon, MedicineIcon, BathIcon } from "../../assets/svg";
-import TodayTodoItem from "./TodayTodoItem";
-import Swiper from "react-native-swiper";
-import TodoSwiper from "./TodoSwiper";
-import AvatarSwiper from "./AvatarSwiper";
-import { ToDoService } from "../../service/ToDoService";
 import { useQuery } from "@tanstack/react-query";
-import { QueryKey } from "../../statics/constants/Querykey";
+import React from "react";
+import { Image, ImageBackground, StyleSheet, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useRecoilValue } from "recoil";
+import HomeTheme1 from "../../assets/png/bg_home_theme1.png";
+import { BathIcon, FeedIcon, HomeAvatar1, HomeAvatar2, HomeAvatar3, HomeAvatar4, HomeAvatar5, MedicineIcon, WalkIcon } from "../../assets/svg";
 import { CurrentProfileAtom } from "../../recoil/AuthAtom";
+import { ToDoService } from "../../service/ToDoService";
+import { QueryKey } from "../../statics/constants/Querykey";
+import AvatarSwiper from "./AvatarSwiper";
+import TodoSwiper from "./TodoSwiper";
 
 const ItemsAvatar = [
     {

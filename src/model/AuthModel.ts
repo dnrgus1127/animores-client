@@ -18,11 +18,13 @@ export namespace AuthModel {
 	}
 	export interface ILoginResponseModel {
 		data: {
-			accessToken: string;
-			refreshToken: string;
-			userId: number;
-			expirationHours: string;
 			success: boolean;
+			data: {
+				accessToken: string;
+				refreshToken: string;
+				userId: number;
+				expirationHours: string;
+			}
 		};
 	}
 

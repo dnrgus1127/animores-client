@@ -14,7 +14,7 @@ interface ModalComponentProps {
 const width = Dimensions.get("window").width;
 
 const CenterModal: React.FC<ModalComponentProps> = ({
-  isVisible,
+  visible,
   title,
   subTitle,
   onClose,
@@ -23,7 +23,7 @@ const CenterModal: React.FC<ModalComponentProps> = ({
   return (
     <Modal
       transparent={true}
-      isVisible={isVisible}
+      visible={visible}
       animationType="fade"
       onRequestClose={onClose}
     >
