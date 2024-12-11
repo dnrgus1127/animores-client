@@ -12,16 +12,20 @@ export namespace AuthModel {
 		email: string
 		password: string
 	}
-
+	export interface IResetPwModel {
+		code: string
+		email: string
+	}
 	export interface ILoginResponseModel {
 		data: {
-			accessToken: string;
-			refreshToken: string;
-			userId: number;
-			expirationHours: string;
 			success: boolean;
+			data: {
+				accessToken: string;
+				refreshToken: string;
+				userId: number;
+				expirationHours: string;
+			}
 		};
-		status: number;
 	}
 
 	export interface IEmailVerificationCodeModel {
@@ -34,5 +38,4 @@ export namespace AuthModel {
 		nickname: string;
 		isAdPermission: boolean;
 	}
-
 }

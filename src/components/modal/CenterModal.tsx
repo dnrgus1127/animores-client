@@ -1,15 +1,14 @@
 import React from "react";
-import { Modal, StyleSheet, Text, View, Pressable } from "react-native";
+import { Modal, StyleSheet, Text, View, Pressable, Dimensions } from "react-native";
 import { Colors } from "../../styles/Colors";
 import Title from "../text/Title";
-import { Dimensions } from "react-native";
 
 interface ModalComponentProps {
   visible: boolean;
   title: string;
   subTitle: string;
   onClose: () => void;
-  onCancle: () => void;
+  onDelete: () => void;
 }
 
 const width = Dimensions.get("window").width;
@@ -19,7 +18,7 @@ const CenterModal: React.FC<ModalComponentProps> = ({
   title,
   subTitle,
   onClose,
-  onCancle,
+  onDelete,
 }) => {
   return (
     <Modal
@@ -42,7 +41,7 @@ const CenterModal: React.FC<ModalComponentProps> = ({
             color={Colors.AEAEAE}
             style={styles.modalSubText}
           />
-          <Pressable style={styles.pressableButton} onPress={onCancle}>
+          <Pressable style={styles.pressableButton} onPress={onDelete}>
             <Title text="삭제" color={Colors.FF4040} fontSize={15} />
           </Pressable>
           <View style={styles.line} />

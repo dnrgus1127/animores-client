@@ -12,14 +12,14 @@ import Title from "../components/text/Title";
 import { Colors } from "../styles/Colors";
 
 interface IProps {
-  middletitle: string;
+  middletitle: any;
   rightTitle?: string;
   onPressBackButton?: () => void;
   onPressRightButton?: () => void;
   hasBackButton?: boolean;
   textStyle?: StyleProp<TextStyle>;
-  onPress?: () => void;
   content?: string;
+  buttonDisabled?: boolean;
 }
 
 const HeaderNavigation = (props: IProps) => {
@@ -30,8 +30,8 @@ const HeaderNavigation = (props: IProps) => {
     onPressRightButton,
     hasBackButton = true,
     textStyle,
-    onPress,
     content,
+    buttonDisabled,
   } = props;
 
   const HIT_SLOP = { top: 10, left: 10, right: 10, bottom: 10 };
@@ -51,16 +51,20 @@ const HeaderNavigation = (props: IProps) => {
         )}
         {middletitle && (
           <View style={styles.titleContainer}>
+            {typeof middletitle  === 'string' ? 
             <Title
               text={middletitle}
               fontSize={18}
-              style={styles.title} />
+              style={styles.title} />:
+              middletitle
+            }
           </View>
         )}
         {rightTitle && (
           <Pressable
-            onPress={onPress}
+            onPress={onPressRightButton}
             style={styles.rightTitleContainer}
+            disabled={buttonDisabled}
           >
             <Title
               text={rightTitle}

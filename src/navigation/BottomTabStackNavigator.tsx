@@ -5,7 +5,7 @@ import CalendarScreen from "../screens/celendar/CalendarScreen";
 import DiaryScreen from "../screens/diary/DiaryScreen";
 import HomeScreen from "../screens/home/HomeScreen";
 import MypageScreen from "../screens/myPage/MypageScreen";
-import AllTodoScreen from "../screens/todo";
+import AllTodoScreen from "../screens/todo/ToDoScreen";
 import { ScreenName } from "../statics/constants/ScreenName";
 import TabBar from "./TabBar";
 

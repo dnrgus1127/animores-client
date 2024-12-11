@@ -18,16 +18,13 @@ import axios from "axios";
 
 const JoinScreen = ({ navigation }: any) => {
   const { control, handleSubmit, trigger, getValues, watch, formState:{errors} } = useForm({ mode: "onChange"})
-  const baseURL = "http://180.229.5.21:8080";
+  const baseUrl = process.env.EXPO_PUBLIC_BASE_URL;
   
   // 패스워드 보이기/가리기 상태
   const [secureText, setScureText] = useState({
     pw: true,
     checkPw: true
   })
-  
-  // 임시 인증코드
-  const [sampleCode, setSampleCode] = useState("")
 
   // Email 중복 확인 상태
   const [emailState, setEmailState] = useState<AuthModel.IEmailModel["state"]>("none")
@@ -59,7 +56,6 @@ const JoinScreen = ({ navigation }: any) => {
   const handleOnChangeEmail = (inputText:string) => {
     // 이메일 재입력 시 인증번호 무효화
     // if (inputText !== getValues("email")) {
-    //   setSampleCode("")
     //   setEmailState("none")
     // }
 
@@ -82,7 +78,7 @@ const JoinScreen = ({ navigation }: any) => {
       AuthService.Auth.emailVerificationCode(getValues("email"));
       // 이메일 중복 체크는 성공
       setEmailState("success")
-      console.log('123...', emailState)
+      console.log('이메일 중복 체크', emailState)
 
       // 카운트 시작 3:00
     } else {
@@ -95,12 +91,11 @@ const JoinScreen = ({ navigation }: any) => {
   // Email -  인증번호 전송 클릭 시
   const sendVerificationCode = async (email: string) => {
     // 중복 확인
-    await axios.get(`${baseURL}/api/v1/account/check-email/${email}`)
+    await axios.get(`${baseUrl}/api/v1/account/check-email/${email}`)
     .then((response) => {
         onSuccessCheckEmail({data: response.data.data, success: response.data.success});
     })
     .catch(function (error) {
-        console.log('---500---')
         return { data: null, success: error || 500 };
     })
   }
@@ -114,12 +109,12 @@ const JoinScreen = ({ navigation }: any) => {
 
   // Email -  인증번호 확인 요청
   const checkVerificationCode = async (email: string, code: string) => {
-    console.log(email, code)
-    // 중복 확인
-    await axios.post(`${baseURL}/api/v1/account/email-auth-verify?email=${email}&code=${code}`)
+    // 인증코드 확인
+    await axios.post(`${baseUrl}/api/v1/account/email-auth-verify?email=${email}&code=${code}`)
     .then((response) => {
-        console.log('코드 성공!', response.data)
+        console.log('인증코드 : ', response.data)
         // 인증 실패 : 인증번호 불일치 시
+        //alert(response.data.error.message)
 
         // 인증 완료
         setValidation({...validation, verificationCode: true})
@@ -133,11 +128,10 @@ const JoinScreen = ({ navigation }: any) => {
 
   // Email - 재전송 클릭 시
   const refreshVerificationCode = () => {
-    // 입력필드, 에러 텍스트 초기화
+    // 인증코드 입력필드, 에러 텍스트 초기화
     setVerificationState("none")
 
     // 새 인증번호 전송
-    //setSampleCode("4567")
 
     // 카운트다운 재시작
     setResetCount(true)
@@ -175,12 +169,11 @@ const JoinScreen = ({ navigation }: any) => {
   // Nickname - 중복확인 클릭 시
   const checkNickname = async (nickname: string) => {
     // 중복이면 
-    await axios.get(`${baseURL}/api/v1/account/check-nickname/${nickname}`)
+    await axios.get(`${baseUrl}/api/v1/account/check-nickname/${nickname}`)
     .then((response) => {
         onSuccessCheckNickname({data: response.data.data, status: response.data.status});
     })
     .catch(function (error) {
-        console.log('---500---')
         return { data: null, status: error || 500 };
     })
     
@@ -222,7 +215,7 @@ const JoinScreen = ({ navigation }: any) => {
     nickname: string,
     isAdPermission: boolean
   ) => {
-    AuthService.Auth.emailVerificationCode(email, password, nickname, isAdPermission);
+    AuthService.Auth.join(email, password, nickname, isAdPermission);
 
     console.log(email, password, nickname, isAdPermission)
     navigation.navigate(ScreenName.JoinCompleted)
@@ -254,13 +247,13 @@ const JoinScreen = ({ navigation }: any) => {
                   <Text style={[styles.label, error ? styles.errorText : null]}>이메일</Text>
                   <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
                     <TextInput 
-                      style={[styles.inputBox, sampleCode !== "" ? styles.textDisabled : null]}
+                      style={[styles.inputBox, emailState === "success" ? styles.textDisabled : null]}
                       placeholder="이메일을 입력해주세요"
                       onChangeText={(value) => {
                         onChange(value);
                         handleOnChangeEmail(value)
                       }}
-                      editable={sampleCode == ""}
+                      editable={emailState !== "success"}
                       returnKeyType="done"
                     />
                     {
@@ -272,7 +265,7 @@ const JoinScreen = ({ navigation }: any) => {
                         <Pressable style={[styles.inputButton, { paddingLeft: 5, paddingRight: 5 }]} disabled>
                           <Text style={styles.textDisabled}>인증실패</Text>
                         </Pressable>
-                        : (sampleCode === "" ? 
+                        : (verificationState === "none" ? 
                           <Pressable 
                             style={[styles.inputButton, { paddingLeft: 5, paddingRight: 5 }]} 
                             disabled={error} 
@@ -304,7 +297,7 @@ const JoinScreen = ({ navigation }: any) => {
                 rules={{
                   required: "인증번호를 입력해주세요.", 
                   validate: {
-                  //matchCode: (value:string) => value !== sampleCode && "인증번호가 일치하지 않습니다.",
+                  matchCode: (value:string) => value !== getValues("verification_code") && "인증번호가 일치하지 않습니다.",
                 }}}
                 render={({ field: { onChange, onBlur, value }, fieldState: {error} }) => (
                   <>
@@ -460,15 +453,15 @@ const JoinScreen = ({ navigation }: any) => {
           
           {Object.values(validation).every(item => item === true) ? (
             <Pressable
-              onPress={() => onRegisterPressed(getValues("email"), getValues("password"), getValues("nickname"), false)}
+              onPress={() => onRegisterPressed(getValues("email"), getValues("password"), getValues("nickname"), agreements.includes("receiveAdvertising"))}
               style={[styles.primaryLargeButton]}
               children={<Text style={[styles.primaryButtonText]}>회원가입</Text>}
             >
             </Pressable>
           ) : (
             <Pressable
-              //disabled
-              onPress={() => navigation.navigate(ScreenName.JoinCompleted)}
+              disabled
+              //onPress={() => navigation.navigate(ScreenName.JoinCompleted)}
               style={[styles.primaryLargeButton, styles.buttonDisabled]}
               children={<Text style={[styles.primaryButtonText, styles.textDisabled]}>회원가입</Text>}
             >

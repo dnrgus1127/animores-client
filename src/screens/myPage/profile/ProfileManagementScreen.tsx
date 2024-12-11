@@ -2,7 +2,7 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
-import { Image, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
+import { Image, Platform, Pressable, ScrollView, StyleSheet, TextInput, View, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { IProfile } from "../../../../types/Profile";
 import { EditIconBlack } from "../../../assets/icons";
@@ -14,16 +14,28 @@ import { ProfileService } from "../../../service/ProfileService";
 import { QueryKey } from "../../../statics/constants/Querykey";
 import { ScreenName } from "../../../statics/constants/ScreenName";
 import { Colors } from "../../../styles/Colors";
+import { emailRegex, nicknameRegex, pwRegex } from "../../../js/util";
+import BottomModal from "../../../components/modal/BottomModal";
+import { Control, Controller, FieldError, FieldValues, RegisterOptions, useForm } from "react-hook-form";
+import { AuthModel } from "../../../model/AuthModel";
+import axios from "axios";
 
 const ProfileManagementScreen = () => {
-  const baseUrl = process.env.EXPO_PUBLIC_BASE_URL;
+  const baseURL = process.env.EXPO_PUBLIC_BASE_URL;
+  const imageBaseURL = "https://animores-image.s3.ap-northeast-2.amazonaws.com";
 
   const navigation =
     useNavigation<
       StackNavigationProp<RootStackParamList, ScreenName.ProfileManagement>
     >();
 
+  const { control, handleSubmit, formState:{errors} } = useForm({ mode: "onChange"})
   const [nickname, setNickname] = useState<string>('');
+
+  // Nickname 중복 확인 상태
+  const [nicknameState, setNicknameState] = useState<AuthModel.INicknameModel["state"]>("none")
+
+  const [isFirstVisible, setIsFirstVisible] = useState<boolean>(false);
 
   const { data: myProfileInfo } = useQuery({
     queryKey: [QueryKey.MY_PROFILE],
@@ -35,8 +47,8 @@ const ProfileManagementScreen = () => {
     queryFn: () => ProfileService.profile.list(),
   });
 
-  const myProfile = myProfileInfo?.data.data;
-  const profiles = [...(profileList?.data.data || [])];
+  const myProfile = myProfileInfo?.data?.data;
+  const profiles = Object.values(profileList?.data?.data) || [];
 
   if (profiles.length < 6) {
     profiles.push({
@@ -44,6 +56,39 @@ const ProfileManagementScreen = () => {
       imageUrl: "",
       name: "",
     });
+  }
+
+
+  // Nickname - 입력 시
+  const handleOnChangeNickname = (inputText:string) => {
+    // 닉네임 재입력 시 인증 무효화
+    setNicknameState("none")
+    
+    const matchNickname = inputText.match(nicknameRegex)
+
+    // if (matchNickname === null) {
+    //   setValidation({...validation, nickname: false})
+    // } else {
+    //   setValidation({...validation, nickname: true})
+    // }
+  }
+
+  // Nickname - 중복확인 클릭 시
+  const checkNickname = async (nickname: string) => {
+    // 중복이면 
+    await axios.get(`${baseURL}/api/v1/account/check-nickname/${nickname}`)
+    .then((response) => {
+      if (!response.data.data){
+        setNicknameState('success');
+      } else {
+        // 중복일 경우
+        setNicknameState('fail');
+      }
+    })
+    .catch(function (error) {
+        console.log("err: ", error);
+        return { data: null, status: error || 500 };
+    })
   }
 
   const handlePress = async (item: IProfile) => {
@@ -55,8 +100,67 @@ const ProfileManagementScreen = () => {
   };
 
   useEffect(() => {
-    setNickname(myProfile?.nickname)
-  }, [])
+    if (myProfile?.nickname) {
+      setNickname(myProfile.nickname);
+    }
+  }, [myProfile]);
+
+  //닉네임 변경 모달 footer
+  const footerEditNickname = (): React.ReactNode => {
+    return (
+      <View style={styles.bottomModalContainer}>
+        <View style={styles.footerTopLine} />
+        <Controller
+          name="nickname"              
+          control={control}
+          rules={{
+            required: "닉네임을 입력해주세요.", 
+            pattern: {
+            value: nicknameRegex, // 닉네임 8자 이상이면 인증 안되는 오류
+            message: "영문, 한글, 숫자만 가능하며 3~20자로 입력해주세요."
+          }}}
+          render={({ field: { onChange, onBlur, value }, fieldState: {error} }) => (
+            <View style={[styles.inputWrap, { marginTop: 33 }]}>
+              <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
+                <TextInput 
+                  style={[styles.inputBox, error ? styles.errorUnderline : null]}
+                  placeholder="닉네임을 입력해주세요" 
+                  onChangeText={(value) => onChange(value) && handleOnChangeNickname(value)} 
+                  returnKeyType="done"
+                />
+                <Pressable
+                  style={[styles.inputButton]} 
+                  disabled={error}
+                  onPress={() => checkNickname(value)}
+                >
+                  <Text style={error && styles.textDisabled}>중복확인</Text>
+                </Pressable>
+              </View>
+              {error && <Text style={styles.errorText}>{error.message}</Text>}
+              {value && nicknameState === 'fail' && <Text style={styles.errorText}>이미 사용중인 닉네임입니다.</Text>}
+              {value && nicknameState === 'success' && <Text style={styles.successText}>사용하실 수 있는 닉네임입니다.</Text>}
+            </View>
+          )}
+        />
+        <View style={[styles.footer, { marginTop: 33 }]}>
+          <Pressable
+            onPress={() => {
+              console.log("수정완료")
+            }}
+            style={styles.buttonContainer}
+          >
+            <Title
+              text={"수정완료"}
+              fontSize={16}
+              color={Colors.White}
+              style={{ textAlign: "center" }}
+            />
+          </Pressable>
+        </View>
+      </View>
+    );
+  };
+  
 
   return (
     <SafeAreaView style={styles.container}>
@@ -79,14 +183,20 @@ const ProfileManagementScreen = () => {
             color={Colors.AEAEAE}
             style={styles.InfoTitle}
           />
-          <View style={styles.TextInputContainer}>
-            <TextInput
+          {/* TODO: 닉네임 변경 모달 열림 */}
+          <Pressable
+            style={styles.TextInputContainer}
+            onPress={() => {
+              setIsFirstVisible(true);
+            }}
+          >
+            <Title 
+              text={"닉네임"}
+              fontSize={16}
               style={styles.input}
-              value={nickname}
-              onChangeText={setNickname}
             />
             <EditIconBlack style={{ alignSelf: "center" }} />
-          </View>
+          </Pressable>
         </View>
         <View style={[styles.Row, { marginTop: 20 }]}>
           <Title
@@ -104,14 +214,15 @@ const ProfileManagementScreen = () => {
           <Title
             text={"비밀번호"}
             color={Colors.AEAEAE}
-            style={{ flex: 1, textAlign: "right", marginRight: 40 }}
+            style={styles.InfoTitle}
           />
           {/* TODO: 비밀번호 변경 페이지로 이동 */}
-          <Pressable style={styles.TextInputContainer} onPress={() => navigation.navigate(ScreenName.ResetPassword)}>
+          <Pressable style={styles.TextInputContainer} onPress={() => navigation.navigate(ScreenName.UserVerification)}>
             <Title
               text={"•••••••••••••••"}
               fontSize={16}
-              style={styles.input} />
+              style={styles.input} 
+            />
             <EditIconBlack style={{ alignSelf: "center" }} />
           </Pressable>
         </View>
@@ -136,7 +247,7 @@ const ProfileManagementScreen = () => {
                       source={
                         item.id === "add"
                           ? asset.petAdd
-                          : { uri: `${baseUrl}/${item.imageUrl}` }
+                          : { uri: `${imageBaseURL}/${item.imageUrl}` }
                       }
                       style={styles.profileImage}
                     />
@@ -147,6 +258,14 @@ const ProfileManagementScreen = () => {
             </View>
           </View>
         )}
+        {/* 모달 */}
+        <BottomModal
+          isVisible={isFirstVisible}
+          onClose={() => {
+            setIsFirstVisible(false);
+          }}
+          footer={footerEditNickname}
+        />
       </ScrollView>
     </SafeAreaView>
   );
@@ -209,10 +328,9 @@ const styles = StyleSheet.create({
     height: 24,
   },
   input: {
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.Black,
     fontSize: 16,
-    marginRight: 7
+    marginRight: 7,
+    textDecorationLine: "underline",
   },
   InfoTitle: {
     flex: 1,
@@ -226,5 +344,60 @@ const styles = StyleSheet.create({
   Row: {
     flexDirection: "row",
     alignItems: "center"
-  }
+  },
+  bottomModalContainer: {
+    marginTop: 15,
+  },
+  footer: {
+    flexDirection: "row",
+    paddingHorizontal: 20,
+  },
+  footerTopLine: {
+    backgroundColor: Colors.Gray838383,
+    height: 1.5,
+    width: 50,
+    alignSelf: "center",
+  },
+  inputWrap: {
+    flexDirection: "column",
+    paddingHorizontal: 20,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  inputBox: {
+    flex: 1,
+    height: 42,
+    paddingTop: 10,
+    paddingBottom: 10,
+    backgroundColor: "#FFF",
+    borderBottomColor: "#C1C1C1",
+    borderBottomWidth: 1,
+    fontSize: 14
+  },
+  inputButton: {
+    backgroundColor: "#F2F2F2", 
+    padding: 12, 
+    borderRadius: 5, 
+    marginStart: 10, 
+    width: 104, 
+    alignItems: "center",
+  },
+  textDisabled: {
+    color: "#AEAEAE",
+  },
+  errorText: {
+    color: "#FF4040",
+  },
+  successText: {
+    color: '#00B01C',
+  },
+  buttonContainer: {
+    backgroundColor: Colors.FB3F7E,
+    flex: 1,
+    height: 50,
+    justifyContent: "center",
+    borderRadius: 10,
+  },
 });

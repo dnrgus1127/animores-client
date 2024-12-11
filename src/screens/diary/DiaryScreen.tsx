@@ -9,8 +9,9 @@ import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import React, { useState } from "react";
 import { FlatList, Pressable, StyleSheet, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
-import { CommentIcon, More, User, UserImage } from "../../assets/svg";
+import { CommentIcon, More, UserImage } from "../../assets/svg";
 import FloatingButton from "../../components/button/FloatingButton";
 import BottomModal from "../../components/modal/BottomModal";
 import Title from "../../components/text/Title";
@@ -20,6 +21,7 @@ import { DiaryService } from "../../service/DiaryService";
 import { QueryKey } from "../../statics/constants/Querykey";
 import { Colors } from "../../styles/Colors";
 import CenterModal from "../../components/modal/CenterModal";
+import AddComment from "./AddComment";
 
 dayjs.locale("ko");
 dayjs.extend(utc);
@@ -29,14 +31,20 @@ const DairyScreen = () => {
   const moreLength = 17; //17자 이상이면 말줄임
 
   const queryClient = useQueryClient();
+  
+  const baseUrl = "https://animores-image.s3.ap-northeast-2.amazonaws.com";
 
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
   const [isFirstVisibleMore, setIsFirstVisibleMore] = useState<boolean>(false); //더보기 모달
   const [isSecondVisibleMore, setIsSecondVisibleMore] = useState<boolean>(false);
   const [isVisibleMenu, setIsVisibleMenu] = useState<boolean>(false); //플로팅버튼
-  const [isVisibleComment, setIsVisibleComment] = useState<boolean>(false); //댓글
-  const [deleteItemId, setDeleteItemId] = useState<number | null>(null);
-
+  const [isVisibleComment, setIsVisibleComment] = useState<boolean>(false); //댓글 모달
+  const [isComment, setIsComment] = useState<boolean>(false); //댓글 유무
+  const [commentDiaryId, setCommentDiaryId] = useState<number | null>(null);  //댓글 diary Id
+  const [commentProfileId, setCommentProfileId] = useState<number | null>(null);  //댓글 profile Id
+  const [deletedDiaryId, setDeletedDiaryId] = useState<number | null>(null);  //삭제 diary Id
+  const [deletedProfileId, setDeletedProfileId] = useState<number | null>(null);  //삭제 profile Id
+  
   //일지 리스트
   //TODO: profile api 가져와서 profileId에 넣기
   const { data, fetchNextPage, isFetchingNextPage, hasNextPage } =
@@ -59,7 +67,8 @@ const DairyScreen = () => {
 
   //일지 삭제
   const { mutate } = useMutation(
-    (diaryId: number) => DiaryService.diary.delete(diaryId),
+    ({ diaryId, profileId }: { diaryId: number, profileId: number }) =>
+      DiaryService.diary.delete(diaryId, profileId),
     {
       onSuccess: async (data) => {
         if (data && data.status === 200) {
@@ -69,7 +78,7 @@ const DairyScreen = () => {
           });
 
           setIsFirstVisibleMore(false);
-		  setIsSecondVisibleMore(false);
+          setIsSecondVisibleMore(false);
           await queryClient.invalidateQueries([QueryKey.DIARY_LIST]);
           //일지 목록 쿼리를 무효화함
         }
@@ -128,7 +137,8 @@ const DairyScreen = () => {
           <Pressable
             onPress={() => {
               setIsFirstVisibleMore(true);
-              setDeleteItemId(item.diaryId);
+              setDeletedDiaryId(item.diaryId);
+              setDeletedProfileId(item.profileId);
             }}
           >
             <More style={styles.moreIcon} />
@@ -155,13 +165,14 @@ const DairyScreen = () => {
         )}
         <Pressable
           onPress={() => {
-            setIsVisibleComment(true);
+            getCommentList(item); // 댓글 리스트
+            setIsVisibleComment(true); // 댓글 모달 보여짐
           }}
           style={styles.commentIconContainer}
         >
           <CommentIcon />
           {/* TODO:댓글 수 수정 */}
-          <Title text={"3"} color={Colors.AEAEAE} style={{ marginLeft: 8 }} />
+          <Title text={item?.commentCount} color={Colors.AEAEAE} style={{ marginLeft: 8 }} />
         </Pressable>
         {index !== diaryData?.length - 1 && <View style={styles.bottomLine} />}
       </View>
@@ -184,7 +195,8 @@ const DairyScreen = () => {
           </View>
           <Pressable
             onPress={() => {
-                setIsSecondVisibleMore(true);
+              console.log(deletedDiaryId, isSecondVisibleMore);
+              setIsSecondVisibleMore(true);
             }}
             style={styles.buttonContainer}
           >
@@ -200,43 +212,17 @@ const DairyScreen = () => {
     );
   };
 
-  //댓글 모달 footer
-  const footerComment = (): React.ReactNode => {
-    return (
-      <View style={styles.bottomModalContainer}>
-        <View style={styles.footerTopLine} />
-        <Title
-          text={"댓글"}
-          fontSize={16}
-          style={{ textAlign: "center", marginTop: 10 }}
-        />
-        <View style={styles.commentContainer}>
-          <User />
-          <View style={styles.comment}>
-            <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
-              <Title text={"사랑꾼 엄마"} fontWeight="bold" fontSize={16} />
-              <Title
-                text={"3분 전"}
-                fontSize={12}
-                color={Colors.AEAEAE}
-                style={{ marginLeft: 12 }}
-              />
-            </View>
-            <Title
-              text={"아이고 이뻐라~ ❤️"}
-              fontSize={14}
-              style={{ marginTop: 8 }}
-            />
-          </View>
-          <Title
-            text={"답글 달기"}
-            fontSize={14}
-            color={Colors.AEAEAE}
-            style={{ marginLeft: 12, alignSelf: "flex-end" }}
-          />
-        </View>
-      </View>
-    );
+
+  const getCommentList = async (item: DiaryModel.IDiaryModel) => {
+    if (item.commentCount !== 0) {
+      setIsComment(true);
+    } else {
+      setIsComment(false);
+    }
+    if (item.diaryId !== null && item.profileId !== null) {
+      setCommentDiaryId(item.diaryId);
+      setCommentProfileId(item.profileId);
+    }
   };
 
   const loadMoreData = () => {
@@ -244,65 +230,67 @@ const DairyScreen = () => {
     fetchNextPage();
   };
 
-  const handleCancel = () => {
-    if (deleteItemId !== null) {
-      mutate(deleteItemId);
+  const handleDelete = async () => {
+    if (deletedDiaryId !== null && deletedProfileId !== null) {
+      mutate({ diaryId: deletedDiaryId, profileId: deletedProfileId });
+    } else {
+      console.log('diary deleted error')
     }
   };
 
   return (
     <>
-      <HeaderNavigation middletitle="일지" hasBackButton={false} />
-      <FlatList
-        keyExtractor={(item, index) => `diary-${item?.diaryId}-${index}`}
-        data={diaryData}
-        renderItem={renderItem}
-        onEndReachedThreshold={0.6}
-        onEndReached={loadMoreData}
-      />
-      {/* 플로팅 버튼 */}
-      <View
-        style={[
-          styles.floatingButtonContainer,
-          {
-            backgroundColor: isVisibleMenu
-              ? "rgba(0, 0, 0, 0.5)"
-              : "transparent",
-            zIndex: isVisibleMenu ? 1 : 0,
-            top: isVisibleMenu ? 0 : null,
-          },
-        ]}
-      >
-        <FloatingButton
-          isVisibleMenu={isVisibleMenu}
-          onPressCancel={() => setIsVisibleMenu(false)}
-          onPressFloating={() => setIsVisibleMenu(!isVisibleMenu)}
-        />
-        {/* 모달 */}
-        <BottomModal
-          isVisible={isFirstVisibleMore}
-          onClose={() => {
-            setIsFirstVisibleMore(false);
-          }}
-          footer={footerMore}
-        />
-        <BottomModal
-          isVisible={isVisibleComment}
-          onClose={() => {
-            setIsVisibleComment(false);
-          }}
-          footer={footerComment}
-        />
-        {deleteItemId !== null && (
-          <CenterModal
-            visible={isSecondVisibleMore}
-            title="게시물을 삭제하시겠어요?"
-            subTitle="삭제 이후에는 게시물이 영구적으로 삭제되며, 복원하실 수 없습니다."
-            onClose={() => setIsSecondVisibleMore(false)}
-            onCancle={handleCancel}
+      <SafeAreaView style={styles.container}>
+          <HeaderNavigation middletitle="일지" hasBackButton={false} />
+          <FlatList
+            keyExtractor={(item, index) => `diary-${item?.diaryId}-${index}`}
+            data={diaryData}
+            renderItem={renderItem}
+            onEndReachedThreshold={0.6}
+            onEndReached={loadMoreData}
           />
-        )}
-      </View>
+          {/* 플로팅 버튼 */}
+          <View
+            style={[
+              styles.floatingButtonContainer,
+              {
+                backgroundColor: isVisibleMenu
+                  ? "rgba(0, 0, 0, 0.5)"
+                  : "transparent",
+                zIndex: isVisibleMenu ? 1 : 0,
+                top: isVisibleMenu ? 0 : null,
+              },
+            ]}
+          >
+            <FloatingButton
+              isVisibleMenu={isVisibleMenu}
+              onPressCancel={() => setIsVisibleMenu(false)}
+              onPressFloating={() => setIsVisibleMenu(!isVisibleMenu)}
+            />
+            {/* 모달 */}
+            <BottomModal
+              isVisible={isFirstVisibleMore}
+              onClose={() => {
+                setIsFirstVisibleMore(false);
+              }}
+              footer={footerMore}
+
+              // 중첩 모달
+              _isVisible={isSecondVisibleMore}
+              _onClose={() => setIsSecondVisibleMore(false)}
+              _title="게시물을 삭제하시겠어요?"
+              _subTitle="삭제 이후에는 게시물이 영구적으로 삭제되며, 복원하실 수 없습니다."
+              _onDelete={handleDelete}
+            />
+            <AddComment 
+              visible={isVisibleComment} 
+              onClose={() => setIsVisibleComment(false)}
+              commentDiaryId={commentDiaryId}
+              isComment={isComment}
+              commentProfileId={commentProfileId}
+            />
+          </View>
+      </SafeAreaView>
     </>
   );
 };
@@ -310,6 +298,10 @@ const DairyScreen = () => {
 export default DairyScreen;
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: Colors.White,
+  },
   renderItemContainer: {
     flex: 1,
     paddingTop: 20,

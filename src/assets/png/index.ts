@@ -13,6 +13,11 @@ import calendarBottomTabActive from './tabActive2.png';
 import homeBottomTabActive from './tabActive3.png';
 import diaryBottomTabActive from './tabActive4.png';
 import mypageBottomTabActive from './tabActive5.png';
+import {ImageProps} from "react-native";
+
+interface ImageObject {
+	[key: string] : ImageProps;
+}
 
 const PngImage = {
 	BottomTab: {
@@ -32,10 +37,24 @@ const PngImage = {
 		bird,
 		cat,
 		fish,
-		rabbit
-	},
+		rabbit,
+		//homeTheme1,
+	} as ImageObject,
 	petAdd: require('./petAdd.png'),
 	profile: require('./profile.png'),
+	getPetType: (name : string) => {
+		switch (name) {
+			case "강아지" : {
+				return "dog";
+			}
+			case "고양이" : {
+				return "cat";
+			}
+			default : {
+				return "dog";
+			}
+		}
+	}
 }
 
 export default PngImage;
