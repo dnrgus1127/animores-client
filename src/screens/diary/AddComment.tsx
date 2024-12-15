@@ -105,16 +105,17 @@ const AddComment = (props: CommentProps) => {
     }
   }
 
-  const footerComment = () => {
+  const FooterComment = () => {
     return (
       <View style={styles.bottomModalContainer}>
-        <View style={styles.footerTopLine} />
+        {/* <View style={styles.footerTopLine} />
 
         <Title
           text={"댓글"}
           fontSize={16}
           style={{ textAlign: "center", marginTop: 10 }}
-        />
+        /> */}
+
         {isComment}
         {isComment ? (
           comments.map((item) => {
@@ -171,27 +172,6 @@ const AddComment = (props: CommentProps) => {
             placeholder="내용을 작성해주세요"
             style={[styles.inputBox, { width: "77%", marginRight: "3%" }]}
           />
-
-          {/* <Controller
-            name={"comment"}
-            control={control}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                style={[styles.inputBox, { width: "77%", marginRight: "3%" }]}
-                value={value}
-                placeholder="댓글을 입력해주세요"
-                onChangeText={(value) => onChange(value) && handleOnChangeComment(value)}
-              />
-            )}
-            defaultValue={""}
-          /> */}
-          
-          {/* <InputBox
-            name={"comment"}
-            placeholder="댓글을 입력해주세요"
-            control={control} 
-            style={{ width: "77%", marginRight: "3%" }}
-          /> */}
           <Pressable
             onPress={addComment}
             style={[isInputText ? styles.submitButton : styles.submitButtonDisabled, { width: "20%" }]}
@@ -208,11 +188,12 @@ const AddComment = (props: CommentProps) => {
   }
 
   return (
-    <BottomModal
-      isVisible={visible}
-      onClose={onClose}
-      footer={footerComment}
-    />
+    // <BottomModal
+    //   isVisible={visible}
+    //   onClose={onClose}
+    //   footer={footerComment}
+    // />
+    <FooterComment />
   )
 }
 export default AddComment;
