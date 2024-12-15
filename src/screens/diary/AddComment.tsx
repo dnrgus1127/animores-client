@@ -56,8 +56,8 @@ const AddComment = (props: CommentProps) => {
 
   // 댓글 등록
   const { mutate } = useMutation(
-    ({profileId, commentDiaryId, content}: {profileId: number, commentDiaryId: number, content: string}) =>
-      DiaryService.diary.addComment(2, 1, content),
+    ({profileId, diaryId, content}: {profileId: number, diaryId: number, content: string}) =>
+      DiaryService.diary.addComment(1, diaryId, content),
     {
       onSuccess: async (data) => {
         if (data && data.status === 200) {
@@ -83,8 +83,7 @@ const AddComment = (props: CommentProps) => {
       const profileId = parsedProfile.id
       const content = methods.getValues('comment');
 
-      mutate({profileId: profileId, diaryId: commentDiaryId, content: content}); // 여기서 왜 안넘어가는가?
-      //DiaryService.diary.addComment(2, 1, content);
+      mutate({profileId: profileId, diaryId: commentDiaryId, content: content});
       //console.log('data:', profileId, commentDiaryId, content);
     } else {
       console.error("comment error!");
@@ -106,16 +105,17 @@ const AddComment = (props: CommentProps) => {
     }
   }
 
-  const footerComment = () => {
+  const FooterComment = () => {
     return (
       <View style={styles.bottomModalContainer}>
-        <View style={styles.footerTopLine} />
+        {/* <View style={styles.footerTopLine} />
 
         <Title
           text={"댓글"}
           fontSize={16}
           style={{ textAlign: "center", marginTop: 10 }}
-        />
+        /> */}
+
         {isComment}
         {isComment ? (
           comments.map((item) => {
@@ -172,27 +172,6 @@ const AddComment = (props: CommentProps) => {
             placeholder="내용을 작성해주세요"
             style={[styles.inputBox, { width: "77%", marginRight: "3%" }]}
           />
-
-          {/* <Controller
-            name={"comment"}
-            control={control}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                style={[styles.inputBox, { width: "77%", marginRight: "3%" }]}
-                value={value}
-                placeholder="댓글을 입력해주세요"
-                onChangeText={(value) => onChange(value) && handleOnChangeComment(value)}
-              />
-            )}
-            defaultValue={""}
-          /> */}
-          
-          {/* <InputBox
-            name={"comment"}
-            placeholder="댓글을 입력해주세요"
-            control={control} 
-            style={{ width: "77%", marginRight: "3%" }}
-          /> */}
           <Pressable
             onPress={addComment}
             style={[isInputText ? styles.submitButton : styles.submitButtonDisabled, { width: "20%" }]}
@@ -209,11 +188,12 @@ const AddComment = (props: CommentProps) => {
   }
 
   return (
-    <BottomModal
-      isVisible={visible}
-      onClose={onClose}
-      footer={footerComment}
-    />
+    // <BottomModal
+    //   isVisible={visible}
+    //   onClose={onClose}
+    //   footer={footerComment}
+    // />
+    <FooterComment />
   )
 }
 export default AddComment;
