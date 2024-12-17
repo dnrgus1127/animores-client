@@ -2,7 +2,7 @@ import {RouteProp, useNavigation, useRoute} from "@react-navigation/native";
 import {StackNavigationProp} from "@react-navigation/stack";
 import React, {useEffect} from "react";
 import {useForm} from "react-hook-form";
-import {StyleProp, StyleSheet, View, ViewStyle} from "react-native";
+import {StyleProp, StyleSheet, Text, View, ViewStyle} from "react-native";
 import {ScrollView} from "react-native-gesture-handler";
 import HeaderNavigation from "../../../navigation/HeaderNavigation";
 import {RootStackParamList} from "../../../navigation/type";
@@ -62,7 +62,7 @@ const AddPet = () => {
                         <CustomForm.ToggleButtonGroup name={"gender"} label={"성별"} buttonNames={GENDER_TYPE}
                                                       defaultValue={GENDER_TYPE[0]}/>
                         <CustomForm.DatePicker name="birthday" label={"생년월일"}/>
-                        <CustomForm.Input name="weight" label={"몸무게"} placeholder="kg"/>
+                        <CustomForm.Input name="weight" label={"몸무게"} placeholder={"몸무게를 입력해주세요"} trailingIcon={<Text>Kg</Text>}/>
                         <CustomForm.SubmitButton text={"제출"}/>
                     </CustomForm>
                 </View>
