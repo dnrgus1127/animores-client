@@ -43,7 +43,7 @@ const AddPet = () => {
             <ScrollView style={styles.horizontalContainer}>
                 <PetImagePicker/>
                 {/* 합성 컴포넌트 패턴 */}
-                <View style={{gap: 20}}>
+                <View style={{gap: 20, paddingVertical : 20}}>
                     <CustomForm methods={methods}>
                         <CustomForm.Input name="name"
                                           label={"반려동물 이름"}
@@ -61,7 +61,7 @@ const AddPet = () => {
                         />
                         <CustomForm.ToggleButtonGroup name={"gender"} label={"성별"} buttonNames={GENDER_TYPE}
                                                       defaultValue={GENDER_TYPE[0]}/>
-                        <CustomForm.Input name="birthday" label={"생년월일"}/>
+                        <CustomForm.DatePicker name="birthday" label={"생년월일"}/>
                         <CustomForm.Input name="weight" label={"몸무게"} placeholder="kg"/>
                         <CustomForm.SubmitButton text={"제출"}/>
                     </CustomForm>

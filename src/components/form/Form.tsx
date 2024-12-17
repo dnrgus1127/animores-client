@@ -1,19 +1,26 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Controller, FormProvider, useFormContext, UseFormReturn} from "react-hook-form";
 import {StyleProp, StyleSheet, TextInput, TouchableOpacity, View, ViewStyle} from "react-native";
 import {PlainButton} from "../button/Button";
 import Title from "../text/Title";
 import {Colors} from "../../styles/Colors";
-import {ReviseIcon} from "../../assets/svg";
+import {CalanderIcon} from "../../assets/svg";
+import CustomCalender from "../Calendar/CustomCalender";
+import BottomModal from "../modal/BottomModal";
+import {ICalendarDay} from "../Calendar/type";
+import {convertCalendarDateToKorean} from "../Calendar/utils";
 
 interface IFormProps {
     methods: UseFormReturn<FormFiled>;
     children: React.ReactNode;
 }
 
-interface IInput {
+interface IFormControl {
     name: string;
     label: string;
+}
+
+interface IInput extends IFormControl {
     placeholder?: string;
     editable?: boolean;
     defaultValue?: string;
@@ -22,9 +29,12 @@ interface IInput {
     style?: StyleProp<ViewStyle>;
 }
 
-interface ITrailingIcon {
-    name: string;
-    icon?: React.ReactNode;
+interface IToggleButton extends IFormControl {
+    buttonNames: Array<string>;
+    defaultValue?: string;
+}
+
+interface IDatePickerProps extends IFormControl {
 }
 
 type FormFiled = {
@@ -46,10 +56,16 @@ type FormFiled = {
  * }
  */
 const BaseForm: React.FC<IFormProps> = ({methods, children}) => {
-
     return <FormProvider {...methods}>
         {children}
     </FormProvider>
+}
+
+const FiledWrapper: React.FC<IFormControl & { children: React.ReactNode }> = ({name, label, children}) => {
+    return <View style={styles.inputBox}>
+        {label && <Title text={label} fontWeight="bold"/>}
+        {children}
+    </View>
 }
 
 /**
@@ -57,28 +73,6 @@ const BaseForm: React.FC<IFormProps> = ({methods, children}) => {
  */
 const TrailingIcon = ({children, onPress}: { children: React.ReactNode, onPress: () => void }) => {
     return <TouchableOpacity onPress={onPress}>{children}</TouchableOpacity>
-}
-
-
-// TODO useForm() 호출을 합성 컴포넌트 사용처 측으로 빼버렸으니 아이콘도 하나의 컴포넌트로 통일시킬 수 있을 것 같다.
-const ClearTrailingIcon: React.FC<ITrailingIcon> = ({name, icon}) => {
-    const {setValue, watch} = useFormContext();
-
-    const filedValue = watch(name);
-
-    if (!filedValue) return null;
-
-    return <TrailingIcon onPress={() => setValue(name, "")}>
-        {icon ? icon : <ReviseIcon/>}
-    </TrailingIcon>
-}
-
-const EditTrailingIcon: React.FC<ITrailingIcon> = ({name, icon}) => {
-    const {setValue} = useFormContext();
-
-    return <TrailingIcon onPress={() => {
-        setValue(name, "newValue")
-    }}>{icon ? icon : <Title text={"수정"}/>}</TrailingIcon>
 }
 
 const Input: React.FC<IInput> = ({
@@ -95,28 +89,17 @@ const Input: React.FC<IInput> = ({
 
     const filedValue = watch(name);
 
-    return <Controller
-        name={name}
-        control={control}
-        defaultValue={defaultValue}
+    return <Controller name={name} control={control} defaultValue={defaultValue}
         render={({field: {onChange, onBlur, value}}) => {
-            return <View style={styles.inputBox}>
-                {label && <Title text={label} fontWeight="bold"/>}
+            return <FiledWrapper name={name} label={label}>
                 <View style={styles.textFiled}>
                     <TextInput style={[styles.input, style]} onBlur={onBlur} onChangeText={onChange} value={value}
                                placeholder={placeholder} editable={editable}/>
                     {(trailingIcon && (filedValue && filedValue.length > 0)) &&
                         <TouchableOpacity onPress={onPressTrailingIcon}>{trailingIcon}</TouchableOpacity>}
                 </View>
-            </View>
+            </FiledWrapper>
         }}/>
-}
-
-interface IToggleButton {
-    name: string;
-    label: string;
-    buttonNames: Array<string>;
-    defaultValue?: string;
 }
 
 const ToggleButtonGroup: React.FC<IToggleButton> = ({name, label, buttonNames, defaultValue}) => {
@@ -128,12 +111,9 @@ const ToggleButtonGroup: React.FC<IToggleButton> = ({name, label, buttonNames, d
         setValue(name, defaultValue);
     }, [defaultValue]);
 
-    return <Controller
-        name={name}
-        control={control}
+    return <Controller name={name} control={control}
         render={() => {
-            return <View>
-                {label && <Title text={label} fontWeight="bold"/>}
+            return <FiledWrapper name={name} label={label}>
                 <View style={styles.twoToggleButtonContainer}>
                     {buttonNames.map((buttonName, idx) => {
                         return <PlainButton
@@ -143,11 +123,39 @@ const ToggleButtonGroup: React.FC<IToggleButton> = ({name, label, buttonNames, d
                             onPress={() => setValue(name, buttonName)}/>
                     })}
                 </View>
-            </View>
+            </FiledWrapper>
         }}
     />
 }
 
+const DatePicker: React.FC<IDatePickerProps> = ({name, label}) => {
+    const [isVisible, setIsVisible] = useState<boolean>(false);
+    const {control, setValue} = useFormContext();
+    return <Controller name={name} control={control}
+                       render={({field: {value}}) => {
+                           return <FiledWrapper name={name} label={label}>
+                               {/* 생년월일 필드 */}
+                               <View style={styles.textFiled}>
+                                   <TextInput style={[styles.input, {color: Colors.Black}]} value={value}
+                                              placeholder={"생년 월일을 입력해주세요"} editable={false}/>
+                                   <TrailingIcon onPress={() => setIsVisible(true)}><CalanderIcon/></TrailingIcon>
+                               </View>
+                               {/* 캘린더 오픈 */}
+                               <BottomModal onClose={() => setIsVisible(false)} isVisible={isVisible}>
+                                   <CustomCalender onDayPress={(day: ICalendarDay) => {
+                                       setValue(name, convertCalendarDateToKorean(day));
+                                       setIsVisible(false);
+                                   }}/>
+                               </BottomModal>
+                           </FiledWrapper>
+                       }}/>
+}
+
+/**
+ * @desc 현재는 테스트 용도로 현재 Form 값 콘솔에 출력만 수행
+ * @param text
+ * @constructor
+ */
 const SubmitButton: React.FC<any> = ({text}) => {
     const {handleSubmit} = useFormContext();
 
@@ -194,7 +202,6 @@ const styles = StyleSheet.create({
 export const CustomForm = Object.assign(BaseForm, {
     Input: Input,
     SubmitButton: SubmitButton,
-    ClearTrailingIcon,
-    EditTrailingIcon,
-    ToggleButtonGroup
+    ToggleButtonGroup,
+    DatePicker
 });

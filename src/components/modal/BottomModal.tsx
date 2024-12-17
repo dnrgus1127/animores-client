@@ -21,6 +21,7 @@ interface IProps {
   _title?: string;
   _subTitle?: string;
   _onDelete?: () => void;
+  children?: React.ReactNode;
 }
 
 const width = Dimensions.get("window").width;
@@ -41,6 +42,7 @@ const BottomModal: React.FunctionComponent<IProps> = (props: IProps) => {
     _title,
     _subTitle,
     _onDelete,
+    children
   } = props;
 
   return (
@@ -58,6 +60,7 @@ const BottomModal: React.FunctionComponent<IProps> = (props: IProps) => {
     >
       <View style={styles.modalContainer}>
         {Footer && <Footer/>}
+          {children}
         {/* 프로필 이미지: 기본 이미지로 할래요 */}
         {BottomText &&
           <Pressable>
