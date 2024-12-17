@@ -7,7 +7,7 @@ import {Colors} from "../../styles/Colors";
 import {CalanderIcon} from "../../assets/svg";
 import CustomCalender from "../Calendar/CustomCalender";
 import BottomModal from "../modal/BottomModal";
-import {ICalendarDay} from "../Calendar/type";
+import {DateData} from "react-native-calendars/src/types";
 import {convertCalendarDateToKorean} from "../Calendar/utils";
 
 interface IFormProps {
@@ -142,8 +142,8 @@ const DatePicker: React.FC<IDatePickerProps> = ({name, label}) => {
                                </View>
                                {/* 캘린더 오픈 */}
                                <BottomModal onClose={() => setIsVisible(false)} isVisible={isVisible}>
-                                   <CustomCalender onDayPress={(day: ICalendarDay) => {
-                                       setValue(name, convertCalendarDateToKorean(day));
+                                   <CustomCalender onDayPress={(day?: DateData) => {
+                                       day && setValue(name, convertCalendarDateToKorean(day));
                                        setIsVisible(false);
                                    }}/>
                                </BottomModal>
