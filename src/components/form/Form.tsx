@@ -18,7 +18,7 @@ interface IInput {
     editable?: boolean;
     defaultValue?: string;
     trailingIcon?: React.ReactNode;
-    onPressTrailingIcon? : () => void;
+    onPressTrailingIcon?: () => void;
     style?: StyleProp<ViewStyle>;
 }
 
@@ -81,7 +81,16 @@ const EditTrailingIcon: React.FC<ITrailingIcon> = ({name, icon}) => {
     }}>{icon ? icon : <Title text={"수정"}/>}</TrailingIcon>
 }
 
-const Input: React.FC<IInput> = ({name, label, placeholder, trailingIcon, onPressTrailingIcon, editable, defaultValue = "", style}) => {
+const Input: React.FC<IInput> = ({
+                                     name,
+                                     label,
+                                     placeholder,
+                                     trailingIcon,
+                                     onPressTrailingIcon,
+                                     editable,
+                                     defaultValue = "",
+                                     style
+                                 }) => {
     const {control, watch} = useFormContext();
 
     const filedValue = watch(name);
@@ -96,7 +105,8 @@ const Input: React.FC<IInput> = ({name, label, placeholder, trailingIcon, onPres
                 <View style={styles.textFiled}>
                     <TextInput style={[styles.input, style]} onBlur={onBlur} onChangeText={onChange} value={value}
                                placeholder={placeholder} editable={editable}/>
-                    {(trailingIcon && (filedValue && filedValue.length > 0)) && <TouchableOpacity onPress={onPressTrailingIcon}>{trailingIcon}</TouchableOpacity>}
+                    {(trailingIcon && (filedValue && filedValue.length > 0)) &&
+                        <TouchableOpacity onPress={onPressTrailingIcon}>{trailingIcon}</TouchableOpacity>}
                 </View>
             </View>
         }}/>
@@ -125,8 +135,9 @@ const ToggleButtonGroup: React.FC<IToggleButton> = ({name, label, buttonNames, d
             return <View>
                 {label && <Title text={label} fontWeight="bold"/>}
                 <View style={styles.twoToggleButtonContainer}>
-                    {buttonNames.map(buttonName => {
+                    {buttonNames.map((buttonName, idx) => {
                         return <PlainButton
+                            key={idx}
                             style={[styles.toggleButton, selectedCase === buttonName ? styles.selectedButton : {}]}
                             text={buttonName}
                             onPress={() => setValue(name, buttonName)}/>
