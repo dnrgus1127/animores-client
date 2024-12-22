@@ -1,6 +1,6 @@
 import React from "react";
 import { Pressable, StyleProp, StyleSheet, View, ViewStyle, Dimensions } from "react-native";
-import Modal, { Direction } from "react-native-modal";
+import Modal from "react-native-modal";
 import { Colors } from "../../styles/Colors";
 import Title from "../text/Title";
 
@@ -56,7 +56,9 @@ const BottomModal: React.FunctionComponent<IProps> = (props: IProps) => {
       backdropOpacity={0.6}
       style={[style, styles.modalStyle]}
     >
-      <View style={styles.modalContainer}>
+      <View 
+        //style={styles.modalContainer}
+      >
         {footer && footer()}
         {/* 프로필 이미지: 기본 이미지로 할래요 */}
         {BottomText &&
@@ -108,6 +110,7 @@ export default BottomModal;
 
 const styles = StyleSheet.create({
   modalStyle: {
+    flex: 1,
     width: "100%",
     margin: "auto",
     justifyContent: "flex-end"
@@ -117,6 +120,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     backgroundColor: Colors.White,
     paddingBottom: 30,
+    height: 530,
   },
   basicTitle: {
     textAlign: "center",

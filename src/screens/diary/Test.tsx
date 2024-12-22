@@ -1,16 +1,31 @@
 import React, { useState } from 'react';
 import {
+  useMutation,
+  useQuery,
+} from "@tanstack/react-query";
+import {
   Modal,
   View,
   Text,
   StyleSheet,
   Animated,
   Pressable,
+  Image, 
+  TextInput,
+  Dimensions,
+  TouchableOpacity,
 } from 'react-native';
+import Toast from "react-native-toast-message";
+import { User } from "../../assets/svg";
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
+import { DiaryService } from "../../service/DiaryService";
+import { QueryKey } from "../../statics/constants/Querykey";
+import { Colors } from "../../styles/Colors";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useController, Controller, Control, useForm } from "react-hook-form";
+import InputBox from "../../components/Input/InputBox";
 import Title from "../../components/text/Title";
 import BottomModal from "../../components/modal/BottomModal";
-import AddComment from "./AddComment";
 
 export interface CommentProps {
   visible: boolean;
@@ -26,26 +41,95 @@ const items = [
   { id: 3, title: "Content 3" },
 ];
 
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
+
 const Test = (props: CommentProps) => {
+  const { visible, onClose, commentDiaryId, isComment, commentProfileId } = props;
+
+  const baseUrl = "https://animores-image.s3.ap-northeast-2.amazonaws.com";
+
   const [modalVisible, setModalVisible] = useState(false);
   const [isVisibleComment, setIsVisibleComment] = useState<boolean>(false); //댓글 모달
+  const [isInputText, setIsInputText] = useState<boolean>(false);
+  const translateY = new Animated.Value(SCREEN_HEIGHT);
 
-  const gestures = items.reduce((acc, item) => {
-    acc[item.id] = new Animated.Value(0);
+  const methods = useForm({
+    defaultValues: {
+      comment: '',
+    },
+  });
+
+  const { control, addComment: formSubmit } = methods;
+  const { field } = useController({
+    control,
+    name: 'comment',
+    rules: { required: true },
+  });
+
+  //(댓글 클릭 시) 댓글 불러오기
+  const { data: commentList } = useQuery({
+    queryKey: [QueryKey.COMMENT_LIST, commentDiaryId],
+    queryFn: () => DiaryService.diary.commentList(commentDiaryId, commentProfileId, 1, 15),
+    option: {
+      enabled: !!commentDiaryId,
+    }
+  });
+
+  const comments = commentList?.data?.comments || [];
+  
+  const gestures = comments.reduce((acc, item) => {
+    acc[item.commentId] = new Animated.Value(0);
     return acc;
   }, {});
 
-  const openModal = () => {
-    setModalVisible(true);
-  };
+  // 댓글 등록
+  const { mutate } = useMutation(
+    ({profileId, diaryId, content}: {profileId: number, diaryId: number, content: string}) =>
+      DiaryService.diary.addComment(1, diaryId, content),
+    {
+      onSuccess: async (data) => {
+        if (data && data.status === 200) {
+          Toast.show({
+            type: 'success',
+            text1: '댓글이 등록되었습니다.',
+          });
+        }
+      },
+      onError: (error) => {
+        console.error('Comment error:', error);
+      },
+      //onSettled: () => { console.log('결과에 관계 없이 무언가 실행됨') }
+    }
+  )
 
-  const closeModal = () => {
-    setModalVisible(false);
-  };
+  // 댓글 입력버튼 클릭 시
+  const addComment = async(data) => {
+    const profile = await AsyncStorage.getItem("userInfo");
+
+    if (profile) {
+      const parsedProfile = JSON.parse(profile);
+      const profileId = parsedProfile.id
+      const content = methods.getValues('comment');
+
+      mutate({profileId: profileId, diaryId: commentDiaryId, content: content});
+      //console.log('data:', profileId, commentDiaryId, content);
+    } else {
+      console.error("comment error!");
+    }
+  }
+
+  // 댓글 입력 시
+  const handleOnChangeComment = (inputText:string) => {
+    if(inputText !== ''){
+      setIsInputText(true);
+    } else {
+      setIsInputText(false);
+    }
+  }
 
   const CommentList = () => {
-  const [visibleItem, setVisibleItem] = useState(null);
-  
+    const [visibleItem, setVisibleItem] = useState(null);
+
     const resetAllGestures = (exceptId) => {
       Object.keys(gestures).forEach((key) => {
         if (parseInt(key) !== exceptId) {
@@ -111,8 +195,15 @@ const Test = (props: CommentProps) => {
     }
     
     return (
-      <View style={{flex: 1, justifyContent: "flex-end" }}>
-          <View style={{ backgroundColor: "#fff", height: 500, borderTopLeftRadius: 20, borderTopRightRadius: 20 }}>
+       <View 
+        style={{ 
+          //flex: 1, 
+          //justifyContent: "flex-end" 
+        }}
+       >
+          <View 
+            style={{ backgroundColor: "#fff", height: 530, borderTopLeftRadius: 20, borderTopRightRadius: 20, paddingBottom: 30, }}
+          >
               <View style={styles.footerTopLine} />
 
               <Title
@@ -121,75 +212,123 @@ const Test = (props: CommentProps) => {
                   style={{ textAlign: "center", marginTop: 10, marginBottom: 10 }}
               />
 
-              {items.map(item => (
-                <View style={styles.cardContainer}>
-                  <PanGestureHandler
-                  key={item.id}
-                  onGestureEvent={handleGestureEvent(item.id)}
-                  onHandlerStateChange={handleGestureStateChange(item.id)}
-                  >
-                    <Animated.View
-                      style={[
-                      styles.itemContainer,
-                      { transform: [{ translateX: gestures[item.id] }] }, // Apply the swipe effect
-                      ]}
+              {isComment ? (
+                comments.map(item => (
+                  <View style={styles.cardContainer}>
+                    <PanGestureHandler
+                    key={item.commentId}
+                    onGestureEvent={handleGestureEvent(item.commentId)}
+                    onHandlerStateChange={handleGestureStateChange(item.commentId)}
                     >
-                      <View style={styles.itemContent}>
-                        <Text style={styles.modalText}>{item.title}</Text>
-                        {/* <AddComment 
-                          //visible={isVisibleComment} 
-                          //onClose={() => setIsVisibleComment(false)}
-                          commentDiaryId={props.commentDiaryId}
-                          isComment={props.isComment}
-                          commentProfileId={props.commentProfileId}
-                        /> */}
-                      </View>
-                    </Animated.View>
-                  </PanGestureHandler>
+                      <Animated.View
+                        style={[
+                        styles.itemContainer,
+                        { transform: [{ translateX: gestures[item.commentId] }] }, // Apply the swipe effect
+                        ]}
+                      >
+                        <View style={styles.commentContainer}>
+                            {item.imageUrl !== null ? (
+                              <Image
+                                  source={{ uri: `${baseUrl}/${item.imageUrl}` }}
+                                  style={styles.profileImage}
+                              />
+                            ) : (
+                              <User />
+                            )}
+                            <View style={styles.itemContent}>
+                              <View style={{ flexDirection: "row" }}>
+                                <Title
+                                  text={item.name}
+                                  fontSize={14}
+                                  fontWeight="bold"
+                                  color="#000000"
+                                />
+                                <Title
+                                  text={"3분 전"}
+                                  fontSize={12}
+                                  color={Colors.AEAEAE}
+                                  style={{ marginLeft: 12 }}
+                                />
+                              </View>
+                              <Title
+                                text={item.content}
+                                fontSize={14}
+                                style={{ marginTop: 8 }}
+                              />
+                            </View>
+                            <Title
+                              text={"답글 달기"}
+                              fontSize={14}
+                              color={Colors.AEAEAE}
+                              style={{ marginLeft: 12, alignSelf: "flex-end" }}
+                            />
+                        </View>
+                      </Animated.View>
+                    </PanGestureHandler>
 
-                  <View style={styles.hidden_card}>
-                    <Pressable onPress={() => console.log('11')}>
-                      <Text style={styles.hiddenMenuText}>삭제</Text>
-                    </Pressable>
-                    <Separator />
-                    <Pressable onPress={() => console.log('22')}>
-                      <Text style={styles.hiddenMenuText}>수정</Text>
-                    </Pressable>
-                  </View>
+                    <View style={styles.hidden_card}>
+                      <Pressable onPress={() => console.log('11')}>
+                        <Text style={styles.hiddenMenuText}>삭제</Text>
+                      </Pressable>
+                      <Separator />
+                      <Pressable onPress={() => console.log('22')}>
+                        <Text style={styles.hiddenMenuText}>수정</Text>
+                      </Pressable>
+                    </View>
                 </View>
-              ))}
-              <Text
-                  onPress={closeModal}
-                  style={styles.closeButton}
+              ))
+            ) : null}
+
+            <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 10, paddingVertical: 10 }}>
+              <TextInput
+                //multiline
+                //numberOfLines={20}
+                value={field.value}
+                onChangeText={(value) => field.onChange(value) && handleOnChangeComment(value)}
+                placeholder="내용을 작성해주세요"
+                style={[styles.inputBox, { width: "77%", marginRight: "3%" }]}
+              />
+              <Pressable
+                onPress={addComment}
+                style={[isInputText ? styles.submitButton : styles.submitButtonDisabled, { width: "20%" }]}
+                disabled={!isInputText}
               >
-                  Close Modal
-              </Text>
-          </View>
+                <Title 
+                  text="입력" 
+                  color={Colors.White} 
+                />
+              </Pressable>
+            </View>
+
+        </View>
       </View>
     )
   }
 
   return (
-    <View style={styles.container}>
-      <Text onPress={openModal} style={styles.openButton}>
-        Open Modal
-      </Text>
-      <Modal
+    <View 
+      style={styles.container}
+    >
+      <Modal        
         transparent={true}
-        visible={modalVisible}
+        visible={visible}
         animationType="fade"
-        onBackdropPress={closeModal}
-        isVisible={modalVisible}
-        propagateSwipe={true}
-        swipeDirection="down"
-        backdropOpacity={0.6}
+        onRequestClose={onClose}
       >
-        <CommentList />
+        <View style={styles.modalOverlay} onPress={onClose}>
+          {/* <Animated.View
+            style={[styles.modalContainer, { transform: [{ translateY }] }]}
+          > */}
+            <TouchableOpacity onPress={onClose} style={{ flex: 1 }}>
+            </TouchableOpacity>
+            <CommentList />
+          {/* </Animated.View> */}
+        </View>
       </Modal>
 
       {/* <BottomModal
-        isVisible={modalVisible}
-        onClose={closeModal}
+        isVisible={visible}
+        onClose={onClose}
         footer={CommentList}
       /> */}
     </View>
@@ -198,14 +337,39 @@ const Test = (props: CommentProps) => {
 
 const styles = StyleSheet.create({
   container: {
+    // flex: 1,
+    // justifyContent: 'center',
+    // alignItems: 'center',
+    // backgroundColor: "#f0f0f0",
+  },
+  modalOverlay: {
     flex: 1,
-    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContainer: {
+    height: SCREEN_HEIGHT * 0.5,
+    backgroundColor: 'white',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
     alignItems: 'center',
-    backgroundColor: "#f0f0f0",
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 5,
   },
-  bottomModalContainer: {
-    marginTop: 15,
+  modalText: {
+    fontSize: 18,
+    marginBottom: 20,
   },
+  closeButton: {
+    color: '#007BFF',
+    fontSize: 16,
+  },
+
+
   footerTopLine: {
     marginTop: 15,
     backgroundColor: '#838383',
@@ -220,30 +384,55 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     zIndex: 2,
+    width: 390,
+    height: 90,
+    backgroundColor: '#fff',
   },
   itemContent: {
-    width: 350,
-    height: 120,
+    width: 200,
+    height: 80,
     backgroundColor: '#f0f0f0',
     borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'space-between',
     padding: 20,
   },
-  modalText: {
-    fontSize: 18,
-    marginBottom: 10,
+  commentContainer: {
+    paddingVertical: 10,
+    marginHorizontal: 20,
+    flexDirection: "row",
   },
-  closeButton: {
-    fontSize: 16,
-    color: 'red',
-    marginTop: 10,
+  profileImage: {
+    alignSelf: "center",
+    width: 50,
+    height: 50,
+    marginRight: 12,
+    borderRadius: 50,
+  },
+  inputBox: {
+    //paddingVertical: 14,
+    height: 45,
+    paddingHorizontal: 20,
+    backgroundColor: Colors.F4F4F4,
+    borderRadius: 15,
     width: "100%",
-    textAlign: "center",
+  },
+  submitButton: {
+    height: 45,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 15,
+    backgroundColor: Colors.FB3F7E,
+  },
+  submitButtonDisabled: {
+    height: 45,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 15,
+    backgroundColor: Colors.AEAEAE,
   },
   cardContainer: {
     width: "100%",
-    height: 120,
+    height: 90,
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative', // 카드와 메뉴의 상대 위치 설정
@@ -254,9 +443,8 @@ const styles = StyleSheet.create({
     paddingRight: 20,
     justifyContent: 'center',
     position: 'absolute',
-    width: 350,
-    height: 120,
-    borderRadius: 10,
+    width: 390,
+    height: 90,
     backgroundColor: '#000',
     zIndex: 1,
   },
