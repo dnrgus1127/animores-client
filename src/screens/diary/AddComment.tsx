@@ -49,7 +49,6 @@ const AddComment = (props: CommentProps) => {
     option: {
       enabled: !!commentDiaryId,
     }
-    
   });
 
   const comments = commentList?.data?.comments || [];
@@ -108,15 +107,14 @@ const AddComment = (props: CommentProps) => {
   const FooterComment = () => {
     return (
       <View style={styles.bottomModalContainer}>
-        {/* <View style={styles.footerTopLine} />
+        <View style={styles.footerTopLine} />
 
         <Title
           text={"댓글"}
           fontSize={16}
           style={{ textAlign: "center", marginTop: 10 }}
-        /> */}
+        />
 
-        {isComment}
         {isComment ? (
           comments.map((item) => {
             return (
