@@ -21,8 +21,8 @@ import { DiaryService } from "../../service/DiaryService";
 import { QueryKey } from "../../statics/constants/Querykey";
 import { Colors } from "../../styles/Colors";
 import CenterModal from "../../components/modal/CenterModal";
-import Test from "./Test";
-import AddComment from "./AddComment";
+import CommentList from "./CommentList";
+//import AddComment from "./AddComment";
 
 dayjs.locale("ko");
 dayjs.extend(utc);
@@ -294,7 +294,7 @@ const DairyScreen = () => {
             isComment={isComment}
             commentProfileId={commentProfileId}
           /> */}
-          <Test
+          <CommentList
             visible={isVisibleComment} 
             onClose={() => setIsVisibleComment(false)}
             commentDiaryId={commentDiaryId}
