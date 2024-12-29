@@ -14,6 +14,7 @@ import {
   TextInput,
   Dimensions,
   TouchableOpacity,
+  ScrollView,
 } from 'react-native';
 import Toast from "react-native-toast-message";
 import { User } from "../../assets/svg";
@@ -195,111 +196,112 @@ const Test = (props: CommentProps) => {
     }
     
     return (
-       <View 
+      <View 
         style={{ 
           //flex: 1, 
           //justifyContent: "flex-end" 
         }}
-       >
-          <View 
-            style={{ backgroundColor: "#fff", height: 530, borderTopLeftRadius: 20, borderTopRightRadius: 20, paddingBottom: 30, }}
-          >
-              <View style={styles.footerTopLine} />
+      >
+        <View 
+          style={{ backgroundColor: "#fff", height: 530, borderTopLeftRadius: 20, borderTopRightRadius: 20, paddingBottom: 30, }}
+        >
+          <View style={styles.footerTopLine} />
 
-              <Title
-                  text={"댓글"}
-                  fontSize={16}
-                  style={{ textAlign: "center", marginTop: 10, marginBottom: 10 }}
-              />
+          <Title
+              text={"댓글"}
+              fontSize={16}
+              style={{ textAlign: "center", marginTop: 10, marginBottom: 10 }}
+          />
 
-              {isComment ? (
-                comments.map(item => (
-                  <View style={styles.cardContainer}>
-                    <PanGestureHandler
-                    key={item.commentId}
-                    onGestureEvent={handleGestureEvent(item.commentId)}
-                    onHandlerStateChange={handleGestureStateChange(item.commentId)}
+          <ScrollView contentContainerStyle={styles.scrollContainer}>
+            {isComment ? (
+              comments.map(item => (
+                <View style={styles.cardContainer}>
+                  <PanGestureHandler
+                  key={item.commentId}
+                  onGestureEvent={handleGestureEvent(item.commentId)}
+                  onHandlerStateChange={handleGestureStateChange(item.commentId)}
+                  >
+                    <Animated.View
+                      style={[
+                      styles.itemContainer,
+                      { transform: [{ translateX: gestures[item.commentId] }] }, // Apply the swipe effect
+                      ]}
                     >
-                      <Animated.View
-                        style={[
-                        styles.itemContainer,
-                        { transform: [{ translateX: gestures[item.commentId] }] }, // Apply the swipe effect
-                        ]}
-                      >
-                        <View style={styles.commentContainer}>
-                            {item.imageUrl !== null ? (
-                              <Image
-                                  source={{ uri: `${baseUrl}/${item.imageUrl}` }}
-                                  style={styles.profileImage}
-                              />
-                            ) : (
-                              <User />
-                            )}
-                            <View style={styles.itemContent}>
-                              <View style={{ flexDirection: "row" }}>
-                                <Title
-                                  text={item.name}
-                                  fontSize={14}
-                                  fontWeight="bold"
-                                  color="#000000"
-                                />
-                                <Title
-                                  text={"3분 전"}
-                                  fontSize={12}
-                                  color={Colors.AEAEAE}
-                                  style={{ marginLeft: 12 }}
-                                />
-                              </View>
+                      <View style={styles.commentContainer}>
+                          {item.imageUrl !== null ? (
+                            <Image
+                                source={{ uri: `${baseUrl}/${item.imageUrl}` }}
+                                style={styles.profileImage}
+                            />
+                          ) : (
+                            <User />
+                          )}
+                          <View style={styles.itemContent}>
+                            <View style={{ flexDirection: "row" }}>
                               <Title
-                                text={item.content}
+                                text={item.name}
                                 fontSize={14}
-                                style={{ marginTop: 8 }}
+                                fontWeight="bold"
+                                color="#000000"
+                              />
+                              <Title
+                                text={"3분 전"}
+                                fontSize={12}
+                                color={Colors.AEAEAE}
+                                style={{ marginLeft: 12 }}
                               />
                             </View>
                             <Title
-                              text={"답글 달기"}
+                              text={item.content}
                               fontSize={14}
-                              color={Colors.AEAEAE}
-                              style={{ marginLeft: 12, alignSelf: "flex-end" }}
+                              style={{ marginTop: 8 }}
                             />
-                        </View>
-                      </Animated.View>
-                    </PanGestureHandler>
+                          </View>
+                          <Title
+                            text={"답글 달기"}
+                            fontSize={14}
+                            color={Colors.AEAEAE}
+                            style={{ marginLeft: 12, alignSelf: "flex-end" }}
+                          />
+                      </View>
+                    </Animated.View>
+                  </PanGestureHandler>
 
-                    <View style={styles.hidden_card}>
-                      <Pressable onPress={() => console.log('11')}>
-                        <Text style={styles.hiddenMenuText}>삭제</Text>
-                      </Pressable>
-                      <Separator />
-                      <Pressable onPress={() => console.log('22')}>
-                        <Text style={styles.hiddenMenuText}>수정</Text>
-                      </Pressable>
-                    </View>
+                  <View style={styles.hidden_card}>
+                    <Pressable onPress={() => console.log('11')}>
+                      <Text style={styles.hiddenMenuText}>답글</Text>
+                    </Pressable>
+                    <Separator />
+                    <Pressable onPress={() => console.log('22')}>
+                      <Text style={styles.hiddenMenuText}>삭제</Text>
+                    </Pressable>
+                  </View>
                 </View>
               ))
             ) : null}
+          </ScrollView>
 
-            <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 10, paddingVertical: 10 }}>
-              <TextInput
-                //multiline
-                //numberOfLines={20}
-                value={field.value}
-                onChangeText={(value) => field.onChange(value) && handleOnChangeComment(value)}
-                placeholder="내용을 작성해주세요"
-                style={[styles.inputBox, { width: "77%", marginRight: "3%" }]}
+          <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 10, paddingVertical: 10 }}>
+            <TextInput
+              //multiline
+              //numberOfLines={20}
+              value={field.value}
+              onChangeText={(value) => field.onChange(value) && handleOnChangeComment(value)}
+              placeholder="내용을 작성해주세요"
+              style={[styles.inputBox, { width: "77%", marginRight: "3%" }]}
+            />
+            <Pressable
+              onPress={addComment}
+              style={[isInputText ? styles.submitButton : styles.submitButtonDisabled, { width: "20%" }]}
+              disabled={!isInputText}
+            >
+              <Title 
+                text="입력" 
+                color={Colors.White} 
               />
-              <Pressable
-                onPress={addComment}
-                style={[isInputText ? styles.submitButton : styles.submitButtonDisabled, { width: "20%" }]}
-                disabled={!isInputText}
-              >
-                <Title 
-                  text="입력" 
-                  color={Colors.White} 
-                />
-              </Pressable>
-            </View>
-
+            </Pressable>
+          </View>
         </View>
       </View>
     )
@@ -316,13 +318,8 @@ const Test = (props: CommentProps) => {
         onRequestClose={onClose}
       >
         <View style={styles.modalOverlay} onPress={onClose}>
-          {/* <Animated.View
-            style={[styles.modalContainer, { transform: [{ translateY }] }]}
-          > */}
-            <TouchableOpacity onPress={onClose} style={{ flex: 1 }}>
-            </TouchableOpacity>
-            <CommentList />
-          {/* </Animated.View> */}
+          <TouchableOpacity onPress={onClose} style={{ flex: 1 }} />
+          <CommentList />
         </View>
       </Modal>
 
