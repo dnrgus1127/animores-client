@@ -17,7 +17,6 @@ import {
   ScrollView,
 } from 'react-native';
 import Toast from "react-native-toast-message";
-import { User } from "../../assets/svg";
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import { DiaryService } from "../../service/DiaryService";
 import { QueryKey } from "../../statics/constants/Querykey";
@@ -27,6 +26,11 @@ import { useController, Controller, Control, useForm } from "react-hook-form";
 import InputBox from "../../components/Input/InputBox";
 import Title from "../../components/text/Title";
 import BottomModal from "../../components/modal/BottomModal";
+import AddComment from "./AddComment";
+
+// icon
+import { User } from "../../assets/svg";
+import { IconTrash } from "../../assets/icons";
 
 export interface CommentProps {
   visible: boolean;
@@ -44,28 +48,9 @@ const items = [
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-const Test = (props: CommentProps) => {
+const CommentList = (props: CommentProps) => {
   const { visible, onClose, commentDiaryId, isComment, commentProfileId } = props;
-
   const baseUrl = "https://animores-image.s3.ap-northeast-2.amazonaws.com";
-
-  const [modalVisible, setModalVisible] = useState(false);
-  const [isVisibleComment, setIsVisibleComment] = useState<boolean>(false); //댓글 모달
-  const [isInputText, setIsInputText] = useState<boolean>(false);
-  const translateY = new Animated.Value(SCREEN_HEIGHT);
-
-  const methods = useForm({
-    defaultValues: {
-      comment: '',
-    },
-  });
-
-  const { control, addComment: formSubmit } = methods;
-  const { field } = useController({
-    control,
-    name: 'comment',
-    rules: { required: true },
-  });
 
   //(댓글 클릭 시) 댓글 불러오기
   const { data: commentList } = useQuery({
@@ -83,52 +68,7 @@ const Test = (props: CommentProps) => {
     return acc;
   }, {});
 
-  // 댓글 등록
-  const { mutate } = useMutation(
-    ({profileId, diaryId, content}: {profileId: number, diaryId: number, content: string}) =>
-      DiaryService.diary.addComment(1, diaryId, content),
-    {
-      onSuccess: async (data) => {
-        if (data && data.status === 200) {
-          Toast.show({
-            type: 'success',
-            text1: '댓글이 등록되었습니다.',
-          });
-        }
-      },
-      onError: (error) => {
-        console.error('Comment error:', error);
-      },
-      //onSettled: () => { console.log('결과에 관계 없이 무언가 실행됨') }
-    }
-  )
-
-  // 댓글 입력버튼 클릭 시
-  const addComment = async(data) => {
-    const profile = await AsyncStorage.getItem("userInfo");
-
-    if (profile) {
-      const parsedProfile = JSON.parse(profile);
-      const profileId = parsedProfile.id
-      const content = methods.getValues('comment');
-
-      mutate({profileId: profileId, diaryId: commentDiaryId, content: content});
-      //console.log('data:', profileId, commentDiaryId, content);
-    } else {
-      console.error("comment error!");
-    }
-  }
-
-  // 댓글 입력 시
-  const handleOnChangeComment = (inputText:string) => {
-    if(inputText !== ''){
-      setIsInputText(true);
-    } else {
-      setIsInputText(false);
-    }
-  }
-
-  const CommentList = () => {
+  const CommentListInner = () => {
     const [visibleItem, setVisibleItem] = useState(null);
 
     const resetAllGestures = (exceptId) => {
@@ -161,7 +101,7 @@ const Test = (props: CommentProps) => {
           animateSwipe(id, 0);
         } else if (translationX < -50) {
           // Swipe Left - Move modal content left
-          animateSwipe(id, -80);
+          animateSwipe(id, -65);
         } else {
           resetPosition(id);
         }
@@ -189,6 +129,7 @@ const Test = (props: CommentProps) => {
       }).start();
     };
 
+    // 댓글 상단 라인
     const Separator = () => {
       return (
           <View style={{width: 24, height: 1, backgroundColor: '#fff', marginVertical: 15}}/>
@@ -196,12 +137,7 @@ const Test = (props: CommentProps) => {
     }
     
     return (
-      <View 
-        style={{ 
-          //flex: 1, 
-          //justifyContent: "flex-end" 
-        }}
-      >
+      <View>
         <View 
           style={{ backgroundColor: "#fff", height: 530, borderTopLeftRadius: 20, borderTopRightRadius: 20, paddingBottom: 30, }}
         >
@@ -258,23 +194,27 @@ const Test = (props: CommentProps) => {
                               style={{ marginTop: 8 }}
                             />
                           </View>
-                          <Title
-                            text={"답글 달기"}
-                            fontSize={14}
-                            color={Colors.AEAEAE}
+                          <Pressable 
+                            onPress={() => console.log('11')}
                             style={{ marginLeft: 12, alignSelf: "flex-end" }}
-                          />
+                          >
+                            <Title
+                              text={"답글 달기"}
+                              fontSize={14}
+                              color={Colors.AEAEAE}
+                            />
+                          </Pressable>
                       </View>
                     </Animated.View>
                   </PanGestureHandler>
 
                   <View style={styles.hidden_card}>
-                    <Pressable onPress={() => console.log('11')}>
-                      <Text style={styles.hiddenMenuText}>답글</Text>
+                    {/* <Pressable onPress={() => console.log('11')}>
+                      <Text style={styles.hiddenMenuText}>수정</Text>
                     </Pressable>
-                    <Separator />
-                    <Pressable onPress={() => console.log('22')}>
-                      <Text style={styles.hiddenMenuText}>삭제</Text>
+                    <Separator /> */}
+                    <Pressable onPress={() => console.log('22')} style={styles.hiddenButton}>
+                      <IconTrash />
                     </Pressable>
                   </View>
                 </View>
@@ -282,35 +222,15 @@ const Test = (props: CommentProps) => {
             ) : null}
           </ScrollView>
 
-          <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 10, paddingVertical: 10 }}>
-            <TextInput
-              //multiline
-              //numberOfLines={20}
-              value={field.value}
-              onChangeText={(value) => field.onChange(value) && handleOnChangeComment(value)}
-              placeholder="내용을 작성해주세요"
-              style={[styles.inputBox, { width: "77%", marginRight: "3%" }]}
-            />
-            <Pressable
-              onPress={addComment}
-              style={[isInputText ? styles.submitButton : styles.submitButtonDisabled, { width: "20%" }]}
-              disabled={!isInputText}
-            >
-              <Title 
-                text="입력" 
-                color={Colors.White} 
-              />
-            </Pressable>
-          </View>
+          {/* 댓글 입력창 */}
+          <AddComment />
         </View>
       </View>
     )
   }
 
   return (
-    <View 
-      style={styles.container}
-    >
+    <View>
       <Modal        
         transparent={true}
         visible={visible}
@@ -319,38 +239,26 @@ const Test = (props: CommentProps) => {
       >
         <View style={styles.modalOverlay} onPress={onClose}>
           <TouchableOpacity onPress={onClose} style={{ flex: 1 }} />
-          <CommentList />
+          <CommentListInner />
         </View>
       </Modal>
-
-      {/* <BottomModal
-        isVisible={visible}
-        onClose={onClose}
-        footer={CommentList}
-      /> */}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    // flex: 1,
-    // justifyContent: 'center',
-    // alignItems: 'center',
-    // backgroundColor: "#f0f0f0",
-  },
   modalOverlay: {
+    justifyContent: 'flex-end',
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
   },
   modalContainer: {
+    alignItems: 'center',
+    padding: 20,
     height: SCREEN_HEIGHT * 0.5,
     backgroundColor: 'white',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    padding: 20,
-    alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -3 },
     shadowOpacity: 0.1,
@@ -358,21 +266,19 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   modalText: {
-    fontSize: 18,
     marginBottom: 20,
+    fontSize: 18,
   },
   closeButton: {
     color: '#007BFF',
     fontSize: 16,
   },
-
-
   footerTopLine: {
+    alignSelf: "center",
     marginTop: 15,
-    backgroundColor: '#838383',
     height: 1.5,
     width: 50,
-    alignSelf: "center",
+    backgroundColor: '#838383',
   },
   openButton: {
     fontSize: 20,
@@ -381,21 +287,20 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     zIndex: 2,
-    width: 390,
-    height: 90,
+    width: '100%',
+    height: '100%',
     backgroundColor: '#fff',
   },
   itemContent: {
-    width: 200,
-    height: 80,
+    justifyContent: 'space-between',
+    padding: 10,
+    width: "50%",
     backgroundColor: '#f0f0f0',
     borderRadius: 8,
-    justifyContent: 'space-between',
-    padding: 20,
   },
   commentContainer: {
     paddingVertical: 10,
-    marginHorizontal: 20,
+    marginHorizontal: 10,
     flexDirection: "row",
   },
   profileImage: {
@@ -405,45 +310,30 @@ const styles = StyleSheet.create({
     marginRight: 12,
     borderRadius: 50,
   },
-  inputBox: {
-    //paddingVertical: 14,
-    height: 45,
-    paddingHorizontal: 20,
-    backgroundColor: Colors.F4F4F4,
-    borderRadius: 15,
-    width: "100%",
-  },
-  submitButton: {
-    height: 45,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 15,
-    backgroundColor: Colors.FB3F7E,
-  },
-  submitButtonDisabled: {
-    height: 45,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 15,
-    backgroundColor: Colors.AEAEAE,
-  },
   cardContainer: {
-    width: "100%",
-    height: 90,
+    position: 'relative', // 카드와 메뉴의 상대 위치 설정
     justifyContent: 'center',
     alignItems: 'center',
-    position: 'relative', // 카드와 메뉴의 상대 위치 설정
     marginVertical: 5,
+    paddingHorizontal: 10,
+    width: "100%",
+    height: 70,
   },
   hidden_card: {
-    alignItems: 'flex-end',
-    paddingRight: 20,
-    justifyContent: 'center',
     position: 'absolute',
-    width: 390,
-    height: 90,
-    backgroundColor: '#000',
     zIndex: 1,
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+    width: '100%',
+    height: '100%',
+    //backgroundColor: '#000',
+  },
+  hiddenButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 65,
+    height: '100%',
+    backgroundColor: '#FF4040',
   },
   hiddenMenuText: {
     color: 'white',
@@ -451,4 +341,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Test;
+export default CommentList;
