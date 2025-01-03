@@ -42,17 +42,6 @@ const AddComment = (props: CommentProps) => {
     rules: { required: true },
   });
 
-  //(댓글 클릭 시) 댓글 불러오기
-  const { data: commentList } = useQuery({
-    queryKey: [QueryKey.COMMENT_LIST, commentDiaryId],
-    queryFn: () => DiaryService.diary.commentList(commentDiaryId, commentProfileId, 1, 15),
-    option: {
-      enabled: !!commentDiaryId,
-    }
-  });
-
-  const comments = commentList?.data?.comments || [];
-
   // 댓글 등록
   const { mutate } = useMutation(
     ({profileId, diaryId, content}: {profileId: number, diaryId: number, content: string}) =>
@@ -98,100 +87,27 @@ const AddComment = (props: CommentProps) => {
     }
   }
 
-  const onPressHandeler = (visible: boolean) => {
-    if (commentVisibleHandeler) {
-      commentVisibleHandeler(visible);
-    }
-  }
-
-  const FooterComment = () => {
-    return (
-      <View style={styles.bottomModalContainer}>
-        <View style={styles.footerTopLine} />
-
-        <Title
-          text={"댓글"}
-          fontSize={16}
-          style={{ textAlign: "center", marginTop: 10 }}
-        />
-
-        {isComment ? (
-          comments.map((item) => {
-            return (
-              <View style={styles.commentContainer}>
-                {item.imageUrl !== null ? (
-                  <Image
-                      source={{ uri: `${baseUrl}/${item.imageUrl}` }}
-                      style={styles.profileImage}
-                  />
-                ) : (
-                  <User />
-                )}
-                <View style={styles.comment}>
-                  <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
-                    <Title
-                      text={"3분 전"}
-                      fontSize={12}
-                      color={Colors.AEAEAE}
-                      style={{ marginLeft: 12 }}
-                    />
-                  </View>
-                  <Title
-                    text={item.content}
-                    fontSize={14}
-                    style={{ marginTop: 8 }}
-                  />
-                </View>
-                <Title
-                  text={"답글 달기"}
-                  fontSize={14}
-                  color={Colors.AEAEAE}
-                  style={{ marginLeft: 12, alignSelf: "flex-end" }}
-                />
-              </View>
-            )
-          })
-        ) : (          
-          <View style={styles.commentContainer}>
-            <Title
-              text={"댓글이 없습니다."}
-              fontSize={14}
-              style={{ paddingVertical: 10 }}
-            />
-          </View>
-        )}
-
-        <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 10, paddingVertical: 10 }}>
-          <TextInput
-            //multiline
-            //numberOfLines={20}
-            value={field.value}
-            onChangeText={(value) => field.onChange(value) && handleOnChangeComment(value)}
-            placeholder="내용을 작성해주세요"
-            style={[styles.inputBox, { width: "77%", marginRight: "3%" }]}
-          />
-          <Pressable
-            onPress={addComment}
-            style={[isInputText ? styles.submitButton : styles.submitButtonDisabled, { width: "20%" }]}
-            disabled={!isInputText}
-          >
-            <Title 
-              text="입력" 
-              color={Colors.White} 
-            />
-          </Pressable>
-        </View>
-      </View>
-    )
-  }
-
   return (
-    // <BottomModal
-    //   isVisible={visible}
-    //   onClose={onClose}
-    //   footer={footerComment}
-    // />
-    <FooterComment />
+    <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 10, paddingVertical: 10 }}>
+      <TextInput
+        //multiline
+        //numberOfLines={20}
+        value={field.value}
+        onChangeText={(value) => field.onChange(value) && handleOnChangeComment(value)}
+        placeholder="내용을 작성해주세요"
+        style={[styles.inputBox, { width: "77%", marginRight: "3%" }]}
+      />
+      <Pressable
+        onPress={addComment}
+        style={[isInputText ? styles.submitButton : styles.submitButtonDisabled, { width: "20%" }]}
+        disabled={!isInputText}
+      >
+        <Title 
+          text="입력" 
+          color={Colors.White} 
+        />
+      </Pressable>
+    </View>
   )
 }
 export default AddComment;
