@@ -3,6 +3,9 @@ import React, { useEffect, useState } from "react";
 import { RecoilRoot } from "recoil"
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
+import * as SplashScreen from 'expo-splash-screen';
+import * as Font from 'expo-font';
+import { Entypo, Ionicons, FontAwesome } from "@expo/vector-icons";
 
 //navigate pages
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -13,30 +16,39 @@ import FullStackNavigation from "./src/navigation/FullStackNavigation";
 const queryClient = new QueryClient();
 
 LogBox.ignoreAllLogs();
+SplashScreen.preventAutoHideAsync();
 
 const App = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [appIsReady, setAppIsReady] = useState(false);
+  const checkAuth = async () => {
+    const token = await AsyncStorage.getItem("accessToken");
+    setIsAuthenticated(!!token);
+  };
 
   useEffect(() => {
-    const checkToken = async () => {
+    const prepareApp = async () => {
       try {
-        const token = await AsyncStorage.getItem("userToken");
-        setIsAuthenticated(!!token);
+        await checkAuth();
+        // await Font.loadAsync({
+        //   ...Ionicons.font,...Entypo.font, ...FontAwesome.font
+        // });
       } catch (error) {
-        console.error("Error token:", error);
-        setIsAuthenticated(false);
+        console.error("Error loading assets and fonts", error);
+      } finally {
+        await SplashScreen.hideAsync();
+        setAppIsReady(true);
       }
     };
 
-    checkToken();
+    prepareApp();
   }, []);
 
-  if (isAuthenticated === null) {
+  if (!appIsReady) {
     // 로딩 중일 때는 렌더링하지 않음
     return null;
   }
 
-  console.log('isAuthenticated', isAuthenticated)
   return (
     <RecoilRoot>
       <QueryClientProvider client={queryClient}>

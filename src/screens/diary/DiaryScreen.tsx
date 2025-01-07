@@ -21,7 +21,8 @@ import { DiaryService } from "../../service/DiaryService";
 import { QueryKey } from "../../statics/constants/Querykey";
 import { Colors } from "../../styles/Colors";
 import CenterModal from "../../components/modal/CenterModal";
-import AddComment from "./AddComment";
+import CommentList from "./CommentList";
+//import AddComment from "./AddComment";
 
 dayjs.locale("ko");
 dayjs.extend(utc);
@@ -174,6 +175,7 @@ const DairyScreen = () => {
           {/* TODO:댓글 수 수정 */}
           <Title text={item?.commentCount} color={Colors.AEAEAE} style={{ marginLeft: 8 }} />
         </Pressable>
+
         {index !== diaryData?.length - 1 && <View style={styles.bottomLine} />}
       </View>
     );
@@ -241,55 +243,65 @@ const DairyScreen = () => {
   return (
     <>
       <SafeAreaView style={styles.container}>
-          <HeaderNavigation middletitle="일지" hasBackButton={false} />
-          <FlatList
-            keyExtractor={(item, index) => `diary-${item?.diaryId}-${index}`}
-            data={diaryData}
-            renderItem={renderItem}
-            onEndReachedThreshold={0.6}
-            onEndReached={loadMoreData}
+        <HeaderNavigation middletitle="일지" hasBackButton={false} />
+        <FlatList
+          keyExtractor={(item, index) => `diary-${item?.diaryId}-${index}`}
+          data={diaryData}
+          renderItem={renderItem}
+          onEndReachedThreshold={0.6}
+          onEndReached={loadMoreData}
+        />
+        {/* 플로팅 버튼 */}
+        <View
+          style={[
+            styles.floatingButtonContainer,
+            {
+              backgroundColor: isVisibleMenu
+                ? "rgba(0, 0, 0, 0.5)"
+                : "transparent",
+              zIndex: isVisibleMenu ? 1 : 0,
+              top: isVisibleMenu ? 0 : null,
+            },
+          ]}
+        >
+          <FloatingButton
+            isVisibleMenu={isVisibleMenu}
+            onPressCancel={() => setIsVisibleMenu(false)}
+            onPressFloating={() => setIsVisibleMenu(!isVisibleMenu)}
           />
-          {/* 플로팅 버튼 */}
-          <View
-            style={[
-              styles.floatingButtonContainer,
-              {
-                backgroundColor: isVisibleMenu
-                  ? "rgba(0, 0, 0, 0.5)"
-                  : "transparent",
-                zIndex: isVisibleMenu ? 1 : 0,
-                top: isVisibleMenu ? 0 : null,
-              },
-            ]}
-          >
-            <FloatingButton
-              isVisibleMenu={isVisibleMenu}
-              onPressCancel={() => setIsVisibleMenu(false)}
-              onPressFloating={() => setIsVisibleMenu(!isVisibleMenu)}
-            />
-            {/* 모달 */}
-            <BottomModal
-              isVisible={isFirstVisibleMore}
-              onClose={() => {
-                setIsFirstVisibleMore(false);
-              }}
-              footer={footerMore}
 
-              // 중첩 모달
-              _isVisible={isSecondVisibleMore}
-              _onClose={() => setIsSecondVisibleMore(false)}
-              _title="게시물을 삭제하시겠어요?"
-              _subTitle="삭제 이후에는 게시물이 영구적으로 삭제되며, 복원하실 수 없습니다."
-              _onDelete={handleDelete}
-            />
-            <AddComment 
-              visible={isVisibleComment} 
-              onClose={() => setIsVisibleComment(false)}
-              commentDiaryId={commentDiaryId}
-              isComment={isComment}
-              commentProfileId={commentProfileId}
-            />
-          </View>
+          {/* 수정/삭제 모달 */}
+          <BottomModal
+            isVisible={isFirstVisibleMore}
+            onClose={() => {
+              setIsFirstVisibleMore(false);
+            }}
+            footer={footerMore}
+
+            // 중첩 모달
+            _isVisible={isSecondVisibleMore}
+            _onClose={() => setIsSecondVisibleMore(false)}
+            _title="게시물을 삭제하시겠어요?"
+            _subTitle="삭제 이후에는 게시물이 영구적으로 삭제되며, 복원하실 수 없습니다."
+            _onDelete={handleDelete}
+          />
+
+          {/* 댓글 모달 */}
+          {/* <AddComment 
+            //visible={isVisibleComment} 
+            //onClose={() => setIsVisibleComment(false)}
+            commentDiaryId={commentDiaryId}
+            isComment={isComment}
+            commentProfileId={commentProfileId}
+          /> */}
+          <CommentList
+            visible={isVisibleComment} 
+            onClose={() => setIsVisibleComment(false)}
+            commentDiaryId={commentDiaryId}
+            isComment={isComment}
+            commentProfileId={commentProfileId} 
+          />
+        </View>
       </SafeAreaView>
     </>
   );

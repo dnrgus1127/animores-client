@@ -17,15 +17,16 @@ export namespace AuthModel {
 		email: string
 	}
 	export interface ILoginResponseModel {
-		data : {
+
+		data: {
+			success: boolean;
 			data: {
 				accessToken: string;
 				refreshToken: string;
 				userId: number;
 				expirationHours: string;
-			};
-			success : boolean;
-		}
+			}
+		};
 	}
 
 	export interface IEmailVerificationCodeModel {

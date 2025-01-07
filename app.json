@@ -1,0 +1,14 @@
+{
+    "expo": {
+      "name": "AnimoresApp",
+      "slug": "animores-app",
+      "version": "1.0.0",
+      "orientation": "portrait",
+      "splash": {
+        "image": "./src/assets/images/splash.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#E84178"
+      }
+    }
+}
+  

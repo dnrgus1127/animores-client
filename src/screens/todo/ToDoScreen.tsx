@@ -8,17 +8,19 @@ import { useQuery } from "@tanstack/react-query";
 import { ToDoService } from "../../service/ToDoService";
 import { QueryKey } from "../../statics/constants/Querykey";
 import { IListToDoParam } from "../../../types/AddToDo";
-import { SafeAreaView } from "react-native-safe-area-context";
 import HeaderNavigation from "../../navigation/HeaderNavigation";
 import { PetService } from "../../service/PetService";
 import { useRecoilState } from "recoil";
 
-import { ScrollView } from "react-native-gesture-handler";
+import { FlatList, ScrollView } from "react-native-gesture-handler";
 import { IToDo } from "../../../types/ToDo";
 import { IPetType } from "../../../types/PetTypes";
 import { PetListAtom } from "../../recoil/PetAtom";
 import PetListModal from "./modal/PetListModal";
 import ToDoCard from "./ToDoCard";
+import FloatingButton from "../../components/button/FloatingButton";
+import styled from "styled-components/native";
+import CenterModal from "../../components/modal/CenterModal";
 
 const AllTodoScreen = () => {
   const navigation =
@@ -104,17 +106,34 @@ const AllTodoScreen = () => {
   }
   , []);
 
+  const [isVisibleMenu, setIsVisibleMenu] = useState<boolean>(false); //플로팅버튼
+  const [todoIdToDelete, setTodoIdToDelete] = useState<number | null>(null); //삭제할 todo id
   return (
-    <SafeAreaView>
-      <HeaderNavigation  middletitle={<PetListButton />} hasBackButton={true} />
-      <ScrollView>
-        <View style={{display: 'flex', alignItems: 'center'}}>
+    <>
+      <HeaderNavigation  middletitle={<PetListButton />} hasBackButton={false} />
+      <View style={{display: 'flex', alignItems: 'center'}}>
         {isLoading ? <Text>Loading...</Text> : toDoList.length === 0 && <Text>할 일이 없습니다.</Text>}
-        {toDoList.map((toDo) => (
-          <ToDoCard todo={toDo} curTime={time}/>
-        ))}
-        </View>
-      </ScrollView>
+        <FlatList
+          data={toDoList}
+          renderItem={({ item }) => (
+            <ToDoCard
+              todo={item}
+              curTime={time}
+              onDelete={() => {
+                setTodoIdToDelete(item.id)
+              }}
+            />
+          )}
+          keyExtractor={(item) => `todo-${item.id}`}
+        />
+      </View>
+      <FloatingButtonContainer isVisibleMenu={isVisibleMenu}>
+        <FloatingButton
+          isVisibleMenu={isVisibleMenu}
+          onPressCancel={() => setIsVisibleMenu(false)}
+          onPressFloating={() => setIsVisibleMenu(!isVisibleMenu)}
+          />
+      </FloatingButtonContainer>
       {usePetListWindow && (
         <PetListModal
           queryIdList={queryParam.pets || []}
@@ -122,8 +141,35 @@ const AllTodoScreen = () => {
           setUsePetListWindow={setUsePetListWindow}
         />
       )}
-    </SafeAreaView>
+      <CenterModal
+        visible={todoIdToDelete != null}
+        title="할 일을 삭제하시겠어요?"
+        subTitle="삭제 이후에는 할 일이 영구적으로 삭제되며, 복원하실 수 없습니다."
+        onClose={() => setTodoIdToDelete(null)}
+        onDelete={() => {
+          if (todoIdToDelete === null) return;
+          ToDoService.todo.delete(todoIdToDelete);
+          setToDoList(toDoList.filter((todo) => todo.id !== todoIdToDelete));
+          setTodoIdToDelete(null);
+        }}
+      />
+
+    </>
   );
 };
 
 export default AllTodoScreen;
+
+interface IFloatingButtonContainer {
+  isVisibleMenu: boolean;
+}
+
+const FloatingButtonContainer = styled.View<IFloatingButtonContainer>`
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  background-color: ${(props) => (props.isVisibleMenu ? "rgba(0, 0, 0, 0.5)" : "rgba(0, 0, 0, 0.0)")};
+  z-index:${(props) => (props.isVisibleMenu ?  1 : 0)};
+  top:${(props) => (props.isVisibleMenu ? 0 : null)};
+`;

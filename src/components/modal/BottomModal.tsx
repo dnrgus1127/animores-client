@@ -1,6 +1,6 @@
 import React from "react";
 import { Pressable, StyleProp, StyleSheet, View, ViewStyle, Dimensions } from "react-native";
-import Modal, { Direction } from "react-native-modal";
+import Modal from "react-native-modal";
 import { Colors } from "../../styles/Colors";
 import Title from "../text/Title";
 
@@ -61,6 +61,7 @@ const BottomModal: React.FunctionComponent<IProps> = (props: IProps) => {
       <View style={styles.modalContainer}>
         {Footer && <Footer/>}
           {children}
+
         {/* 프로필 이미지: 기본 이미지로 할래요 */}
         {BottomText &&
           <Pressable>
@@ -110,16 +111,18 @@ const BottomModal: React.FunctionComponent<IProps> = (props: IProps) => {
 export default BottomModal;
 
 const styles = StyleSheet.create({
+  modalStyle: {
+    flex: 1,
+    width: "100%",
+    margin: "auto",
+    justifyContent: "flex-end"
+  },
   modalContainer: {
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     backgroundColor: Colors.White,
     paddingBottom: 30,
-  },
-  modalStyle: {
-    width: "100%",
-    margin: "auto",
-    justifyContent: "flex-end"
+    height: 530,
   },
   basicTitle: {
     textAlign: "center",
@@ -128,13 +131,6 @@ const styles = StyleSheet.create({
   },
 
   // 중첩 모달
-  // innerModalOverlay: {
-  //   flex: 1,
-  //   justifyContent: "center",
-  //   alignItems: "center",
-  //   backgroundColor: "rgba(0, 0, 0, 0.5)",
-  //   paddingHorizontal: 20,
-  // },
   innerModalContainer: {
     paddingTop: 44,
     paddingBottom: 17,
