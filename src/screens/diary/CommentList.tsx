@@ -40,12 +40,6 @@ export interface CommentProps {
   commentProfileId: number;
 }
 
-const items = [
-  { id: 1, title: "Content 1" },
-  { id: 2, title: "Content 2" },
-  { id: 3, title: "Content 3" },
-];
-
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const CommentList = (props: CommentProps) => {
@@ -53,7 +47,7 @@ const CommentList = (props: CommentProps) => {
   const baseUrl = "https://animores-image.s3.ap-northeast-2.amazonaws.com";
 
   //(댓글 클릭 시) 댓글 불러오기
-  const { data: commentList } = useQuery({
+  const { data: commentList, refetch } = useQuery({
     queryKey: [QueryKey.COMMENT_LIST, commentDiaryId],
     queryFn: () => DiaryService.diary.commentList(commentDiaryId, commentProfileId, 1, 15),
     option: {
@@ -109,7 +103,7 @@ const CommentList = (props: CommentProps) => {
     }
 
     const animateSwipe = (id, toValue) => {
-      const others = items.filter((el, index) => { 
+      const others = comments.filter((el, index) => { 
           el.id !== visibleItem
       });
       console.log(others.map((el) => el.id));
@@ -223,7 +217,7 @@ const CommentList = (props: CommentProps) => {
           </ScrollView>
 
           {/* 댓글 입력창 */}
-          <AddComment />
+          <AddComment commentDiaryId={commentDiaryId} refetch={refetch} />
         </View>
       </View>
     )

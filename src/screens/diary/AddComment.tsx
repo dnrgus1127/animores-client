@@ -16,17 +16,14 @@ import { useController, Controller, Control, useForm } from "react-hook-form";
 import InputBox from "../../components/Input/InputBox";
 
 export interface CommentProps {
-  visible: boolean;
-  onClose: () => void;
   commentDiaryId: string;
-  isComment: boolean;
-  commentProfileId: number;
+  refetch: () => void;
 }
 
 const AddComment = (props: CommentProps) => {
   const baseUrl = "https://animores-image.s3.ap-northeast-2.amazonaws.com";
   
-  const { visible, onClose, commentDiaryId, isComment, commentProfileId } = props;
+  const { commentDiaryId, refetch } = props;
   const [isInputText, setIsInputText] = useState<boolean>(false);
 
   const methods = useForm({
@@ -53,6 +50,7 @@ const AddComment = (props: CommentProps) => {
             type: 'success',
             text1: '댓글이 등록되었습니다.',
           });
+          refetch();
         }
       },
       onError: (error) => {
