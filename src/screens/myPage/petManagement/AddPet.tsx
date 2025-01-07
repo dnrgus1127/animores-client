@@ -12,8 +12,29 @@ import PetImagePicker from "./PetImagePicker";
 import {CustomForm} from "../../../components/form/Form";
 import {ReviseIcon} from "../../../assets/svg";
 import Title from "../../../components/text/Title";
+import {PetService} from "../../../service/PetService";
+import {IPetRequest} from "../../../../types/PetTypes";
+import {useMutation} from "@tanstack/react-query";
 
 const GENDER_TYPE = ["남아", "여아"];
+
+const Rules = {
+    name: {
+        required: "\"이름\"을 입력해 주세요",
+        minLength: {value: 2, message: "너무 짧습니다. 최소 2글자 이상으로 입력해주세요"}
+    },
+    date: {
+        required: "\"생년 월일\"을 입력해 주세요.",
+        pattern: {value: /^(\d{4})년\s(\d{1,2})월\s(\d{1,2})일$/, message: "날짜 형식이 맞지 않습니다."},
+    },
+    weight: {
+        required: "\"몸무게\"를 입력해주세요.",
+        pattern: {
+            value: /^[0-9]*$/,
+            message: "숫자만 입력 가능합니다."
+        }
+    },
+}
 
 const AddPet = () => {
     const navigation =
@@ -26,6 +47,15 @@ const AddPet = () => {
     const handleClearTrailing = (filedName : string) => {
         methods.setValue(filedName , "")
     }
+
+    const {mutate} = useMutation({
+        mutationFn: async (data: IPetRequest) => {
+            return PetService.pet.create(data);
+        },
+        onError: (error, variables) => {
+            console.error(error, variables)
+        }
+    })
 
     useEffect(() => {
         methods.setValue("breed", route.params?.breed);
@@ -50,6 +80,7 @@ const AddPet = () => {
                                           placeholder={"반려동물의 이름을 입력해주세요"}
                                           trailingIcon={<ReviseIcon/>}
                                           onPressTrailingIcon={() => handleClearTrailing("name")}
+                                          rules={Rules.name}
                         />
                         <CustomForm.Input name="breed"
                                           label={"품종"}
@@ -61,9 +92,11 @@ const AddPet = () => {
                         />
                         <CustomForm.ToggleButtonGroup name={"gender"} label={"성별"} buttonNames={GENDER_TYPE}
                                                       defaultValue={GENDER_TYPE[0]}/>
-                        <CustomForm.DatePicker name="birthday" label={"생년월일"}/>
-                        <CustomForm.Input name="weight" label={"몸무게"} placeholder={"몸무게를 입력해주세요"} trailingIcon={<Text>Kg</Text>}/>
-                        <CustomForm.SubmitButton text={"제출"}/>
+                        <CustomForm.DatePicker name="birthday" label={"생년월일"} rules={Rules.date}/>
+                        <CustomForm.Input name="weight" label={"몸무게"} placeholder={"몸무게를 입력해주세요"}
+                                          trailingIcon={<Text>Kg</Text>} rules={Rules.weight}
+                        />
+                        <CustomForm.SubmitButton text={"제출"} onPress={() => {}}/>
                     </CustomForm>
                 </View>
             </ScrollView>
