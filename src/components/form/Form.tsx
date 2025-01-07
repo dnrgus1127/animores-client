@@ -41,7 +41,7 @@ interface IInput extends IFormControl {
 
 interface IToggleButton extends IFormControl {
     buttonNames: Array<string>;
-    defaultValue?: string;
+    defaultValue?: number;
 }
 
 interface IDatePickerProps extends IFormControl {
@@ -135,9 +135,9 @@ const ToggleButtonGroup: React.FC<IToggleButton> = ({name, label, buttonNames, d
                     {buttonNames.map((buttonName, idx) => {
                         return <PlainButton
                             key={idx}
-                            style={[styles.toggleButton, selectedCase === buttonName ? styles.selectedButton : {}]}
+                            style={[styles.toggleButton, selectedCase === idx ? styles.selectedButton : {}]}
                             text={buttonName}
-                            onPress={() => setValue(name, buttonName)}/>
+                            onPress={() => setValue(name, idx)}/>
                     })}
                 </View>
             </FiledWrapper>

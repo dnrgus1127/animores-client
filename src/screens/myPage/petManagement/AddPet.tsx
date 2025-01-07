@@ -15,6 +15,8 @@ import Title from "../../../components/text/Title";
 import {PetService} from "../../../service/PetService";
 import {IPetRequest} from "../../../../types/PetTypes";
 import {useMutation} from "@tanstack/react-query";
+import {useBreedList} from "./hooks/useBreed";
+import {formatToYYYYMMDD} from "../../../components/Calendar/utils";
 
 const GENDER_TYPE = ["남아", "여아"];
 
@@ -40,7 +42,7 @@ const AddPet = () => {
     const navigation =
         useNavigation<StackNavigationProp<RootStackParamList, ScreenName.AddPet>>();
     const route = useRoute<RouteProp<RootStackParamList, ScreenName.AddPet>>(),
-        {breed} = route.params;
+        {breed, petType} = route.params;
 
     const methods = useForm();
 
@@ -48,9 +50,17 @@ const AddPet = () => {
         methods.setValue(filedName , "")
     }
 
+    const breedList = useBreedList(petType);
+
     const {mutate} = useMutation({
         mutationFn: async (data: IPetRequest) => {
+            console.log(data);
             return PetService.pet.create(data);
+        },
+        onSuccess: (data) => {
+            if (data.data.status === 200) {
+                navigation.navigate(ScreenName.PatManagement);
+            }
         },
         onError: (error, variables) => {
             console.error(error, variables)
@@ -91,12 +101,21 @@ const AddPet = () => {
                                           onPressTrailingIcon={() => navigation.push(ScreenName.BreedType, {petType : 0, isEdit : true})}
                         />
                         <CustomForm.ToggleButtonGroup name={"gender"} label={"성별"} buttonNames={GENDER_TYPE}
-                                                      defaultValue={GENDER_TYPE[0]}/>
+                                                      defaultValue={0}/>
                         <CustomForm.DatePicker name="birthday" label={"생년월일"} rules={Rules.date}/>
                         <CustomForm.Input name="weight" label={"몸무게"} placeholder={"몸무게를 입력해주세요"}
                                           trailingIcon={<Text>Kg</Text>} rules={Rules.weight}
                         />
-                        <CustomForm.SubmitButton text={"제출"} onPress={() => {}}/>
+                        <CustomForm.SubmitButton text={"제출"} onPress={() => {
+                            mutate({
+                                breedId: breedList.filter(breedInfo => breedInfo.name === breed)[0].id,
+                                imageId: 1,
+                                name: methods.getValues("name") || "뽀삐",
+                                gender: methods.getValues("gender"),
+                                birthday: formatToYYYYMMDD(methods.getValues("birthday")),
+                                weight: Number(methods.getValues("weight"))
+                            });
+                        }}/>
                     </CustomForm>
                 </View>
             </ScrollView>
