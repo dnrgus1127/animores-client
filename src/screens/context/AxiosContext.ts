@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios, { AxiosRequestConfig } from 'axios';
 import { AuthService } from '../../service/AuthService';
+import {EXPO_PUBLIC_BASE_URL} from '@env';
 
 // Axios 인스턴스 생성
 const instance = axios.create({
@@ -10,7 +11,7 @@ const instance = axios.create({
 	headers: {
 		'Content-Type': 'application/json',
 	},
-	baseURL: 'http://180.229.5.21:8080',
+	baseURL: `${EXPO_PUBLIC_BASE_URL}`,
 } as AxiosRequestConfig);
 
 //요청 인터셉터
