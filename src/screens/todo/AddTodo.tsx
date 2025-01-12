@@ -45,31 +45,27 @@ const AddTodo = () => {
   const { control, handleSubmit, setValue, getValues, watch} = methods;
   
   //펫 정보 불러오기
-  const { data: petData } = useQuery({
+  useQuery({
     queryKey: [QueryKey.PET_LIST],
-    queryFn: () => PetService.pet.list(),
+    queryFn: () => PetService.get.petList(),
+    initialData: [],
+    onSuccess: (data) => {
+      setPets(data.map(pet => {
+        return {
+          ...pet,
+          isPressed: false
+        }
+      }));
+    }
   });
 
-  interface IPet {
+  interface IPressablePet {
     id: number;
     name: string;
     isPressed: boolean;
   }
 
-  // 펫 정보에다가 isPressed 추가
-  useEffect(() => {
-    if (petData?.data?.data) {
-      setPets(
-        petData.data.data.map(({ id, name }: { id: number, name: string }) => ({
-          id,
-          name,
-          isPressed: false,
-        }))
-      );
-    }
-  }, [petData]);
-
-  const [pets, setPets] = useState<IPet[]>([]);
+  const [pets, setPets] = useState<IPressablePet[]>([]);
   const [date, setDate] = useState<Date>(new Date());
 
   // 현재 날짜와 시간을 형식에 맞춰 date, time 에 넣어주기
@@ -662,7 +658,7 @@ const styles = StyleSheet.create({
     paddingTop: 30,
     paddingBottom: 30,
     width: 480,
-    hegith: 140,
+    height: 140,
   },
   footerRepeatContainer: {
     marginTop: 30,

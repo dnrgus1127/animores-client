@@ -1,7 +1,7 @@
 import { useRecoilState } from "recoil";
 import React, { useEffect, useState } from "react";
 import { PetListAtom } from "../../../recoil/PetAtom";
-import { IPetType } from "../../../../types/PetTypes";
+import { IPet } from "../../../../types/PetTypes";
 import { PetService } from "../../../service/PetService";
 import { View, Text, Pressable, StyleSheet, Image } from "react-native";
 import BottomModal from "../../../components/modal/BottomModal";
@@ -11,12 +11,10 @@ import { IconCheck } from "../../../assets/icons";
 
 const PetListModal = (props: any) => {
     const { setUsePetListWindow, queryIdList, setClickedPetIds } = props;
-    const [petList, setPetList] = useRecoilState<IPetType[]>(PetListAtom);
+    const [petList, setPetList] = useRecoilState<IPet[]>(PetListAtom);
     useEffect(() => { 
       if(petList.length === 0) {
-        PetService.pet.list().then((response) => {
-          setPetList(response.data.data);
-        });
+        PetService.get.petList().then(setPetList);
       }
     }, []);
 

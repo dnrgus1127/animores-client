@@ -1,5 +1,5 @@
 import {useQuery} from "@tanstack/react-query";
-import {IBreedType} from "../../../../../types/PetTypes";
+import {IBreed} from "../../../../../types/PetTypes";
 import {QueryKey} from "../../../../statics/constants/Querykey";
 import {PetService} from "../../../../service/PetService";
 
@@ -8,9 +8,9 @@ import {PetService} from "../../../../service/PetService";
  * @param petType
  */
 export function useBreedList(petType: number) {
-    const data = useQuery<IBreedType[]>([QueryKey.BREED_LIST, petType], () => PetService.pet.breedList(petType), {
+    const {data} = useQuery<IBreed[]>([QueryKey.BREED_LIST, petType], () => PetService.get.breedList(petType), {
         enabled: !!petType,
         initialData: [],
     });
-    return data.data;
+    return data;
 }

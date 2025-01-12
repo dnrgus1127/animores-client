@@ -1,7 +1,7 @@
 import { atom } from "recoil";
-import { IPetType } from "../../types/PetTypes";
+import { IPet } from "../../types/PetTypes";
 
-export const PetListAtom = atom<IPetType[]>({
+export const PetListAtom = atom<IPet[]>({
     key: 'PetListAtom',
     default: [],
 });

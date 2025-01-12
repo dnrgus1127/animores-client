@@ -54,16 +54,14 @@ const AddPet = () => {
 
     const {mutate} = useMutation({
         mutationFn: async (data: IPetRequest) => {
-            console.log(data);
-            return PetService.pet.create(data);
+            return PetService.post.addPet(data);
         },
-        onSuccess: (data) => {
-            if (data.data.status === 200) {
-                navigation.navigate(ScreenName.PatManagement);
-            }
+        onSuccess: () => {
+            navigation.navigate(ScreenName.PatManagement);
         },
         onError: (error, variables) => {
-            console.error(error, variables)
+            // TODO 응답 실패에 대한 UI 혹은 Toast 알림 추가
+            console.error(error, variables);
         }
     })
 
