@@ -21,6 +21,7 @@ interface IProps {
   _title?: string;
   _subTitle?: string;
   _onDelete?: () => void;
+  children?: React.ReactNode;
 }
 
 const width = Dimensions.get("window").width;
@@ -35,12 +36,13 @@ const BottomModal: React.FunctionComponent<IProps> = (props: IProps) => {
     swipeDirection = "down",
     BottomText,
     style,
-    footer,
+    footer : Footer,
     _isVisible,
     _onClose,
     _title,
     _subTitle,
     _onDelete,
+    children
   } = props;
 
   return (
@@ -56,10 +58,10 @@ const BottomModal: React.FunctionComponent<IProps> = (props: IProps) => {
       backdropOpacity={0.6}
       style={[style, styles.modalStyle]}
     >
-      <View 
-        //style={styles.modalContainer}
-      >
-        {footer && footer()}
+      <View style={styles.modalContainer}>
+        {Footer && <Footer/>}
+          {children}
+
         {/* 프로필 이미지: 기본 이미지로 할래요 */}
         {BottomText &&
           <Pressable>
@@ -120,7 +122,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     backgroundColor: Colors.White,
     paddingBottom: 30,
-    height: 530,
+    height: 150,
   },
   basicTitle: {
     textAlign: "center",

@@ -296,7 +296,7 @@ const DairyScreen = () => {
           /> */}
           <CommentList
             visible={isVisibleComment} 
-            onClose={() => setIsVisibleComment(false)}
+            setIsVisibleComment={setIsVisibleComment}
             commentDiaryId={commentDiaryId}
             isComment={isComment}
             commentProfileId={commentProfileId} 

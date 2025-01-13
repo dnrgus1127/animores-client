@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
   useMutation,
   useQuery,
+  useQueryClient,
 } from "@tanstack/react-query";
 import {
   Modal,
@@ -25,7 +26,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useController, Controller, Control, useForm } from "react-hook-form";
 import InputBox from "../../components/Input/InputBox";
 import Title from "../../components/text/Title";
-import BottomModal from "../../components/modal/BottomModal";
 import AddComment from "./AddComment";
 
 // icon
@@ -34,7 +34,7 @@ import { IconTrash } from "../../assets/icons";
 
 export interface CommentProps {
   visible: boolean;
-  onClose: () => void;
+  setIsVisibleComment: () => void;
   commentDiaryId: string;
   isComment: boolean;
   commentProfileId: number;
@@ -43,8 +43,11 @@ export interface CommentProps {
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const CommentList = (props: CommentProps) => {
-  const { visible, onClose, commentDiaryId, isComment, commentProfileId } = props;
+  const { visible, setIsVisibleComment, commentDiaryId, isComment, commentProfileId } = props;
   const baseUrl = "https://animores-image.s3.ap-northeast-2.amazonaws.com";
+  const queryClient = useQueryClient();
+
+  const [deletedDiaryId, setDeletedDiaryId] = useState<number | null>(null);  //삭제 diary Id
 
   //(댓글 클릭 시) 댓글 불러오기
   const { data: commentList, refetch } = useQuery({
@@ -54,6 +57,29 @@ const CommentList = (props: CommentProps) => {
       enabled: !!commentDiaryId,
     }
   });
+
+  //댓글 삭제
+  const { mutate } = useMutation(
+    ({ commentId }: { commentId: number }) =>
+      DiaryService.diary.commentDelete(commentId),
+    {
+      onSuccess: async (data) => {
+        if (data && data.status === 200) {
+          Toast.show({
+            type: "success",
+            text1: "삭제되었습니다.",
+          });
+
+          setIsVisibleComment(false);
+          await queryClient.invalidateQueries([QueryKey.COMMENT_LIST]);
+          //일지 목록 쿼리를 무효화함
+        }
+      },
+      onError: (error) => {
+        console.error("Delete error:", error);
+      },
+    }
+  );
 
   const comments = commentList?.data?.comments || [];
   
@@ -123,6 +149,34 @@ const CommentList = (props: CommentProps) => {
       }).start();
     };
 
+    // 댓글 작성된 시간
+    function timeAgo(isoDate) {
+      const now = new Date();
+      const past = new Date(isoDate);
+      
+      past.setHours(past.getHours() + 9);// 9시간 빼기
+      const diff = now - past; // 밀리초 차이
+
+      const seconds = Math.floor(diff / 1000);
+      const minutes = Math.floor(seconds / 60);
+      const hours = Math.floor(minutes / 60);
+      const days = Math.floor(hours / 24);
+
+      if (seconds < 60) return `${seconds}초 전`;
+      if (minutes < 60) return `${minutes}분 전`;
+      if (hours < 24) return `${hours}시간 전`;
+      return `${days}일 전`;
+    }
+
+    // 댓글 삭제
+    const handleDelete = async (commentId: number) => {
+      if (commentId !== null) {
+        mutate({ commentId: commentId });
+      } else {
+        console.log('diary deleted error')
+      }
+    };
+
     // 댓글 상단 라인
     const Separator = () => {
       return (
@@ -176,7 +230,7 @@ const CommentList = (props: CommentProps) => {
                                 color="#000000"
                               />
                               <Title
-                                text={"3분 전"}
+                                text={timeAgo(item.createdAt)}
                                 fontSize={12}
                                 color={Colors.AEAEAE}
                                 style={{ marginLeft: 12 }}
@@ -207,7 +261,7 @@ const CommentList = (props: CommentProps) => {
                       <Text style={styles.hiddenMenuText}>수정</Text>
                     </Pressable>
                     <Separator /> */}
-                    <Pressable onPress={() => console.log('22')} style={styles.hiddenButton}>
+                    <Pressable onPress={() => handleDelete(item.commentId)} style={styles.hiddenButton}>
                       <IconTrash />
                     </Pressable>
                   </View>
@@ -229,12 +283,12 @@ const CommentList = (props: CommentProps) => {
         transparent={true}
         visible={visible}
         animationType="fade"
-        onRequestClose={onClose}
       >
-        <View style={styles.modalOverlay} onPress={onClose}>
-          <TouchableOpacity onPress={onClose} style={{ flex: 1 }} />
+        <View style={styles.modalOverlay}>
+          <TouchableOpacity onPress={() => setIsVisibleComment(false)} style={{ flex: 1 }} />
           <CommentListInner />
         </View>
+        <Toast />
       </Modal>
     </View>
   );
