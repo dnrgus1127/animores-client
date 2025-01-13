@@ -6,7 +6,6 @@ import React, { useState } from "react";
 import { Pressable, StyleSheet, View, Image, TextInput } from "react-native";
 import Toast from "react-native-toast-message";
 import { User } from "../../assets/svg";
-import BottomModal from "../../components/modal/BottomModal";
 import Title from "../../components/text/Title";
 import { DiaryService } from "../../service/DiaryService";
 import { QueryKey } from "../../statics/constants/Querykey";

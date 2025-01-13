@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import { RecoilRoot } from "recoil"
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import Toast from "react-native-toast-message";
+import Toast, { BaseToast } from "react-native-toast-message";
 import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font';
 import { Entypo, Ionicons, FontAwesome } from "@expo/vector-icons";
@@ -50,6 +50,7 @@ const App = () => {
   }
 
   return (
+    <>
     <RecoilRoot>
       <QueryClientProvider client={queryClient}>
         <NavigationContainer>
@@ -60,6 +61,7 @@ const App = () => {
         </NavigationContainer>
       </QueryClientProvider>
     </RecoilRoot>
+    </>
   );
 };
 

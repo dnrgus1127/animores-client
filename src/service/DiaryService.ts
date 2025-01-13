@@ -69,6 +69,21 @@ export namespace DiaryService {
 				console.error('DiaryService.diary.addComment:', error);
 				return { data: null, status: error || 500 };
 			}
-		}
+		},
+		commentDelete: async (commentId: number) => {
+			console.log("commentId", commentId)
+			try {
+				const response = await AxiosContext.delete(`/api/v1/diary-comments/${commentId}`, {
+					data: {
+						commentId
+					}
+				});
+
+				return { data: response.data, status: response.status };
+			} catch (error) {
+				console.error('DiaryService.diary-comments.delete:', error);
+				return { data: null, status: error || 500 };
+			}
+		},
 	}
 }
