@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     backgroundColor: Colors.White,
     paddingBottom: 30,
-    height: 530,
+    height: 150,
   },
   basicTitle: {
     textAlign: "center",
