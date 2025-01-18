@@ -16,14 +16,14 @@ const TodayTodoItem = ({item, index}: {item: TodosModel.ITodayListModel, index: 
             {item.time}
           </Text>
         </View>
-        <Text style={{ fontSize: 20, marginLeft: 20, width: "45%", marginLeft: "10%" }}>
+        <Text style={{ fontSize: 20, width: "45%", marginLeft: "10%" }}>
           {item.title}
         </Text>
       </View>
       <View style={{ flexDirection: "row", alignItems: "center"}}>
         <View style={{ flexDirection: "row", alignItems: "baseline", width: "45%" }}>
-        { item.pets.map((pet) => (
-          <Text style={[styles.petTag, { backgroundColor: "#E1F0FF", color: "#80A5F1", marginRight: 5 }]}>
+        { item.pets.map((pet, index) => (
+          <Text key={index} style={[styles.petTag, { backgroundColor: "#E1F0FF", color: "#80A5F1", marginRight: 5 }]}>
             {pet.name}
           </Text>
         ))}
