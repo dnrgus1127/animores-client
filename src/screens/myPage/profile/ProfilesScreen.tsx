@@ -14,7 +14,7 @@ import { QueryKey } from "../../../statics/constants/Querykey";
 import { ScreenName } from "../../../statics/constants/ScreenName";
 import { IProfile } from "../../../../types/Profile";
 import { useRecoilState } from "recoil";
-import { CurrentProfileAtom } from "../../../recoil/AuthAtom";
+import { CurrentProfileImgAtom, CurrentProfileIdAtom } from "../../../recoil/AuthAtom";
 
 const ProfilesScreen = () => {
   const navigation =
@@ -24,7 +24,8 @@ const ProfilesScreen = () => {
 
   const baseUrl = process.env.IMAGE_BASE_URL;
 
-  const [currentProfile, setCurrentProfile] = useRecoilState(CurrentProfileAtom);
+  const [currentProfileImg, setCurrentProfileImg] = useRecoilState(CurrentProfileImgAtom);
+  const [currentProfileId, setCurrentProfileId] = useRecoilState(CurrentProfileIdAtom);
 
   const { data: profile } = useQuery({
     queryKey: [QueryKey.PROFILE],
@@ -61,7 +62,8 @@ const ProfilesScreen = () => {
       navigation.navigate(ScreenName.BottomTab);
       
       // Atom에 선택한 프로필 저장
-      setCurrentProfile(item.imageUrl);
+      setCurrentProfileImg(item.imageUrl);
+      setCurrentProfileId(item.id);
     }
   };
 

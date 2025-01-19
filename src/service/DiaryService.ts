@@ -70,15 +70,15 @@ export namespace DiaryService {
 				return { data: null, status: error || 500 };
 			}
 		},
-		commentDelete: async (commentId: number) => {
-			console.log("commentId", commentId)
+		commentDelete: async (commentId: number, profileId: number) => {
+			console.log("commentId", commentId, "profileId", profileId)
 			try {
 				const response = await AxiosContext.delete(`/api/v1/diary-comments/${commentId}`, {
 					data: {
-						commentId
+						profileId
 					}
 				});
-
+				console.log('삭제됨')
 				return { data: response.data, status: response.status };
 			} catch (error) {
 				console.error('DiaryService.diary-comments.delete:', error);

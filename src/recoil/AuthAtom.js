@@ -5,7 +5,11 @@ export const UserEmailAtom = atom({
     default: ''
 })
 
-export const CurrentProfileAtom = atom({
-    key: 'CurrentProfileAtom',
+export const CurrentProfileImgAtom = atom({
+    key: 'CurrentProfileImgAtom',
+    default: ''
+})
+export const CurrentProfileIdAtom = atom({
+    key: 'CurrentProfileIdAtom',
     default: ''
 })
