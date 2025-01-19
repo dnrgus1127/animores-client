@@ -27,6 +27,8 @@ import { useController, Controller, Control, useForm } from "react-hook-form";
 import InputBox from "../../components/Input/InputBox";
 import Title from "../../components/text/Title";
 import AddComment from "./AddComment";
+import { useRecoilValue } from "recoil";
+import { CurrentProfileIdAtom } from "../../recoil/AuthAtom";
 
 // icon
 import { User } from "../../assets/svg";
@@ -46,6 +48,8 @@ const CommentList = (props: CommentProps) => {
   const { visible, setIsVisibleComment, commentDiaryId, isComment, commentProfileId } = props;
   const baseUrl = "https://animores-image.s3.ap-northeast-2.amazonaws.com";
   const queryClient = useQueryClient();
+  
+  const currentProfileId = useRecoilValue(CurrentProfileIdAtom);
 
   const [deletedDiaryId, setDeletedDiaryId] = useState<number | null>(null);  //삭제 diary Id
 
@@ -60,8 +64,8 @@ const CommentList = (props: CommentProps) => {
 
   //댓글 삭제
   const { mutate } = useMutation(
-    ({ commentId }: { commentId: number }) =>
-      DiaryService.diary.commentDelete(commentId),
+    ({ commentId, profileId }: { commentId: number, profileId: number }) =>
+      DiaryService.diary.commentDelete(commentId, profileId),
     {
       onSuccess: async (data) => {
         if (data && data.status === 200) {
@@ -169,9 +173,10 @@ const CommentList = (props: CommentProps) => {
     }
 
     // 댓글 삭제
-    const handleDelete = async (commentId: number) => {
-      if (commentId !== null) {
-        mutate({ commentId: commentId });
+    const handleDelete = async (commentId: number, profileId: number) => {
+      console.log(commentId, profileId);
+      if (commentId !== null && profileId !== null) {
+        mutate({ commentId: commentId, profileId: profileId });
       } else {
         console.log('diary deleted error')
       }
@@ -261,7 +266,7 @@ const CommentList = (props: CommentProps) => {
                       <Text style={styles.hiddenMenuText}>수정</Text>
                     </Pressable>
                     <Separator /> */}
-                    <Pressable onPress={() => handleDelete(item.commentId)} style={styles.hiddenButton}>
+                    <Pressable onPress={() => handleDelete(item.commentId, currentProfileId)} style={styles.hiddenButton}>
                       <IconTrash />
                     </Pressable>
                   </View>
@@ -365,6 +370,7 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     paddingHorizontal: 10,
     width: "100%",
+    //minHeight: 70,
     height: 70,
   },
   hidden_card: {

@@ -5,7 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useRecoilValue } from "recoil";
 import HomeTheme1 from "../../assets/png/bg_home_theme1.png";
 import { BathIcon, FeedIcon, HomeAvatar1, HomeAvatar2, HomeAvatar3, HomeAvatar4, HomeAvatar5, MedicineIcon, WalkIcon } from "../../assets/svg";
-import { CurrentProfileAtom } from "../../recoil/AuthAtom";
+import { CurrentProfileImgAtom } from "../../recoil/AuthAtom";
 import { ToDoService } from "../../service/ToDoService";
 import { QueryKey } from "../../statics/constants/Querykey";
 import AvatarSwiper from "./AvatarSwiper";
@@ -37,7 +37,7 @@ const ItemsAvatar = [
 const HomeScreen = () => {
   const baseUrl = "https://animores-image.s3.ap-northeast-2.amazonaws.com";
   
-  const currentProfile = useRecoilValue(CurrentProfileAtom);
+  const currentProfileImg = useRecoilValue(CurrentProfileImgAtom);
 
   const { data: todayToDo } = useQuery({
     queryKey: [QueryKey.PROFILE_LIST],
@@ -80,7 +80,7 @@ const HomeScreen = () => {
         <View style={{ flexDirection: "row", justifyContent: "flex-end", paddingHorizontal: 20 }}>
           <Image 
           style={styles.profile}
-          source={{ uri: `${baseUrl}/${currentProfile}` }}
+          source={{ uri: `${baseUrl}/${currentProfileImg}` }}
            />
         </View>
         <TodoSwiper itemList={todayTodoList} />
