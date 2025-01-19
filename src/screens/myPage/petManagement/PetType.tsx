@@ -1,19 +1,17 @@
-import { useNavigation } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
-import React, { useState } from "react";
-import { Image, Platform, Pressable, StyleSheet, View } from "react-native";
-import { IPetType } from "../../../../types/PetTypes";
+import {useNavigation} from "@react-navigation/native";
+import {StackNavigationProp} from "@react-navigation/stack";
+import React, {useState} from "react";
+import {Image, Platform, Pressable, StyleSheet, View} from "react-native";
+import {IPet, ISpecies} from "../../../../types/PetTypes";
 import SingleButton from "../../../components/button/SingleButton";
 import Title from "../../../components/text/Title";
-import { petTypes } from "../../../data/PetTypes";
 import HeaderNavigation from "../../../navigation/HeaderNavigation";
-import { RootStackParamList } from "../../../navigation/type";
-import { ScreenName } from "../../../statics/constants/ScreenName";
-import { Colors } from "../../../styles/Colors";
+import {RootStackParamList} from "../../../navigation/type";
+import {ScreenName} from "../../../statics/constants/ScreenName";
+import {Colors} from "../../../styles/Colors";
 import {useQuery} from "@tanstack/react-query";
-import { QueryKey } from "../../../statics/constants/Querykey";
+import {QueryKey} from "../../../statics/constants/Querykey";
 import {PetService} from "../../../service/PetService";
-import {AxiosError} from "axios";
 import PngImage from "../../../assets/png";
 
 
@@ -24,7 +22,11 @@ const PetType = () => {
     >();
 
   const [userSelectPetType, setUserSelectPetType] = useState<string>("");
-  const {data: petSpeciesList, error, isLoading, isSuccess} = useQuery<IPetType[], AxiosError, IPetType[], string[]>([QueryKey.PET_SPECIES], PetService.pet.speciesList);
+  const {
+    data: petSpeciesList,
+    isLoading,
+    isSuccess
+  } = useQuery<ISpecies[]>([QueryKey.PET_SPECIES], PetService.get.speciesList, {initialData: []});
   // 펫 리스트 로딩 전 중 & 로딩 실패 시에 대한 화면 필요
   if(isLoading || !isSuccess) return;
 
@@ -45,7 +47,7 @@ const PetType = () => {
             fontWeight="bold"
             style={{ marginTop: 52, marginBottom: 31 }}
           />
-          {petSpeciesList.map((petSpeciesItem: IPetType) => {
+          {petSpeciesList.map((petSpeciesItem: IPet) => {
             return (
               <Pressable
                 key={petSpeciesItem.id}

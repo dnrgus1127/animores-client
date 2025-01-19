@@ -14,7 +14,7 @@ import { useRecoilState } from "recoil";
 
 import { FlatList, ScrollView } from "react-native-gesture-handler";
 import { IToDo } from "../../../types/ToDo";
-import { IPetType } from "../../../types/PetTypes";
+import { IPet } from "../../../types/PetTypes";
 import { PetListAtom } from "../../recoil/PetAtom";
 import PetListModal from "./modal/PetListModal";
 import ToDoCard from "./ToDoCard";
@@ -34,12 +34,10 @@ const AllTodoScreen = () => {
     size: 15,
   });
 
-  const [petList, setPetList] = useRecoilState<IPetType[]>(PetListAtom);
+  const [petList, setPetList] = useRecoilState<IPet[]>(PetListAtom);
   useEffect(() => {
     if (petList.length === 0) {
-      PetService.pet.list().then((response) => {
-        setPetList(response.data.data);
-      });
+      PetService.get.petList().then(setPetList);
     }
   }, []);
 
