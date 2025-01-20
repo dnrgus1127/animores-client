@@ -1,9 +1,7 @@
-import { ImageProps } from "react-native";
-
 export interface IPet {
     id: number;
     name: string;
-    image?: ImageProps;
+    imageUrl?: string;
 }
 
 export interface IBreed {
