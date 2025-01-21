@@ -69,7 +69,7 @@ const AuthStackNavigation = () => {
           options={{ headerShown: false }}
         />
         <RootStack.Screen
-          name={ScreenName.PatManagement}
+          name={ScreenName.PetManagement}
           component={PatManagementScreen}
           options={{ headerShown: false }}
         />

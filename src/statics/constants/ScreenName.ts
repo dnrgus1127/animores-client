@@ -14,7 +14,7 @@ export enum ScreenName {
 	Information = 'Information',
 	Mypage = 'Mypage',
 	Notice = 'Notice',
-	PatManagement = 'PatManagement',
+	PetManagement = 'PetManagement',
 	Profile = 'Profile',
 	Profiles = 'Profiles',
 	CreateProfile = 'CreateProfile',
@@ -29,3 +29,15 @@ export enum ScreenName {
 	ProfileManagement = 'ProfileManagement',
 	ToDoList = 'ToDoList',
 }
+
+/**
+ * ScreenName 실제 Navigation Stack 별로 나눠 가독성을 높이기 위하여 수정 중
+ */
+export const StackName = {
+    PetManagement : {
+		Home: "Home",
+        PetType: "PetType",
+        BreedType : "BreedType",
+        AddPet: "AddPet",
+    } as const
+} as const;

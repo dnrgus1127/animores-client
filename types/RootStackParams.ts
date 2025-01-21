@@ -10,7 +10,7 @@ export type RootStackParams = {
 	CustomerService: undefined;
 	Information: undefined;
 	Notice: undefined;
-	PatManagement: undefined;
+	PetManagement: undefined;
 	Profile: undefined;
 	Profiles: undefined;
 	PetType: undefined;
