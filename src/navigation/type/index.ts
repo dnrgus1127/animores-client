@@ -1,5 +1,5 @@
-import { IProfile } from "../../../types/Profile";
-import { ScreenName } from "../../statics/constants/ScreenName"
+import {IProfile} from "../../../types/Profile";
+import {ScreenName, StackName} from "../../statics/constants/ScreenName"
 
 export type RootStackParamList = {
     [ScreenName.Login]: undefined;
@@ -7,10 +7,6 @@ export type RootStackParamList = {
     [ScreenName.JoinCompleted]: undefined;
     [ScreenName.CreateDiary]: undefined;
     [ScreenName.AddTodo]: undefined;
-	[ScreenName.PatManagement]: undefined;
-	[ScreenName.PetType]: undefined;
-	[ScreenName.BreedType]: { petType: number, isEdit?: boolean };
-	[ScreenName.AddPet]: { breed : string, petType: number };
 	[ScreenName.Mypage]: undefined;
 	[ScreenName.Home]: undefined;
 	[ScreenName.Profiles]: undefined;
@@ -21,5 +17,13 @@ export type RootStackParamList = {
 	[ScreenName.BottomTab]: undefined;
 	[ScreenName.EditProfile]: { item: IProfile };
 	[ScreenName.ProfileManagement]: undefined;
-	[ScreenName.ToDoList]: undefined;
+	[ScreenName.ToDoList]: undefined
+    PetManagement : PetManagementParamList;
+}
+
+type PetManagementParamList = {
+    [StackName.PetManagement.Home]: undefined;
+    [StackName.PetManagement.PetType]: undefined;
+    [StackName.PetManagement.BreedType]: { petType: number, isEdit?: boolean };
+    [StackName.PetManagement.AddPet]: { breed : string, petType: number };
 }

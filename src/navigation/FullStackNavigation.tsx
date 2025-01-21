@@ -18,7 +18,7 @@ import ProfilesScreen from "../screens/myPage/profile/ProfilesScreen";
 import AddTodo from "../screens/todo/AddTodo";
 import {ScreenName} from "../statics/constants/ScreenName";
 import BottomTabNavigator from "./BottomTabStackNavigator";
-import {PetManagementScreen} from "../screens/myPage/petManagement/PatManagementScreen";
+import {PetManagementScreen} from "../screens/myPage/petManagement/PetManagementHome";
 
 const RootStack = createNativeStackNavigator<RootStackParams>();
 

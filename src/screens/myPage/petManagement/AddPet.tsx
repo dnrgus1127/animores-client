@@ -6,7 +6,7 @@ import {StyleProp, StyleSheet, Text, View, ViewStyle} from "react-native";
 import {ScrollView} from "react-native-gesture-handler";
 import HeaderNavigation from "../../../navigation/HeaderNavigation";
 import {RootStackParamList} from "../../../navigation/type";
-import {ScreenName} from "../../../statics/constants/ScreenName";
+import {ScreenName, StackName} from "../../../statics/constants/ScreenName";
 import {Colors} from "../../../styles/Colors";
 import PetImagePicker from "./PetImagePicker";
 import {CustomForm} from "../../../components/form/Form";
@@ -40,8 +40,8 @@ const Rules = {
 
 const AddPet = () => {
     const navigation =
-        useNavigation<StackNavigationProp<RootStackParamList, ScreenName.AddPet>>();
-    const route = useRoute<RouteProp<RootStackParamList, ScreenName.AddPet>>(),
+        useNavigation<StackNavigationProp<RootStackParamList["PetManagement"], "PetType">>();
+    const route = useRoute<RouteProp<RootStackParamList["PetManagement"], "AddPet">>(),
         {breed, petType} = route.params;
 
     const methods = useForm();
@@ -57,7 +57,7 @@ const AddPet = () => {
             return PetService.post.addPet(data);
         },
         onSuccess: () => {
-            navigation.navigate(ScreenName.PatManagement);
+            navigation.navigate(StackName.PetManagement.Home);
         },
         onError: (error, variables) => {
             // TODO 응답 실패에 대한 UI 혹은 Toast 알림 추가
@@ -75,7 +75,7 @@ const AddPet = () => {
                 middletitle="펫 추가"
                 hasBackButton={true}
                 onPressBackButton={() => {
-                    navigation.navigate(ScreenName.PatManagement);
+                    navigation.navigate(StackName.PetManagement.Home);
                 }}
             />
             <ScrollView style={styles.horizontalContainer}>
