@@ -37,7 +37,7 @@ const PetListModal = (props: any) => {
               <Pressable key={pet.id} onPress={() => togglePetsIdsFunction(pet.id)}>
                 <View style={styles.petRowContainer}>
                   <View style={{flexDirection: 'row'}}>
-                    <Image source={{uri: baseURL+pet.image}} style={{width: 50, height: 50, marginRight: 20}}/>
+                    <Image source={{uri: baseURL+pet.imageUrl}} style={{width: 50, height: 50, marginRight: 20}}/>
                     <Text style={{color: pressedPetsId.includes(pet.id) ? Colors.Black : Colors.Gray717171}}>{pet.name}</Text>
                   </View>
                   <View style={{backgroundColor: pressedPetsId.includes(pet.id) ? Colors.FB3F7E : Colors.Gray717171, ...styles.checkBox}}>

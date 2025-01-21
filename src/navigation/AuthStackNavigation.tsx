@@ -11,7 +11,7 @@ import InformationScreen from "../screens/myPage/information/InformationScreen";
 import NoticeScreen from "../screens/myPage/notice/NoticeScreen";
 import AddPet from "../screens/myPage/petManagement/AddPet";
 import BreedType from "../screens/myPage/petManagement/BreedType";
-import PatManagementScreen from "../screens/myPage/petManagement/PatManagementScreen";
+import PetManagementHome from "../screens/myPage/petManagement/PetManagementHome";
 import PetType from "../screens/myPage/petManagement/PetType";
 import CreateProfile from "../screens/myPage/profile/CreateProfile";
 import ResetPassword from "../screens/myPage/password/ResetPassword";
@@ -70,7 +70,7 @@ const AuthStackNavigation = () => {
         />
         <RootStack.Screen
           name={ScreenName.PetManagement}
-          component={PatManagementScreen}
+          component={PetManagementHome}
           options={{ headerShown: false }}
         />
         <RootStack.Screen

@@ -18,7 +18,7 @@ import PngImage from "../../../assets/png";
 const PetType = () => {
   const navigation =
     useNavigation<
-      StackNavigationProp<RootStackParamList, ScreenName.PetType>
+        StackNavigationProp<RootStackParamList["PetManagement"], "PetType">
     >();
 
   const [userSelectPetType, setUserSelectPetType] = useState<string>("");
