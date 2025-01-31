@@ -28,7 +28,7 @@ import InputBox from "../../components/Input/InputBox";
 import Title from "../../components/text/Title";
 import AddComment from "./AddComment";
 import { useRecoilValue } from "recoil";
-import { CurrentProfileIdAtom } from "../../recoil/AuthAtom";
+import { CurrentProfileAtom } from "../../recoil/AuthAtom";
 
 // icon
 import { User } from "../../assets/svg";
@@ -49,7 +49,7 @@ const CommentList = (props: CommentProps) => {
   const baseUrl = "https://animores-image.s3.ap-northeast-2.amazonaws.com";
   const queryClient = useQueryClient();
   
-  const currentProfileId = useRecoilValue(CurrentProfileIdAtom);
+  const currentProfile = useRecoilValue(CurrentProfileAtom);
 
   const [deletedDiaryId, setDeletedDiaryId] = useState<number | null>(null);  //삭제 diary Id
 
@@ -266,7 +266,7 @@ const CommentList = (props: CommentProps) => {
                       <Text style={styles.hiddenMenuText}>수정</Text>
                     </Pressable>
                     <Separator /> */}
-                    <Pressable onPress={() => handleDelete(item.commentId, currentProfileId)} style={styles.hiddenButton}>
+                    <Pressable onPress={() => handleDelete(item.commentId, currentProfile.id)} style={styles.hiddenButton}>
                       <IconTrash />
                     </Pressable>
                   </View>
