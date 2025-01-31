@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
-import { Image, ImageBackground, StyleSheet, View } from "react-native";
+import { Image, ImageBackground, StyleSheet, View, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRecoilValue } from "recoil";
 import HomeTheme1 from "../../assets/png/bg_home_theme1.png";
@@ -10,6 +10,10 @@ import { ToDoService } from "../../service/ToDoService";
 import { QueryKey } from "../../statics/constants/Querykey";
 import AvatarSwiper from "./AvatarSwiper";
 import TodoSwiper from "./TodoSwiper";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from "../../navigation/type";
+import { ScreenName } from "../../statics/constants/ScreenName";
 
 const ItemsAvatar = [
     {
@@ -35,6 +39,7 @@ const ItemsAvatar = [
 ]
 
 const HomeScreen = () => {
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList, ScreenName.Profiles>>();
   const baseUrl = "https://animores-image.s3.ap-northeast-2.amazonaws.com";
   
   const currentProfile = useRecoilValue(CurrentProfileAtom);
@@ -78,10 +83,14 @@ const HomeScreen = () => {
     <ImageBackground source={ HomeTheme1 } resizeMode="cover" style={styles.homeBackground}>
       <SafeAreaView style={styles.container}>
         <View style={{ flexDirection: "row", justifyContent: "flex-end", paddingHorizontal: 20 }}>
+          <Pressable onPress={() => {
+                    navigation.navigate(ScreenName.Profiles);
+                }}>
           <Image 
           style={styles.profile}
           source={{ uri: `${baseUrl}/${currentProfile.imageUrl}` }}
            />
+           </Pressable>
         </View>
         <TodoSwiper itemList={todayTodoList} />
         <AvatarSwiper itemList={ItemsAvatar} />
