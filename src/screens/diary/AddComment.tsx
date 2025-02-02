@@ -15,12 +15,12 @@ import { useController, Controller, Control, useForm } from "react-hook-form";
 import InputBox from "../../components/Input/InputBox";
 
 export interface CommentProps {
-  commentDiaryId: string;
+  commentDiaryId: number;
   refetch: () => void;
 }
 
 const AddComment = (props: CommentProps) => {
-  const baseUrl = "https://animores-image.s3.ap-northeast-2.amazonaws.com";
+  const baseUrl = process.env.IMAGE_BASE_URL;
   
   const { commentDiaryId, refetch } = props;
   const [isInputText, setIsInputText] = useState<boolean>(false);
@@ -60,7 +60,7 @@ const AddComment = (props: CommentProps) => {
   )
 
   // 댓글 입력버튼 클릭 시
-  const addComment = async(data) => {
+  const addComment = async() => {
     const profile = await AsyncStorage.getItem("userInfo");
 
     if (profile) {

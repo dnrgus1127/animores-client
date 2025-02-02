@@ -15,6 +15,7 @@ export namespace ProfileService {
 		//프로필 목록 조회
 		list: async () => {
 			try {
+				console.log(AxiosContext.getUri())
 				const response = await AxiosContext.get(`/api/v1/profiles`);
 				return { data: response.data };
 			} catch (error) {
