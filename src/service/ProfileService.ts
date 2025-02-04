@@ -1,4 +1,5 @@
 import AxiosContext from "../screens/context/AxiosContext";
+import {EXPO_PUBLIC_BASE_URL} from '@env';
 
 export namespace ProfileService {
 	export const profile = {
@@ -6,6 +7,7 @@ export namespace ProfileService {
 		myProfile: async () => {
 			try {
 				const response = await AxiosContext.get(`/api/v1/account`);
+				console.log(response)
 				return { data: response.data, status: response.status };
 			} catch (error) {
 				console.error('ProfileService.Profile.myProfile:', error);
@@ -15,7 +17,7 @@ export namespace ProfileService {
 		//프로필 목록 조회
 		list: async () => {
 			try {
-				console.log(AxiosContext.getUri())
+				console.log(EXPO_PUBLIC_BASE_URL)
 				const response = await AxiosContext.get(`/api/v1/profiles`);
 				return { data: response.data };
 			} catch (error) {
