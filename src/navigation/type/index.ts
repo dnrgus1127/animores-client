@@ -23,7 +23,7 @@ export type RootStackParamList = {
 
 type PetManagementParamList = {
     [StackName.PetManagement.Home]: undefined;
-    [StackName.PetManagement.PetType]: undefined;
-    [StackName.PetManagement.BreedType]: { petType: number, isEdit?: boolean };
-    [StackName.PetManagement.AddPet]: { breed : string, petType: number };
+	[StackName.PetManagement.PetType]: undefined;
+    [StackName.PetManagement.BreedType]: undefined;
+	[StackName.PetManagement.AddPet]: { petId?: number };
 }

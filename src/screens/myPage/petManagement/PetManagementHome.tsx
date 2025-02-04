@@ -8,69 +8,60 @@ import HeaderNavigation from "../../../navigation/HeaderNavigation";
 import {RootStackParamList} from "../../../navigation/type";
 import {StackName} from "../../../statics/constants/ScreenName";
 import {Colors} from "../../../styles/Colors";
-import {useQuery} from "@tanstack/react-query";
-import {PetService} from "../../../service/PetService";
-import {IPet} from "../../../../types/PetTypes";
-import {ProfileContainer, ProfileData} from "./Profile";
+import {ProfileContainer} from "./Profile";
 import BreedType from "./BreedType";
 import AddPet from "./AddPet";
 import PetType from "./PetType";
+import {FormProvider, useForm} from "react-hook-form";
+import {useResetFormOnScreenFocus} from "./hooks/useNavigationFormHooks";
+import {usePetQuery, useProfileData} from "./hooks/usePetQuery";
 
 const PetStack = createStackNavigator();
 
 export const PetManagementScreen = () => {
-    return <PetStack.Navigator screenOptions={{
-        headerShown: false,
-        animationEnabled: true,
-        cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS
-    }} initialRouteName={StackName.PetManagement.Home}>
-        <PetStack.Screen name={StackName.PetManagement.Home} component={PetManagementHome}/>
-        <PetStack.Screen name={StackName.PetManagement.BreedType} component={BreedType}/>
-        <PetStack.Screen name={StackName.PetManagement.PetType} component={PetType}/>
-        <PetStack.Screen name={StackName.PetManagement.AddPet} component={AddPet}/>
-    </PetStack.Navigator>
+    const form = useForm();
+
+    return <FormProvider {...form}>
+        <PetStack.Navigator initialRouteName={StackName.PetManagement.Home}
+                            screenOptions={{
+                                headerShown: false,
+                                animationEnabled: true,
+                                cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS
+                            }}>
+            <PetStack.Screen name={StackName.PetManagement.Home} component={PetManagementHome}/>
+            <PetStack.Screen name={StackName.PetManagement.BreedType} component={BreedType}/>
+            <PetStack.Screen name={StackName.PetManagement.PetType} component={PetType}/>
+            <PetStack.Screen name={StackName.PetManagement.AddPet} component={AddPet}/>
+        </PetStack.Navigator>
+    </FormProvider>
 }
 
 const PetManagementHome = () => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList["PetManagement"], "Home">>();
-
-    const {data : profileData = []} = useQuery<Array<IPet>, unknown, Array<ProfileData>>(["PetList"], () => PetService.get.petList(), {
-            select: (data) => data.map((pet) => {
-                    return {
-                        name: pet.name,
-                        imageUrl: pet.imageUrl,
-                        onPress: () => navigation.navigate(StackName.PetManagement.AddPet, {
-                            petType: 1,
-                            breed: "치와와"
-                        })
-                    }
-                }
-            )
-        }
-    );
-
     const [isEdit, setIsEdit] = useState(false);
+    const {data: profileList, refetch} = useProfileData();
+    const {deletePet} = usePetQuery();
+    useResetFormOnScreenFocus();
 
     return (
         <SafeAreaView style={styles.container}>
             <HeaderNavigation
-                middletitle="펫 관리"
-                hasBackButton={true}
-                onPressBackButton={() => {
-                    navigation.goBack();
-                }}
-                rightTitle="편집"
-                onPressRightButton={()=>{
-                    setIsEdit(true);
-                }}
+                middletitle="펫 관리" hasBackButton={true} rightTitle="편집"
+                onPressBackButton={() => navigation.pop()}
+                onPressRightButton={() => setIsEdit(true)}
             />
             <View style={styles.profileTitleContainer}>
-                <ProfileListInfo length={profileData.length}/>
+                <ProfileListInfo length={profileList.length}/>
                 <ProfileContainer
                     isEdit={isEdit}
                     title={"펫 추가"}
-                    profileData={profileData}
-                    onAddProfile={() => navigation.navigate(StackName.PetManagement.PetType)}
+                    profileData={profileList}
+                    onAddProfile={() => navigation.push(StackName.PetManagement.PetType)}
+                    onDelete={(petId: number) => {
+                        deletePet(petId);
+                        refetch();
+                    }}
+                    onPress={(petId: number) => navigation.push(StackName.PetManagement.AddPet, {petId: petId})}
                 />
             </View>
         </SafeAreaView>

@@ -9,4 +9,5 @@ export enum QueryKey {
     TODO_LIST = "TODO_LIST",
     PET_SPECIES = "PET_SPECIES",
     BREED_LIST = "BREED_LIST",
+    PET = "PET",
 }

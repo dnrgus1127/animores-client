@@ -1,4 +1,4 @@
-import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useState} from 'react';
 import {StyleSheet, View} from 'react-native';
@@ -7,59 +7,34 @@ import SingleButton from '../../../components/button/SingleButton';
 import Title from '../../../components/text/Title';
 import HeaderNavigation from '../../../navigation/HeaderNavigation';
 import {RootStackParamList} from '../../../navigation/type';
-import {ScreenName} from '../../../statics/constants/ScreenName';
 import {Colors} from '../../../styles/Colors';
 import AutoComplete from "./AutoComplete";
-import {useBreedList} from "./hooks/useBreed";
+import {useFormContext} from "react-hook-form";
+import {StackName} from "../../../statics/constants/ScreenName";
+import {useBreedList} from "./hooks/usePetQuery";
 
 const BreedType = () => {
-    const navigation =
-        useNavigation<StackNavigationProp<RootStackParamList, ScreenName.BreedType>>();
+    const navigation = useNavigation<StackNavigationProp<RootStackParamList["PetManagement"], "BreedType">>();
     const [keyword, setKeyword] = useState<string>('');
-    const route = useRoute<RouteProp<RootStackParamList, ScreenName.BreedType>>(),
-        {petType, isEdit} = route.params;
+    const form = useFormContext();
+    const breedList = useBreedList(form.getValues("petSpecies"));
 
-    const breedList = useBreedList(petType);
+    const onPressNextButton = () => {
+        form.setValue("breed", keyword);
+        navigation.push(StackName.PetManagement.AddPet, {petId : 0});
+    }
 
     return (
         <View style={styles.container}>
-            <HeaderNavigation
-                middletitle="펫 추가"
-                hasBackButton={true}
-                onPressBackButton={() => {
-                    navigation.goBack();
-                }}
-            />
+            <HeaderNavigation middletitle="펫 추가" hasBackButton={true} onPressBackButton={() => navigation.goBack()}/>
             <View style={styles.horizontalContainer}>
                 <View style={{flex: 2.5}}>
-                    <Title
-                        text={"품종이 무엇인가요?"}
-                        fontSize={16}
-                        fontWeight="bold"
-                        style={{marginTop: 52, marginBottom: 31}}
-                    />
-                    <InputSearch
-                        value={keyword}
-                        setValue={setKeyword}
-                        name={'_'}
-                        placeholder={'직접 입력하세요'}
-                    />
-                    <AutoComplete searchText={keyword} suggestionList={breedList.map(item => item.name)}
-                                  onPress={setKeyword}/>
+                    <Title text={"품종이 무엇인가요?"} fontSize={16} fontWeight="bold" style={{marginTop: 52, marginBottom: 31}}/>
+                    <InputSearch value={keyword} setValue={setKeyword} name={'_'} placeholder={'직접 입력하세요'}/>
+                    <AutoComplete searchText={keyword} suggestionList={breedList.map(item => item.name)} onPress={setKeyword}/>
                 </View>
                 <View style={styles.buttonContainer}>
-                    {isEdit ? <SingleButton title={"완료"} onPress={() => {
-                        navigation.navigate(ScreenName.AddPet, {breed : keyword, petType});
-                    }} disabled={false}/> : <SingleButton
-                        title="다음"
-                        disabled={!keyword}
-                        onPress={() => {
-                            if (keyword) {
-                                navigation.navigate(ScreenName.AddPet, {breed: keyword, petType});
-                            }
-                        }}
-                        style={{marginTop: 70}}
-                    />}
+                    <SingleButton title={"다음"} disabled={!keyword} onPress={onPressNextButton} style={{marginTop: 70}}/>
                 </View>
             </View>
         </View>

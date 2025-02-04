@@ -41,3 +41,5 @@ export const StackName = {
         AddPet: "AddPet",
     } as const
 } as const;
+
+export type StackNameKey = keyof typeof StackName;

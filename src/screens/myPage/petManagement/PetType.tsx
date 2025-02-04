@@ -7,37 +7,32 @@ import SingleButton from "../../../components/button/SingleButton";
 import Title from "../../../components/text/Title";
 import HeaderNavigation from "../../../navigation/HeaderNavigation";
 import {RootStackParamList} from "../../../navigation/type";
-import {ScreenName} from "../../../statics/constants/ScreenName";
+import {StackName} from "../../../statics/constants/ScreenName";
 import {Colors} from "../../../styles/Colors";
 import {useQuery} from "@tanstack/react-query";
 import {QueryKey} from "../../../statics/constants/Querykey";
 import {PetService} from "../../../service/PetService";
 import PngImage from "../../../assets/png";
-
+import {useFormContext} from "react-hook-form";
 
 const PetType = () => {
-  const navigation =
-    useNavigation<
-        StackNavigationProp<RootStackParamList["PetManagement"], "PetType">
-    >();
-
-  const [userSelectPetType, setUserSelectPetType] = useState<string>("");
-  const {
-    data: petSpeciesList,
-    isLoading,
-    isSuccess
-  } = useQuery<ISpecies[]>([QueryKey.PET_SPECIES], PetService.get.speciesList, {initialData: []});
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList["PetManagement"], "PetType">>();
+  const form = useFormContext();
+  const [userSelectPetType, setUserSelectPetType] = useState<number>(0);
   // 펫 리스트 로딩 전 중 & 로딩 실패 시에 대한 화면 필요
-  if(isLoading || !isSuccess) return;
+  const {data: petSpeciesList} = useQuery<ISpecies[]>([QueryKey.PET_SPECIES], PetService.get.speciesList, {initialData: []});
+
+  const onPressNextButton = () => {
+      form.setValue("petSpecies", userSelectPetType);
+      navigation.push(StackName.PetManagement.BreedType)
+  }
 
   return (
     <View style={styles.container}>
       <HeaderNavigation
         middletitle="펫 추가"
         hasBackButton={true}
-        onPressBackButton={() => {
-          navigation.goBack();
-        }}
+        onPressBackButton={() => navigation.pop()}
       />
       <View style={styles.paddingContainer}>
         <View style={{ flex: 1 }}>
@@ -51,39 +46,18 @@ const PetType = () => {
             return (
               <Pressable
                 key={petSpeciesItem.id}
-                onPress={() => {
-                  setUserSelectPetType(petSpeciesItem.name);
-                }}
-                style={[
-                  styles.pressableType,
-                  userSelectPetType === ""
-                    ? styles.pressableType
-                    : userSelectPetType === petSpeciesItem.name
-                    ? styles.selectedType
-                    : styles.unselectedType,
-                ]}
+                onPress={() => setUserSelectPetType(petSpeciesItem.id)}
+                style={[userSelectPetType === petSpeciesItem.id ? styles.selectedType : styles.unselectedType]}
               >
-                <Image source={PngImage.petType[`${PngImage.getPetType(petSpeciesItem.name)}`] || PngImage.petType.dog}/>
-                <Title
-                  text={petSpeciesItem.name}
-                  fontWeight={userSelectPetType ? "bold" : "normal"}
-                  style={{ marginLeft: 16, alignSelf: "center" }}
-                />
+                <Image source={PngImage.petType[`${PngImage.getPetType(petSpeciesItem.name)}`]}/>
+                <Title text={petSpeciesItem.name} fontWeight={userSelectPetType ? "bold" : "normal"}
+                       style={{marginLeft: 16, alignSelf: "center"}}/>
               </Pressable>
             );
           })}
         </View>
         <View style={styles.buttonContainer}>
-          <SingleButton
-            title={"다음"}
-            disabled={!userSelectPetType}
-            onPress={() => {
-              if (userSelectPetType) {
-                navigation.navigate(ScreenName.BreedType , { petType : 1 });
-              }
-            }}
-            style={{ marginTop: 70 }}
-          />
+          <SingleButton title={"다음"} disabled={!userSelectPetType} style={{marginTop: 70}} onPress={onPressNextButton}/>
         </View>
       </View>
     </View>
@@ -91,6 +65,17 @@ const PetType = () => {
 };
 
 export default PetType;
+
+const baseStyles = StyleSheet.create({
+  pressable: {
+    flexDirection: "row",
+    backgroundColor: Colors.F9F9FB,
+    paddingVertical: 8,
+    marginBottom: 16,
+    paddingLeft: 20,
+    borderRadius: 10,
+  }
+})
 
 const styles = StyleSheet.create({
   container: {
@@ -101,15 +86,8 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
   },
-  pressableType: {
-    flexDirection: "row",
-    backgroundColor: Colors.F9F9FB,
-    paddingVertical: 8,
-    marginBottom: 16,
-    paddingLeft: 20,
-    borderRadius: 10,
-  },
   selectedType: {
+    ...baseStyles.pressable,
     borderWidth: 1,
     borderColor: Colors.F9F9FB,
     ...Platform.select({
@@ -128,6 +106,7 @@ const styles = StyleSheet.create({
     }),
   },
   unselectedType: {
+    ...baseStyles.pressable,
     opacity: 0.4,
     backgroundColor: Colors.F9F9FB,
   },

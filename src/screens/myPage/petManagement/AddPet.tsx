@@ -1,22 +1,19 @@
-import {RouteProp, useNavigation, useRoute} from "@react-navigation/native";
+import {useNavigation} from "@react-navigation/native";
 import {StackNavigationProp} from "@react-navigation/stack";
 import React, {useEffect} from "react";
-import {useForm} from "react-hook-form";
 import {StyleProp, StyleSheet, Text, View, ViewStyle} from "react-native";
 import {ScrollView} from "react-native-gesture-handler";
 import HeaderNavigation from "../../../navigation/HeaderNavigation";
 import {RootStackParamList} from "../../../navigation/type";
-import {ScreenName, StackName} from "../../../statics/constants/ScreenName";
+import {StackName} from "../../../statics/constants/ScreenName";
 import {Colors} from "../../../styles/Colors";
 import PetImagePicker from "./PetImagePicker";
 import {CustomForm} from "../../../components/form/Form";
 import {ReviseIcon} from "../../../assets/svg";
 import Title from "../../../components/text/Title";
-import {PetService} from "../../../service/PetService";
-import {IPetRequest} from "../../../../types/PetTypes";
-import {useMutation} from "@tanstack/react-query";
-import {useBreedList} from "./hooks/useBreed";
-import {formatToYYYYMMDD} from "../../../components/Calendar/utils";
+import {useNavigationParams} from "../../../hooks/useNavigation";
+import {usePetDetails} from "./hooks/usePetQuery";
+import {usePetForm} from "./hooks/usePetForm";
 
 const GENDER_TYPE = ["남아", "여아"];
 
@@ -32,89 +29,45 @@ const Rules = {
     weight: {
         required: "\"몸무게\"를 입력해주세요.",
         pattern: {
-            value: /^[0-9]*$/,
+            value: /^[0-9]*(.[0-9]*)?$/,
             message: "숫자만 입력 가능합니다."
         }
     },
 }
 
 const AddPet = () => {
-    const navigation =
-        useNavigation<StackNavigationProp<RootStackParamList["PetManagement"], "PetType">>();
-    const route = useRoute<RouteProp<RootStackParamList["PetManagement"], "AddPet">>(),
-        {breed, petType} = route.params;
+    const navigation = useNavigation<StackNavigationProp<RootStackParamList["PetManagement"], "PetType">>();
+    // navigation param
+    const {petId} = useNavigationParams<"PetManagement", "AddPet">();
+    const {submit, initFormValues, clearValue} = usePetForm(() => navigation.navigate(StackName.PetManagement.Home), petId);
 
-    const methods = useForm();
-
-    const handleClearTrailing = (filedName : string) => {
-        methods.setValue(filedName , "")
-    }
-
-    const breedList = useBreedList(petType);
-
-    const {mutate} = useMutation({
-        mutationFn: async (data: IPetRequest) => {
-            return PetService.post.addPet(data);
-        },
-        onSuccess: () => {
-            navigation.navigate(StackName.PetManagement.Home);
-        },
-        onError: (error, variables) => {
-            // TODO 응답 실패에 대한 UI 혹은 Toast 알림 추가
-            console.error(error, variables);
-        }
-    })
-
+    // 펫 정보 수정이라면, petId로 펫 정보 불러와서 필드 값 업데이트
+    const petDetails = usePetDetails(petId);
     useEffect(() => {
-        methods.setValue("breed", route.params?.breed);
-    }, [route.params?.breed]);
+        petDetails && initFormValues(petDetails);
+    }, [petDetails]);
 
     return (
         <View style={styles.container}>
-            <HeaderNavigation
-                middletitle="펫 추가"
-                hasBackButton={true}
-                onPressBackButton={() => {
-                    navigation.navigate(StackName.PetManagement.Home);
-                }}
-            />
+            <HeaderNavigation middletitle="펫 추가" hasBackButton={true} onPressBackButton={() => navigation.pop()}/>
             <ScrollView style={styles.horizontalContainer}>
                 <PetImagePicker/>
-                {/* 합성 컴포넌트 패턴 */}
                 <View style={{gap: 20, paddingVertical : 20}}>
-                    <CustomForm methods={methods}>
-                        <CustomForm.Input name="name"
-                                          label={"반려동물 이름"}
-                                          placeholder={"반려동물의 이름을 입력해주세요"}
-                                          trailingIcon={<ReviseIcon/>}
-                                          onPressTrailingIcon={() => handleClearTrailing("name")}
-                                          rules={Rules.name}
-                        />
-                        <CustomForm.Input name="breed"
-                                          label={"품종"}
-                                          editable={false}
-                                          defaultValue={breed}
-                                          style={{color: Colors.Black} as StyleProp<ViewStyle>}
-                                          trailingIcon={<Title text={"수정"} />}
-                                          onPressTrailingIcon={() => navigation.push(ScreenName.BreedType, {petType : 0, isEdit : true})}
-                        />
-                        <CustomForm.ToggleButtonGroup name={"gender"} label={"성별"} buttonNames={GENDER_TYPE}
-                                                      defaultValue={0}/>
-                        <CustomForm.DatePicker name="birthday" label={"생년월일"} rules={Rules.date}/>
-                        <CustomForm.Input name="weight" label={"몸무게"} placeholder={"몸무게를 입력해주세요"}
-                                          trailingIcon={<Text>Kg</Text>} rules={Rules.weight}
-                        />
-                        <CustomForm.SubmitButton text={"제출"} onPress={() => {
-                            mutate({
-                                breedId: breedList.filter(breedInfo => breedInfo.name === breed)[0].id,
-                                imageId: 1,
-                                name: methods.getValues("name") || "뽀삐",
-                                gender: methods.getValues("gender"),
-                                birthday: formatToYYYYMMDD(methods.getValues("birthday")),
-                                weight: Number(methods.getValues("weight"))
-                            });
-                        }}/>
-                    </CustomForm>
+                    <CustomForm.Input name="name" label={"반려동물 이름"}
+                                      placeholder={"반려동물의 이름을 입력해주세요"}
+                                      trailingIcon={<ReviseIcon/>}
+                                      onPressTrailingIcon={() => clearValue("name")}
+                                      rules={Rules.name}/>
+                    <CustomForm.Input name="breed" label={"품종"} editable={false}
+                                      style={{color: Colors.Black} as StyleProp<ViewStyle>}
+                                      trailingIcon={<Title text={"수정"}/>}
+                                      onPressTrailingIcon={() => navigation.pop()}/>
+                    <CustomForm.ToggleButtonGroup name={"gender"} label={"성별"} buttonNames={GENDER_TYPE}
+                                                  defaultValue={0}/>
+                    <CustomForm.DatePicker name="birthday" label={"생년월일"} rules={Rules.date}/>
+                    <CustomForm.Input name="weight" label={"몸무게"} placeholder={"몸무게를 입력해주세요"}
+                                      trailingIcon={<Text>Kg</Text>} rules={Rules.weight}/>
+                    <CustomForm.SubmitButton text={"제출"} onPress={submit}/>
                 </View>
             </ScrollView>
         </View>

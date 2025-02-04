@@ -14,7 +14,7 @@ export interface ISpecies {
     name : string;
 }
 
-export interface IPetRequest {
+export interface IPetResponse {
     breedId : number;
     imageId : number;
     name : string;
@@ -22,3 +22,5 @@ export interface IPetRequest {
     birthday : string;
     weight : number;
 }
+
+export type IPetDetails =  Omit<IPetResponse,"breedId"> & {breed : IBreed};
