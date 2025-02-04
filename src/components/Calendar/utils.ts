@@ -25,6 +25,11 @@ const convertCalendarDateToKorean = ({year, month, day}: DateData) => {
     return `${year}년 ${month}월 ${day}일`;
 }
 
+const convertYYYYMMDDToKorean = (yyyymmdd : string) => {
+    const [yyyy,mm,dd] = yyyymmdd.split("-").map(token => Number(token));
+    return convertCalendarDateToKorean({ year : yyyy, month : mm, day: dd} as DateData);
+}
+
 /**
  * @desc YYYY-MM-DD 형태로 날짜를 변환해주는 유틸로, 필요에 따라 여러 day 형태를 처리하는 코드 추가하여 포맷에 맞게 반환하도록 구현 필요
  * @param day 다양한 날짜 형태
@@ -49,6 +54,7 @@ const getDayOfWeek = (dateString: string): DayOfWeek => {
 
 export {
     convertCalendarDateToKorean,
+    convertYYYYMMDDToKorean,
     getDayOfWeek,
     formatToYYYYMMDD
 }
