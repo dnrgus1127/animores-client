@@ -30,7 +30,7 @@ export const usePetForm = (onSuccess: () => void, petId?: number) => {
             birthday: formatToYYYYMMDD(form.getValues("birthday")),
             weight: Number(form.getValues("weight"))
         })
-    }, [form])
+    }, [form, breedList])
 
     const initFormValues = (petDetails: IPetDetails) => {
         form.setValue("name", petDetails.name);
