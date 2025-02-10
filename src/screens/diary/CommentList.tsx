@@ -1,297 +1,95 @@
-import React, { useState } from 'react';
 import {
   useMutation,
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
+import React from 'react';
 import {
-  Modal,
-  View,
-  Text,
-  StyleSheet,
-  Animated,
-  Pressable,
-  Image, 
-  TextInput,
   Dimensions,
-  TouchableOpacity,
+  Image,
+  Modal,
+  Pressable,
   ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View
 } from 'react-native';
+import Animated from 'react-native-reanimated';
+import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Toast from "react-native-toast-message";
-import { PanGestureHandler, State } from 'react-native-gesture-handler';
+import { useRecoilValue } from "recoil";
+import Title from "../../components/text/Title";
+import { DiaryModel } from "../../model/DiaryModel";
+import { CurrentProfileAtom } from "../../recoil/AuthAtom";
 import { DiaryService } from "../../service/DiaryService";
 import { QueryKey } from "../../statics/constants/Querykey";
 import { Colors } from "../../styles/Colors";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useController, Controller, Control, useForm } from "react-hook-form";
-import InputBox from "../../components/Input/InputBox";
-import Title from "../../components/text/Title";
 import AddComment from "./AddComment";
-import { useRecoilValue } from "recoil";
-import { CurrentProfileAtom } from "../../recoil/AuthAtom";
 
 // icon
-import { User } from "../../assets/svg";
+import { useAnimatedStyle, useSharedValue, withTiming, withSpring } from "react-native-reanimated";
 import { IconTrash } from "../../assets/icons";
+import { User } from "../../assets/svg";
+import { Easing } from "react-native-reanimated";
 
 export interface CommentProps {
   visible: boolean;
-  setIsVisibleComment: () => void;
-  commentDiaryId: string;
+  setIsVisibleComment: (isVisibleComment: boolean) => void;
+  commentDiaryId: number;
   isComment: boolean;
   commentProfileId: number;
 }
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
+const HIDDEN_MENU_WIDTH = 65;
+const TIMING_DURATION = 500;
+const baseUrl = process.env.IMAGE_BASE_URL;
 
 const CommentList = (props: CommentProps) => {
   const { visible, setIsVisibleComment, commentDiaryId, isComment, commentProfileId } = props;
-  const baseUrl = "https://animores-image.s3.ap-northeast-2.amazonaws.com";
-  const queryClient = useQueryClient();
-  
-  const currentProfile = useRecoilValue(CurrentProfileAtom);
-
-  const [deletedDiaryId, setDeletedDiaryId] = useState<number | null>(null);  //삭제 diary Id
 
   //(댓글 클릭 시) 댓글 불러오기
   const { data: commentList, refetch } = useQuery({
     queryKey: [QueryKey.COMMENT_LIST, commentDiaryId],
     queryFn: () => DiaryService.diary.commentList(commentDiaryId, commentProfileId, 1, 15),
-    option: {
-      enabled: !!commentDiaryId,
-    }
+    enabled: !!commentDiaryId,
   });
 
-  //댓글 삭제
-  const { mutate } = useMutation(
-    ({ commentId, profileId }: { commentId: number, profileId: number }) =>
-      DiaryService.diary.commentDelete(commentId, profileId),
-    {
-      onSuccess: async (data) => {
-        if (data && data.status === 200) {
-          Toast.show({
-            type: "success",
-            text1: "삭제되었습니다.",
-          });
-
-          setIsVisibleComment(false);
-          await queryClient.invalidateQueries([QueryKey.COMMENT_LIST]);
-          //일지 목록 쿼리를 무효화함
-        }
-      },
-      onError: (error) => {
-        console.error("Delete error:", error);
-      },
-    }
-  );
-
-  const comments = commentList?.data?.comments || [];
-  
-  const gestures = comments.reduce((acc, item) => {
-    acc[item.commentId] = new Animated.Value(0);
-    return acc;
-  }, {});
-
-  const CommentListInner = () => {
-    const [visibleItem, setVisibleItem] = useState(null);
-
-    const resetAllGestures = (exceptId) => {
-      Object.keys(gestures).forEach((key) => {
-        if (parseInt(key) !== exceptId) {
-          Animated.spring(gestures[key], {
-            toValue: 0,
-            useNativeDriver: true,
-          }).start();
-        }
-      });
-    };
-
-    const handleGestureEvent = (id) => Animated.event(
-      [{ nativeEvent: { translationX: gestures[id] } }],
-      { useNativeDriver: true }
-    );
-
-    const handleGestureStateChange = (id) => (event) => {
-      if (event.nativeEvent.state === State.END) {
-        const { translationX } = event.nativeEvent;
-
-        if (Math.abs(translationX) > 20) {
-          // One of the content has been swiped - reset others
-          resetAllGestures(id);
-        }
-
-        if (translationX > 50) {
-          // Swipe Right - Move modal content right
-          animateSwipe(id, 0);
-        } else if (translationX < -50) {
-          // Swipe Left - Move modal content left
-          animateSwipe(id, -65);
-        } else {
-          resetPosition(id);
-        }
-      }
-    }
-
-    const animateSwipe = (id, toValue) => {
-      const others = comments.filter((el, index) => { 
-          el.id !== visibleItem
-      });
-      console.log(others.map((el) => el.id));
-      Animated.spring(gestures[id], {
-        toValue,
-        useNativeDriver: true,
-      }).start(() => {
-        // Reset the swipe animation after the effect
-        //resetPosition(id);
-      });
-    };
-
-    const resetPosition = (id) => {
-      Animated.spring(gestures[id], {
-        toValue: 0,
-        useNativeDriver: true,
-      }).start();
-    };
-
-    // 댓글 작성된 시간
-    function timeAgo(isoDate) {
-      const now = new Date();
-      const past = new Date(isoDate);
-      
-      past.setHours(past.getHours() + 9);// 9시간 빼기
-      const diff = now - past; // 밀리초 차이
-
-      const seconds = Math.floor(diff / 1000);
-      const minutes = Math.floor(seconds / 60);
-      const hours = Math.floor(minutes / 60);
-      const days = Math.floor(hours / 24);
-
-      if (seconds < 60) return `${seconds}초 전`;
-      if (minutes < 60) return `${minutes}분 전`;
-      if (hours < 24) return `${hours}시간 전`;
-      return `${days}일 전`;
-    }
-
-    // 댓글 삭제
-    const handleDelete = async (commentId: number, profileId: number) => {
-      console.log(commentId, profileId);
-      if (commentId !== null && profileId !== null) {
-        mutate({ commentId: commentId, profileId: profileId });
-      } else {
-        console.log('diary deleted error')
-      }
-    };
-
-    // 댓글 상단 라인
-    const Separator = () => {
-      return (
-          <View style={{width: 24, height: 1, backgroundColor: '#fff', marginVertical: 15}}/>
-      );
-    }
-    
-    return (
-      <View>
-        <View 
-          style={{ backgroundColor: "#fff", height: 530, borderTopLeftRadius: 20, borderTopRightRadius: 20, paddingBottom: 30, }}
-        >
-          <View style={styles.footerTopLine} />
-
-          <Title
-              text={"댓글"}
-              fontSize={16}
-              style={{ textAlign: "center", marginTop: 10, marginBottom: 10 }}
-          />
-
-          <ScrollView contentContainerStyle={styles.scrollContainer}>
-            {isComment ? (
-              comments.map(item => (
-                <View style={styles.cardContainer}>
-                  <PanGestureHandler
-                  key={item.commentId}
-                  onGestureEvent={handleGestureEvent(item.commentId)}
-                  onHandlerStateChange={handleGestureStateChange(item.commentId)}
-                  >
-                    <Animated.View
-                      style={[
-                      styles.itemContainer,
-                      { transform: [{ translateX: gestures[item.commentId] }] }, // Apply the swipe effect
-                      ]}
-                    >
-                      <View style={styles.commentContainer}>
-                          {item.imageUrl !== null ? (
-                            <Image
-                                source={{ uri: `${baseUrl}/${item.imageUrl}` }}
-                                style={styles.profileImage}
-                            />
-                          ) : (
-                            <User />
-                          )}
-                          <View style={styles.itemContent}>
-                            <View style={{ flexDirection: "row" }}>
-                              <Title
-                                text={item.name}
-                                fontSize={14}
-                                fontWeight="bold"
-                                color="#000000"
-                              />
-                              <Title
-                                text={timeAgo(item.createdAt)}
-                                fontSize={12}
-                                color={Colors.AEAEAE}
-                                style={{ marginLeft: 12 }}
-                              />
-                            </View>
-                            <Title
-                              text={item.content}
-                              fontSize={14}
-                              style={{ marginTop: 8 }}
-                            />
-                          </View>
-                          <Pressable 
-                            onPress={() => console.log('11')}
-                            style={{ marginLeft: 12, alignSelf: "flex-end" }}
-                          >
-                            <Title
-                              text={"답글 달기"}
-                              fontSize={14}
-                              color={Colors.AEAEAE}
-                            />
-                          </Pressable>
-                      </View>
-                    </Animated.View>
-                  </PanGestureHandler>
-
-                  <View style={styles.hidden_card}>
-                    {/* <Pressable onPress={() => console.log('11')}>
-                      <Text style={styles.hiddenMenuText}>수정</Text>
-                    </Pressable>
-                    <Separator /> */}
-                    <Pressable onPress={() => handleDelete(item.commentId, currentProfile.id)} style={styles.hiddenButton}>
-                      <IconTrash />
-                    </Pressable>
-                  </View>
-                </View>
-              ))
-            ) : null}
-          </ScrollView>
-
-          {/* 댓글 입력창 */}
-          <AddComment commentDiaryId={commentDiaryId} refetch={refetch} />
-        </View>
-      </View>
-    )
-  }
+  const comments: DiaryModel.IDiaryCommentModel[] = commentList?.data?.comments || [];
 
   return (
     <View>
-      <Modal        
+      <Modal
         transparent={true}
         visible={visible}
         animationType="fade"
       >
         <View style={styles.modalOverlay}>
           <TouchableOpacity onPress={() => setIsVisibleComment(false)} style={{ flex: 1 }} />
-          <CommentListInner />
+          <View>
+            <View
+              style={{ backgroundColor: "#fff", height: 530, borderTopLeftRadius: 20, borderTopRightRadius: 20, paddingBottom: 30, }}
+            >
+              <View style={styles.footerTopLine} />
+
+              <Title
+                text={"댓글"}
+                fontSize={16}
+                style={{ textAlign: "center", marginTop: 10, marginBottom: 10 }}
+              />
+
+              <ScrollView>
+                  {isComment ?
+                    comments.map(item => (
+                      <CommentBar item={item} setIsVisibleComment={setIsVisibleComment}/>
+                    )
+                  ) : null}
+              </ScrollView>
+
+              {/* 댓글 입력창 */}
+              <AddComment commentDiaryId={commentDiaryId} refetch={refetch} />
+            </View>
+          </View>
         </View>
         <Toast />
       </Modal>
@@ -394,5 +192,163 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+
+// 댓글 상단 라인
+const Separator = () => {
+  return (
+    <View style={{ width: 24, height: 1, backgroundColor: '#fff', marginVertical: 15 }} />
+  );
+}
+
+function timeAgo(isoDate: string) {
+  const now = new Date().getTime();
+  const past = new Date(isoDate);
+  
+  past.setHours(past.getHours() + 9);
+  const diff = now - past.getTime();
+
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (seconds < 60) return `${seconds}초 전`;
+  if (minutes < 60) return `${minutes}분 전`;
+  if (hours < 24) return `${hours}시간 전`;
+  return `${days}일 전`;
+}
+
+const CommentBar = ({item, setIsVisibleComment} : {item: DiaryModel.IDiaryCommentModel, setIsVisibleComment: (isVisibleComment: boolean) => void}) => {
+  const queryClient = useQueryClient();
+  const currentProfile = useRecoilValue(CurrentProfileAtom);
+  const xOffset = useSharedValue(0);
+  
+  const pan = Gesture.Pan()
+    .onUpdate((e) => {
+      xOffset.value = Math.max(-HIDDEN_MENU_WIDTH, Math.min(0, e.translationX));
+    })
+    .onEnd((e) => {
+      const velocity = e.velocityX;  // 제스처의 속도
+      
+      if (xOffset.value < -HIDDEN_MENU_WIDTH / 2) {
+        // 왼쪽으로 스와이프
+        xOffset.value = withTiming(-HIDDEN_MENU_WIDTH, {
+          duration: TIMING_DURATION,
+          easing: Easing.bezier(0.25, 0.1, 0.25, 1),  // 부드러운 이징
+        });
+      } else {
+        // 원위치로 돌아가기
+        xOffset.value = withSpring(0, {
+          velocity: velocity,        // 현재 속도 반영
+          damping: 15,              // 감쇠
+          stiffness: 150,           // 강성
+          mass: 0.5                 // 질량
+        });
+      }
+    });
+
+  const rStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: xOffset.value }],
+    };
+  });
+
+    //댓글 삭제
+    const { mutate } = useMutation(
+      ({ commentId, profileId }: { commentId: number, profileId: number }) =>
+        DiaryService.diary.commentDelete(commentId, profileId),
+      {
+        onSuccess: async (data) => {
+          if (data && data.status === 200) {
+            Toast.show({
+              type: "success",
+              text1: "삭제되었습니다.",
+            });
+  
+            setIsVisibleComment(false);
+            await queryClient.invalidateQueries([QueryKey.COMMENT_LIST]);
+            //일지 목록 쿼리를 무효화함
+          }
+        },
+        onError: (error) => {
+          console.error("Delete error:", error);
+        },
+      }
+    );
+    // 댓글 삭제
+    const handleDelete = async (commentId: number, profileId: number) => {
+      console.log(commentId, profileId);
+      if (commentId !== null && profileId !== null) {
+        mutate({ commentId: commentId, profileId: profileId });
+      } else {
+        console.log('diary deleted error')
+      }
+    };
+
+  return (
+    <GestureHandlerRootView>
+      <View style={styles.cardContainer}>
+        <GestureDetector gesture={pan}>
+          <Animated.View style={[styles.itemContainer, rStyle]}>
+            <View style={styles.commentContainer}>
+              {item.imageUrl !== null ? (
+                <Image
+                  source={{ uri: `${baseUrl}/${item.imageUrl}` }}
+                  style={styles.profileImage}
+                />
+              ) : (
+                <User />
+              )}
+              <View style={styles.itemContent}>
+                <View style={{ flexDirection: "row" }}>
+                  <Title
+                    text={item.name}
+                    fontSize={14}
+                    fontWeight="bold"
+                    color="#000000"
+                  />
+                  <Title
+                    text={timeAgo(item.createdAt)}
+                    fontSize={12}
+                    color={Colors.AEAEAE}
+                    style={{ marginLeft: 12 }}
+                  />
+                </View>
+                <Title
+                  text={item.content}
+                  fontSize={14}
+                  style={{ marginTop: 8 }}
+                />
+              </View>
+              <Pressable
+                onPress={() => console.log('11')}
+                style={{ marginLeft: 12, alignSelf: "flex-end" }}
+              >
+                <Title
+                  text={"답글 달기"}
+                  fontSize={14}
+                  color={Colors.AEAEAE}
+                />
+              </Pressable>
+            </View>
+          </Animated.View>
+        </GestureDetector>
+
+        <View style={styles.hidden_card}>
+          {/* <Pressable onPress={() => console.log('11')}>
+                        <Text style={styles.hiddenMenuText}>수정</Text>
+                      </Pressable>
+                      <Separator /> */}
+          <Pressable
+            onPress={() => handleDelete(item.commentId, currentProfile?.id ?? -1)}
+            style={styles.hiddenButton}
+          >
+            <IconTrash />
+          </Pressable>
+        </View>
+      </View>
+    </GestureHandlerRootView>
+  )
+};
 
 export default CommentList;

@@ -6,7 +6,7 @@ export const UserEmailAtom = atom<string>({
     default: ''
 })
 
-export const CurrentProfileAtom = atom<IProfile[]>({
+export const CurrentProfileAtom = atom<IProfile | null>({
     key: 'CurrentProfileAtom',
-    default: []
+    default: null
 })

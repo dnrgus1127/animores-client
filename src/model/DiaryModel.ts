@@ -19,4 +19,14 @@ export namespace DiaryModel {
 		profileId: number
 		likeYn: boolean
 	}
+
+	export interface IDiaryCommentModel {
+		commentId: number
+		content: string
+		createdAt: string
+		profileId: number
+		name: string
+		imageUrl: string
+		replyCount: number
+	}
 }

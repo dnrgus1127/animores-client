@@ -11,12 +11,13 @@ const instance = axios.create({
 	headers: {
 		'Content-Type': 'application/json',
 	},
-	baseURL: `${EXPO_PUBLIC_BASE_URL}`,
+	baseURL: EXPO_PUBLIC_BASE_URL,
 } as AxiosRequestConfig);
 
 //요청 인터셉터
 instance.interceptors.request.use(
 	async (config) => {
+		
 		const accessToken = await AsyncStorage.getItem('accessToken');
 		if (accessToken) {
 			config.headers.Authorization = `Bearer ${accessToken}`;
