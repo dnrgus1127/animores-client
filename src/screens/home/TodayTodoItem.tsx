@@ -4,16 +4,36 @@ import { Colors } from "../../styles/Colors";
 import { TodosModel } from "../../model/TodosModel";
 
 const TodayTodoItem = ({item, index}: {item: TodosModel.ITodayListModel, index: number}) => {
+
+  // AM 또는 PM 표기
+  function getAmPm(time) {
+    chars = time.split(':');
+    let hour = 0;
+    hour = chars[0]
+    return hour < 12 ? 'AM' : 'PM';
+  }
+  
+  // 24시간 형식을 12시간 형식으로 변환
+  function convert12hourFormat(time) {
+    chars = time.split(':');
+    let convertHour = 0;
+    if (chars > 12) {
+      convertHour = chars % 12 || 12;
+    } else {
+      convertHour = chars[0]
+    }
+    return `${convertHour}:${chars[1]}`;
+  }
+
   return (
     <View style={styles.todayTodo}>
       <View style={{ flexDirection: "row", alignItems: "center"}}>
         <View style={{ flexDirection: "row", alignItems: "baseline", width: "45%" }}>
           <Text style={{ fontSize: 15 }}>
-            {/* {item.at} */}
-            AM
+            {getAmPm(item.time)}
           </Text>
           <Text style={{ fontSize: 30, fontWeight: "bold" }}>
-            {item.time}
+            {convert12hourFormat(item.time)}
           </Text>
         </View>
         <Text style={{ fontSize: 20, marginLeft: 20, width: "45%", marginLeft: "10%" }}>
@@ -29,7 +49,7 @@ const TodayTodoItem = ({item, index}: {item: TodosModel.ITodayListModel, index: 
         ))}
         </View>
         <Text numberOfLines={2} ellipsizeMode="tail" style={{ width: "45%", marginLeft: "10%", color: "#AEAEAE"}}>
-          {/* {item.discription} */}
+          {/* {item.content} */}
           집 앞 공원 한바퀴 돌고 오기
         </Text>
       </View>

@@ -88,7 +88,7 @@ const HomeScreen = () => {
                 }}>
           <Image 
           style={styles.profile}
-          source={{ uri: `${baseUrl}/${currentProfile.imageUrl}` }}
+          source={{ uri: `${baseUrl}/${currentProfile?.imageUrl}` }}
            />
            </Pressable>
         </View>

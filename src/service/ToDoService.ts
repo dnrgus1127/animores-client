@@ -12,9 +12,9 @@ export namespace ToDoService {
                 console.error('ToDoService.todo.create:', error);
                 if	(axios.isAxiosError(error)) {
 					if (error.response) {
-						console.error('ProfileService.Profile.create:', error.response.data);
+						console.error('ToDoService.todo.create:', error.response.data);
 					} else {
-						console.error('ProfileService.Profile.create:', error.message);
+						console.error('ToDoService.todo.create:', error.message);
 					}
 				}
                 throw error;
@@ -37,9 +37,9 @@ export namespace ToDoService {
                 console.error('ToDoService.todo.list:', error);
                 if	(axios.isAxiosError(error)) {
 					if (error.response) {
-						console.error('ProfileService.Profile.list:', error.response.data);
+						console.error('ToDoService.todo.list:', error.response.data);
 					} else {
-						console.error('ProfileService.Profile.list:', error.message);
+						console.error('ToDoService.todo.list:', error.message);
 					}
 				}
             }
@@ -62,7 +62,7 @@ export namespace ToDoService {
                 console.error('ToDoService.todo.check:', error);
                 if	(axios.isAxiosError(error)) {
                     if (error.response) {
-                        console.error('ProfileService.Profile.check:', error.response.data);
+                        console.error('ToDoService.todo.check:', error.response.data);
                     }
                 }
             }
@@ -75,7 +75,7 @@ export namespace ToDoService {
                 console.error('ToDoService.todo.delete:', error);
                 if	(axios.isAxiosError(error)) {
                     if (error.response) {
-                        console.error('ProfileService.Profile.delete:', error.response.data);
+                        console.error('ToDoService.todo.delete:', error.response.data);
                     }
                 }
             }
