@@ -27,7 +27,7 @@ const ProfilesScreen = () => {
   const [currentProfile, setCurrentProfile] = useRecoilState(CurrentProfileAtom);
 
   const { data: profile } = useQuery({
-    queryKey: [QueryKey.PROFILE],
+    queryKey: [QueryKey.PROFILE_LIST],
     queryFn: () => ProfileService.profile.list(),
   });
 

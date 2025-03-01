@@ -110,27 +110,6 @@ const AddComment = (props: CommentProps) => {
 export default AddComment;
 
 const styles = StyleSheet.create({
-  bottomModalContainer: {
-    marginTop: 15,
-  },
-  footerTopLine: {
-    backgroundColor: Colors.Gray838383,
-    height: 1.5,
-    width: 50,
-    alignSelf: "center",
-  },
-  commentContainer: {
-    marginHorizontal: 20,
-    flexDirection: "row",
-    marginTop: 20,
-  },
-  comment: {
-    backgroundColor: Colors.F4F4F4,
-    marginLeft: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    borderRadius: 10,
-  },
   submitButton: {
     height: 45,
     justifyContent: "center",
@@ -144,12 +123,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 15,
     backgroundColor: Colors.AEAEAE,
-  },
-  profileImage: {
-      alignSelf: "center",
-      width: 50,
-      height: 50,
-      borderRadius: 50
   },
   inputBox: {
     //paddingVertical: 14,
