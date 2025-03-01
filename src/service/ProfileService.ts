@@ -14,6 +14,22 @@ export namespace ProfileService {
 				return { data: null, status: error };
 			}
 		},
+		//회원 닉네임 변경...
+		updateNickname: async (formData: FormData) => {
+			console.log(formData);
+			try {
+				const response = await AxiosContext.put(`/api/v1/account/update-nickname`, formData, {
+					headers: {
+						'Content-Type': 'application/json'
+					},
+				});
+				return { data: response.data, status: response.status };
+			} catch (error) {
+				console.error('ProfileService.profile.updateNickname:', error);
+				return { data: null, status: error || error };
+			}
+		},
+
 		//프로필 목록 조회
 		list: async () => {
 			try {
