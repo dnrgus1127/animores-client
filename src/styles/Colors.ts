@@ -13,5 +13,6 @@ export enum Colors {
 	FF4040 = '#FF4040',
 	Pink = '#FB3F7E',
 	SoftCoral = '#FEEAED',
-	Warning = '#fda38a'
+	Warning = '#fda38a',
+	DarkGrey = '#3c3c3c',
 }

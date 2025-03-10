@@ -15,6 +15,7 @@ import PetType from "./PetType";
 import {FormProvider, useForm} from "react-hook-form";
 import {useResetFormOnScreenFocus} from "./hooks/useNavigationFormHooks";
 import {usePetQuery, useProfileData} from "./hooks/usePetQuery";
+import {PetInfoScreen} from "./PetInfoScreen";
 
 const PetStack = createStackNavigator();
 
@@ -32,6 +33,7 @@ export const PetManagementScreen = () => {
             <PetStack.Screen name={StackName.PetManagement.BreedType} component={BreedType}/>
             <PetStack.Screen name={StackName.PetManagement.PetType} component={PetType}/>
             <PetStack.Screen name={StackName.PetManagement.AddPet} component={AddPet}/>
+            <PetStack.Screen name={StackName.PetManagement.PetInfo} component={PetInfoScreen}/>
         </PetStack.Navigator>
     </FormProvider>
 }
@@ -61,7 +63,7 @@ const PetManagementHome = () => {
                         deletePet(petId);
                         refetch();
                     }}
-                    onPress={(petId: number) => navigation.push(StackName.PetManagement.AddPet, {petId: petId})}
+                    onPress={(petId: number) => navigation.push(StackName.PetManagement.PetInfo, {petId: petId})}
                 />
             </View>
         </SafeAreaView>

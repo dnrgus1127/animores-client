@@ -42,7 +42,8 @@ const AddPet = () => {
     const {submit, initFormValues, clearValue} = usePetForm(() => navigation.navigate(StackName.PetManagement.Home), petId);
 
     // 펫 정보 수정이라면, petId로 펫 정보 불러와서 필드 값 업데이트
-    const petDetails = usePetDetails(petId);
+    const {data : petDetails} = petId ? usePetDetails(petId) : {data : null};
+    
     useEffect(() => {
         petDetails && initFormValues(petDetails);
     }, [petDetails]);

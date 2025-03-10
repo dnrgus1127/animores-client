@@ -3,10 +3,8 @@ import {IBreed, IPet, IPetDetails} from "../../../../../types/PetTypes";
 import {QueryKey} from "../../../../statics/constants/Querykey";
 import {PetService} from "../../../../service/PetService";
 
-export const usePetDetails = (petId?: number) => {
-    if (!petId) return;
-    const {data} = useQuery<IPetDetails>([QueryKey.PET, petId], () => PetService.get.pet(petId))
-    return data;
+export const usePetDetails = (petId: number) => {
+    return useQuery<IPetDetails>([QueryKey.PET, petId], () => PetService.get.pet(petId))
 }
 
 /**

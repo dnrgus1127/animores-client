@@ -52,9 +52,17 @@ const getDayOfWeek = (dateString: string): DayOfWeek => {
     return date.getDay() as DayOfWeek;
 }
 
+const daySinceBirth = (dateString: string) => {
+    const birth = new Date(dateString);
+    const today = new Date();
+    const diffTime = today.getTime() - birth.getTime();
+    return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+}
+
 export {
     convertCalendarDateToKorean,
     convertYYYYMMDDToKorean,
     getDayOfWeek,
-    formatToYYYYMMDD
+    formatToYYYYMMDD,
+    daySinceBirth
 }

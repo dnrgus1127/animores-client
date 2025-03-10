@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, {AxiosRequestConfig, isAxiosError} from 'axios';
 import { AuthService } from '../../service/AuthService';
 import {EXPO_PUBLIC_BASE_URL} from '@env';
 
@@ -33,6 +33,9 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
 	(response) => response,
 	async (error) => {
+		if (isAxiosError(error)) {
+			console.log(error.code);
+		}
 		const originRequest = error.config;
 		console.log('AxiosContext.interceptors.response:', error);
 		if (error.response.status === 401 && !originRequest._retry) {

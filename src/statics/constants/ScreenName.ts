@@ -39,6 +39,7 @@ export const StackName = {
         PetType: "PetType",
         BreedType : "BreedType",
         AddPet: "AddPet",
+		PetInfo: "PetInfo",
     } as const
 } as const;
 
