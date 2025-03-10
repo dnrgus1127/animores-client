@@ -45,7 +45,7 @@ const HomeScreen = () => {
   const currentProfile = useRecoilValue(CurrentProfileAtom);
 
   const { data: todayToDo } = useQuery({
-    queryKey: [QueryKey.PROFILE_LIST],
+    queryKey: [QueryKey.TODO_LIST],
     queryFn: () => ToDoService.todo.today(1, 5),
   });
 
