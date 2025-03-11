@@ -26,4 +26,5 @@ type PetManagementParamList = {
 	[StackName.PetManagement.PetType]: undefined;
     [StackName.PetManagement.BreedType]: undefined;
 	[StackName.PetManagement.AddPet]: { petId?: number };
+	[StackName.PetManagement.PetInfo] : { petId: number };
 }

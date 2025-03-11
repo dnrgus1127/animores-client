@@ -1,19 +1,19 @@
 import {useQuery, useMutation} from "@tanstack/react-query";
-import {IBreed, IPet, IPetDetails} from "../../../../../types/PetTypes";
+import {IBreed, IPet, IPetDetails, IPetResponse} from "../../../../../types/PetTypes";
 import {QueryKey} from "../../../../statics/constants/Querykey";
 import {PetService} from "../../../../service/PetService";
 
-export const usePetDetails = (petId: number) => {
-    return useQuery<IPetDetails>([QueryKey.PET, petId], () => PetService.get.pet(petId))
+export const usePet = (petId: number) => {
+    return useQuery<IPetResponse>([QueryKey.PET, petId], () => PetService.get.pet(petId))
 }
 
 /**
  * @desc 펫 품종 목록을 가져오는 커스텀 훅 (Tanstack Query Cache 이용)
- * @param petType
+ * @param speciesId
  */
-export function useBreedList(petType: number) {
-    const {data} = useQuery<IBreed[]>([QueryKey.BREED_LIST, petType], () => PetService.get.breedList(petType), {
-        enabled: !!petType,
+export function useBreedList(speciesId: number) {
+    const {data} = useQuery<IBreed[]>([QueryKey.BREED_LIST, speciesId], () => PetService.get.breedList(speciesId), {
+        enabled: !!speciesId,
         initialData: [],
     });
     return data;
@@ -22,7 +22,7 @@ export function useBreedList(petType: number) {
 export function useProfileData() {
     return useQuery<Array<IPet>, unknown, Array<IPet>>([QueryKey.PET_LIST],
         () => PetService.get.petList(),
-        {initialData: []}
+        {placeholderData: []}
     );
 }
 

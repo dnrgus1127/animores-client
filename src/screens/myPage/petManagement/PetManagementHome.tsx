@@ -1,6 +1,6 @@
-import {useNavigation} from "@react-navigation/native";
+import {useFocusEffect, useNavigation} from "@react-navigation/native";
 import {CardStyleInterpolators, createStackNavigator, StackNavigationProp} from "@react-navigation/stack";
-import React, {useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {Platform, StyleSheet, Text, View} from "react-native";
 import {SafeAreaView} from "react-native-safe-area-context";
 import Title from "../../../components/text/Title";
@@ -14,7 +14,7 @@ import AddPet from "./AddPet";
 import PetType from "./PetType";
 import {FormProvider, useForm} from "react-hook-form";
 import {useResetFormOnScreenFocus} from "./hooks/useNavigationFormHooks";
-import {usePetQuery, useProfileData} from "./hooks/usePetQuery";
+import {useProfileData} from "./hooks/usePetQuery";
 import {PetInfoScreen} from "./PetInfoScreen";
 
 const PetStack = createStackNavigator();
@@ -41,14 +41,21 @@ export const PetManagementScreen = () => {
 const PetManagementHome = () => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList["PetManagement"], "Home">>();
     const [isEdit, setIsEdit] = useState(false);
-    const {data: profileList, refetch} = useProfileData();
-    const {deletePet} = usePetQuery();
+    const {data: profileList, refetch, isSuccess} = useProfileData();
     useResetFormOnScreenFocus();
+
+    useFocusEffect(
+        useCallback(() => {
+            refetch();
+        }, [])
+    );
+
+    if (!isSuccess) return;
 
     return (
         <SafeAreaView style={styles.container}>
             <HeaderNavigation
-                middletitle="펫 관리" hasBackButton={true} rightTitle="편집"
+                middletitle="펫 관리" hasBackButton={true}
                 onPressBackButton={() => navigation.pop()}
                 onPressRightButton={() => setIsEdit(true)}
             />
@@ -59,10 +66,6 @@ const PetManagementHome = () => {
                     title={"펫 추가"}
                     profileData={profileList}
                     onAddProfile={() => navigation.push(StackName.PetManagement.PetType)}
-                    onDelete={(petId: number) => {
-                        deletePet(petId);
-                        refetch();
-                    }}
                     onPress={(petId: number) => navigation.push(StackName.PetManagement.PetInfo, {petId: petId})}
                 />
             </View>

@@ -1,7 +1,7 @@
 import {Dimensions, Image, Pressable, ScrollView, StyleSheet, Text, View} from "react-native";
-import React from "react";
+import React, {useEffect} from "react";
 import {useNavigationParams} from "../../../hooks/useNavigation";
-import {usePetDetails, usePetQuery} from "./hooks/usePetQuery";
+import {usePet, usePetQuery, useProfileData} from "./hooks/usePetQuery";
 import {useBreed} from "./hooks/useBreed";
 import {useNavigation} from "@react-navigation/native";
 import {StackNavigationProp} from "@react-navigation/stack";
@@ -23,10 +23,15 @@ const {width} = Dimensions.get("window");
 export function PetInfoScreen() {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList["PetManagement"], "PetInfo">>();
     const {petId} = useNavigationParams<"PetManagement", "PetInfo">();
-    const {data: petDetails, isSuccess} = usePetDetails(petId);
+    const {data: petData, isSuccess} = usePet(petId);
     const {getBreedName} = useBreed();
     const {deletePet} = usePetQuery();
     const [showDialog, toggleDialog] = useDialog();
+
+    const onSubmit = (petId: number) => {
+        deletePet(petId);
+        navigation.pop();
+    }
 
     if (!isSuccess) return;
 
@@ -58,16 +63,17 @@ export function PetInfoScreen() {
             }]}
                    source={asset.profile}></Image>
             <View style={styles.nameContainer}>
-                <Text style={styles.name}>{petDetails.name}</Text>
-                <Text style={styles.nameGender}>{petDetails.gender === 1 ? "군" : "양"}</Text>
+                <Text style={styles.name}>{petData.name}</Text>
+                <Text style={styles.nameGender}>{petData.gender === 0 ? "군" : "양"}</Text>
             </View>
             <View style={styles.petInfoContainer}>
-                <PetInfo title="품종" content={getBreedName(petDetails.breed.id)} subTitle="강아지"/>
-                <PetInfo title="몸무게" content={`${petDetails.weight}`} subTitle="정상 체중"/>
-                <PetInfo title="태어난지" content={`${daySinceBirth(petDetails.birthday)}일`}
-                         subTitle={convertYYYYMMDDToKorean(petDetails.birthday)}/>
+                <PetInfo title="품종" content={getBreedName(petData.breed.id)} subTitle={petData.species.name}/>
+                <PetInfo title="몸무게" content={`${petData.weight} Kg`} subTitle="정상 체중"/>
+                <PetInfo title="태어난지" content={`${daySinceBirth(petData.birthday)}일`}
+                         subTitle={convertYYYYMMDDToKorean(petData.birthday)}/>
             </View>
-            <Dialog visible={showDialog} title={"펫 정보 삭제"} description={"정말로 지우시겠습니까?"} onCancel={toggleDialog} onSubmit={() => deletePet(petId)}/>
+            <Dialog visible={showDialog} title={"펫 정보 삭제"} description={"정말로 지우시겠습니까?"} onCancel={toggleDialog}
+                    onSubmit={() => onSubmit(petId)}/>
         </ScrollView>
     </View>
 }

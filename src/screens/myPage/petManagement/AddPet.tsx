@@ -12,7 +12,7 @@ import {CustomForm} from "../../../components/form/Form";
 import {ReviseIcon} from "../../../assets/svg";
 import Title from "../../../components/text/Title";
 import {useNavigationParams} from "../../../hooks/useNavigation";
-import {usePetDetails} from "./hooks/usePetQuery";
+import {usePet} from "./hooks/usePetQuery";
 import {usePetForm} from "./hooks/usePetForm";
 
 const GENDER_TYPE = ["남아", "여아"];
@@ -42,7 +42,7 @@ const AddPet = () => {
     const {submit, initFormValues, clearValue} = usePetForm(() => navigation.navigate(StackName.PetManagement.Home), petId);
 
     // 펫 정보 수정이라면, petId로 펫 정보 불러와서 필드 값 업데이트
-    const {data : petDetails} = petId ? usePetDetails(petId) : {data : null};
+    const {data : petDetails} = petId ? usePet(petId) : {data : null};
     
     useEffect(() => {
         petDetails && initFormValues(petDetails);

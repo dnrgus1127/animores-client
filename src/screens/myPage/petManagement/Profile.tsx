@@ -20,7 +20,6 @@ export interface ProfileData {
 
 interface ProfileContainerProps {
     onAddProfile: () => void,
-    onDelete: (id: number) => void,
     onPress: (id: number) => void,
     title: string,
     profileData: Array<IPet>,
@@ -40,36 +39,21 @@ const ProfileContainerContext = createContext<number>(0);
  * @desc profile 이 필요한 profileData Array 를 전달하여 프로필 목록 표시
  */
 export const ProfileContainer: React.FC<ProfileContainerProps> = (props) => {
-    const {onAddProfile, title, profileData, isEdit, onPress, onDelete} = props;
+    const {onAddProfile, title, profileData, isEdit, onPress} = props;
     return <ProfileContainerContext.Provider value={2}>
         <View style={styles.container}>
             {!isEdit && <AddProfile onPress={onAddProfile} name={title}/>}
             {profileData.map((data, idx) => {
                 if (idx > 4) return;
                 return <Profile key={idx} index={idx} imageUrl={data.imageUrl} name={data.name}
-                                onPress={() => isEdit ? onDelete(data.id) : onPress(data.id)} isEdit={isEdit}/>
+                                onPress={() => onPress(data.id)} isEdit={isEdit}/>
             })}
         </View>
     </ProfileContainerContext.Provider>
 }
 
-export const Profile: React.FC<ProfileProps & { index: number }> = ({imageUrl, name, onPress, isEdit, index}) => {
+export const Profile: React.FC<ProfileProps & { index: number }> = ({imageUrl, name, onPress, index}) => {
     const translateX = useSharedValue(0);
-    const lineCount = useContext(ProfileContainerContext);
-
-    useEffect(() => {
-        if (!isEdit) return;
-        // 떨림 애니메이션: 좌우로 빠르게 반복
-        translateX.value = withDelay(100 * (index % (lineCount + 1)), withRepeat(
-            withSequence(withTiming(SHAKE_DEG, {duration: SHAKE_DURATION}), withTiming(0, {duration: SHAKE_DURATION}), withTiming(-SHAKE_DEG, {duration: SHAKE_DURATION})), // 오른쪽으로 이동
-            -1, // 무한 반복
-            true // 되돌아가는 애니메이션 포함,
-        ));
-
-        return () => {
-            translateX.value = 0;
-        }
-    }, [isEdit]);
 
     const animatedStyle = useAnimatedStyle(() => {
         return {
@@ -83,7 +67,6 @@ export const Profile: React.FC<ProfileProps & { index: number }> = ({imageUrl, n
         <Animated.View style={animatedStyle}>
             <Image style={[styles.image, {backgroundColor: Colors.Black}]}
                    source={{uri: `${IMAGE_BASE_URL}/${imageUrl}`}}/>
-            {isEdit && <DeleteIcon/>}
         </Animated.View>
         <Text style={styles.profileName}>{name}</Text>
     </Pressable>

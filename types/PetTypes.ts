@@ -14,13 +14,19 @@ export interface ISpecies {
     name : string;
 }
 
-export interface IPetResponse {
-    breedId : number;
-    imageId : number;
-    name : string;
-    gender : number;
-    birthday : string;
-    weight : number;
+export interface IPetDetails {
+    imageId: number;
+    name: string;
+    gender: number;
+    birthday: string;
+    weight: number;
 }
 
-export type IPetDetails =  Omit<IPetResponse,"breedId"> & {breed : IBreed};
+export interface IPetRequest extends IPetDetails {
+    breedId : number;
+}
+
+export interface IPetResponse extends IPetDetails {
+    breed: IBreed;
+    species: ISpecies;
+}

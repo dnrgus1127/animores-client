@@ -1,18 +1,19 @@
-import {useCallback, useMemo} from "react";
+import {useCallback, useState} from "react";
 import {useMutation} from "@tanstack/react-query";
-import {IPetDetails, IPetResponse} from "../../../../../types/PetTypes";
+import {IPetRequest, IPetResponse} from "../../../../../types/PetTypes";
 import {PetService} from "../../../../service/PetService";
 import {useBreedList, useProfileData} from "./usePetQuery";
 import {useFormContext} from "react-hook-form";
 import {convertYYYYMMDDToKorean, formatToYYYYMMDD} from "../../../../components/Calendar/utils";
 
 export const usePetForm = (onSuccess: () => void, petId?: number) => {
+    const [speciesId, setSpeciesId] = useState<number>(0);
     const {refetch} = useProfileData();
     const form = useFormContext();
-    const breedList = useBreedList(form.getValues("petSpecies"));
+    const breedList = useBreedList(speciesId);
 
     const {mutate} = useMutation({
-        mutationFn: async (data: IPetResponse) => {
+        mutationFn: async (data: IPetRequest) => {
             if (petId) return PetService.PUT.editPet(data, petId);
             return PetService.post.addPet(data);
         },
@@ -32,14 +33,14 @@ export const usePetForm = (onSuccess: () => void, petId?: number) => {
         })
     }, [form, breedList])
 
-    const initFormValues = (petDetails: IPetDetails) => {
-        form.setValue("name", petDetails.name);
-        form.setValue("birthday", convertYYYYMMDDToKorean(petDetails.birthday));
-        form.setValue("weight", `${petDetails.weight}`);
-        form.setValue("gender", petDetails.gender);
-        // 어떤 품종인지에 대한 정보가 필요함
-        form.setValue("petSpecies", 1);
-        form.setValue("breed", breedList.find((breed) => breed.id === petDetails.breed.id)?.name);
+
+    const initFormValues = (petData: IPetResponse) => {
+        form.setValue("name", petData.name);
+        form.setValue("birthday", convertYYYYMMDDToKorean(petData.birthday));
+        form.setValue("weight", `${petData.weight}`);
+        form.setValue("gender", petData.gender);
+        form.setValue("breed", petData.breed.name);
+        setSpeciesId(petData.species.id);
     }
 
     const clearValue = useCallback((filedName: string) => {
