@@ -21,8 +21,10 @@ const BreedType = () => {
 
     const onPressNextButton = () => {
         form.setValue("breed", keyword);
-        navigation.push(StackName.PetManagement.AddPet, {petId : 0});
+        navigation.push(StackName.PetManagement.AddPet, {});
     }
+
+    if (!breedList) return;
 
     return (
         <View style={styles.container}>

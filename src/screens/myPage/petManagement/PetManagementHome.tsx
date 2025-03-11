@@ -41,17 +41,10 @@ export const PetManagementScreen = () => {
 const PetManagementHome = () => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList["PetManagement"], "Home">>();
     const [isEdit, setIsEdit] = useState(false);
-    const {data: profileList, refetch, isSuccess} = useProfileData();
+    const {data: profileList, isSuccess} = useProfileData();
     useResetFormOnScreenFocus();
 
-    useFocusEffect(
-        useCallback(() => {
-            refetch();
-        }, [])
-    );
-
     if (!isSuccess) return;
-
     return (
         <SafeAreaView style={styles.container}>
             <HeaderNavigation

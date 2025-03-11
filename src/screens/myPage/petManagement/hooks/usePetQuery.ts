@@ -13,8 +13,8 @@ export const usePet = (petId: number) => {
  */
 export function useBreedList(speciesId: number) {
     const {data} = useQuery<IBreed[]>([QueryKey.BREED_LIST, speciesId], () => PetService.get.breedList(speciesId), {
-        enabled: !!speciesId,
-        initialData: [],
+        enabled: speciesId !== undefined,
+        placeholderData: [],
     });
     return data;
 }

@@ -17,6 +17,7 @@ import {Edit_SVG} from "../../../assets/svg/component/Edit";
 import {StackName} from "../../../statics/constants/ScreenName";
 import {Dialog} from "../../../components/Dialog";
 import {useDialog} from "../../../components/hooks/useDialog";
+import {usePetForm} from "./hooks/usePetForm";
 
 const {width} = Dimensions.get("window");
 
@@ -27,11 +28,24 @@ export function PetInfoScreen() {
     const {getBreedName} = useBreed();
     const {deletePet} = usePetQuery();
     const [showDialog, toggleDialog] = useDialog();
+    const {refetch} = useProfileData();
+    const {initFormValues} = usePetForm();
 
     const onSubmit = (petId: number) => {
+        toggleDialog();
         deletePet(petId);
         navigation.pop();
     }
+
+    useEffect(() => {
+        return () => {
+            refetch();
+        }
+    })
+
+    useEffect(() => {
+        isSuccess && initFormValues(petData)
+    }, [petData])
 
     if (!isSuccess) return;
 
@@ -72,7 +86,7 @@ export function PetInfoScreen() {
                 <PetInfo title="태어난지" content={`${daySinceBirth(petData.birthday)}일`}
                          subTitle={convertYYYYMMDDToKorean(petData.birthday)}/>
             </View>
-            <Dialog visible={showDialog} title={"펫 정보 삭제"} description={"정말로 지우시겠습니까?"} onCancel={toggleDialog}
+            <Dialog visible={showDialog} title={"펫 삭제"} description={"저장된 내용이 삭제됩니다."} onCancel={toggleDialog}
                     onSubmit={() => onSubmit(petId)}/>
         </ScrollView>
     </View>

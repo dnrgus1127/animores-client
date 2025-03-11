@@ -62,13 +62,13 @@ const AddPet = () => {
                     <CustomForm.Input name="breed" label={"품종"} editable={false}
                                       style={{color: Colors.Black} as StyleProp<ViewStyle>}
                                       trailingIcon={<Title text={"수정"}/>}
-                                      onPressTrailingIcon={() => navigation.pop()}/>
+                                      onPressTrailingIcon={() => navigation.navigate(StackName.PetManagement.BreedType)}/>
                     <CustomForm.ToggleButtonGroup name={"gender"} label={"성별"} buttonNames={GENDER_TYPE}
                                                   defaultValue={0}/>
                     <CustomForm.DatePicker name="birthday" label={"생년월일"} rules={Rules.date}/>
                     <CustomForm.Input name="weight" label={"몸무게"} placeholder={"몸무게를 입력해주세요"}
                                       trailingIcon={<Text>Kg</Text>} rules={Rules.weight}/>
-                    <CustomForm.SubmitButton text={"제출"} onPress={submit}/>
+                    <CustomForm.SubmitButton text={"제출"} onPress={() => submit()}/>
                 </View>
             </ScrollView>
         </View>
