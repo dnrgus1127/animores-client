@@ -1,38 +1,31 @@
-import { useMutation } from "@tanstack/react-query";
-import React, { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { Pressable, StyleSheet, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {useMutation} from "@tanstack/react-query";
+import React from "react";
+import {useForm} from "react-hook-form";
+import {Pressable, StyleSheet, View} from "react-native";
+import {SafeAreaView} from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
-import {
-  EmptyCircleIcon,
-  IconSnsApple,
-  IconSnsFacebook,
-  IconSnsKakao,
-  IconSnsNaver,
-} from "../../assets/svg";
+import {EmptyCircleIcon, IconSnsApple, IconSnsFacebook, IconSnsKakao, IconSnsNaver,} from "../../assets/svg";
 import InputBox from "../../components/Input/InputBox";
 import Title from "../../components/text/Title";
-import { AuthModel } from "../../model/AuthModel";
-import { AuthService } from "../../service/AuthService";
-import { ScreenName } from "../../statics/constants/ScreenName";
-import { Colors } from "../../styles/Colors";
-import { commonStyles } from "../../styles/commonStyles";
-import { setTokens } from "../../utils/storage/Storage";
+import {AuthModel} from "../../model/AuthModel";
+import {AuthService} from "../../service/AuthService";
+import {ScreenName} from "../../statics/constants/ScreenName";
+import {Colors} from "../../styles/Colors";
+import {commonStyles} from "../../styles/commonStyles";
+import {setTokens} from "../../utils/storage/Storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
 const LoginScreen = ({ navigation }: any) => {
   const { control, handleSubmit } = useForm<AuthModel.ILoginModel>();
   const loginFunction = async (input: AuthModel.ILoginModel): Promise<AuthModel.ILoginResponseModel> => {
-    const response = await AuthService.Auth.login(input.email, input.password);
-    return response;
+    return await AuthService.Auth.login(input.email, input.password);
   };
   
   const { isLoading, mutate } = useMutation<AuthModel.ILoginResponseModel,Error,AuthModel.ILoginModel>(loginFunction,{
-    onSuccess: (response: AuthModel.ILoginResponseModel) => {
-      if (response.data.success) {
-        const { accessToken, refreshToken } = response.data.data;
+    onSuccess: (response) => {
+      if (response.success) {
+        const {accessToken, refreshToken} = response.data;
         if (accessToken && refreshToken) {
           setTokens(accessToken, refreshToken);
           AsyncStorage.setItem("userToken", accessToken);

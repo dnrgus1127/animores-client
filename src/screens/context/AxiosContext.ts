@@ -41,9 +41,8 @@ instance.interceptors.response.use(
 			if (refreshToken) {
 				try {
 					const response = await AuthService.Auth.refreshToken(refreshToken);
-					console.log('AxiosContext.interceptors.response:', response);
-					if (response && response.data.success) {
-						const { accessToken } = response.data.data;
+					if (response && response.success) {
+						const { accessToken } = response.data;
 
 						await AsyncStorage.setItem('accessToken', accessToken);
 						originRequest.headers.Authorization = `Bearer ${accessToken}`;
