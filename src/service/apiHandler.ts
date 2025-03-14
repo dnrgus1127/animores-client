@@ -54,6 +54,7 @@ export const apiHandler = async <T>(
     } catch (error) {
         if (errorMessage) {
             console.error(errorMessage, error);
+            // console.error(error?.response?.data?.error.message);
         }
         return errorValue;
     }
