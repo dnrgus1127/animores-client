@@ -5,10 +5,10 @@ import { AxiosResponse } from 'axios';
 
 export const AuthService = {
 	Auth: {
-		login: async (email: string, password: string): Promise<AuthModel.ILoginResponseModel> => {
-			const response: AuthModel.ILoginResponseModel = await AxiosContext.post<AuthModel.ILoginModel, AuthModel.ILoginResponseModel>(
+		login: async (email: string, password: string) : Promise<AuthModel.ILoginResponseModel> => {
+			const response = await AxiosContext.post<AuthModel.ILoginResponseModel>(
 				`/api/v1/account/sign-in`, { email, password });
-			return response;
+			return response.data;
 		},	
 		refreshToken: async (refreshToken: string) => {
 			const response = await AxiosContext.post<AuthModel.ILoginResponseModel>(

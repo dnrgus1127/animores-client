@@ -86,7 +86,7 @@ const HomeScreen = () => {
           <Pressable onPress={() => {
                     navigation.navigate(ScreenName.Profiles);
                 }}>
-          <Image 
+          <Image
           style={styles.profile}
           source={{ uri: `${baseUrl}/${currentProfile?.imageUrl}` }}
            />
