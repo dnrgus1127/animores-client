@@ -22,7 +22,6 @@ import { QueryKey } from "../../statics/constants/Querykey";
 import { Colors } from "../../styles/Colors";
 import CenterModal from "../../components/modal/CenterModal";
 import CommentList from "./CommentList";
-//import AddComment from "./AddComment";
 
 dayjs.locale("ko");
 dayjs.extend(utc);
@@ -41,8 +40,8 @@ const DairyScreen = () => {
   const [isVisibleMenu, setIsVisibleMenu] = useState<boolean>(false); //플로팅버튼
   const [isVisibleComment, setIsVisibleComment] = useState<boolean>(false); //댓글 모달
   const [isComment, setIsComment] = useState<boolean>(false); //댓글 유무
-  const [commentDiaryId, setCommentDiaryId] = useState<number | null>(null);  //댓글 diary Id
-  const [commentProfileId, setCommentProfileId] = useState<number | null>(null);  //댓글 profile Id
+  const [diaryId, setDiaryId] = useState<number | null>(null);  //댓글 diary Id
+  const [profileId, setProfileId] = useState<number | null>(null);  //댓글 profile Id
   const [deletedDiaryId, setDeletedDiaryId] = useState<number | null>(null);  //삭제 diary Id
   const [deletedProfileId, setDeletedProfileId] = useState<number | null>(null);  //삭제 profile Id
   
@@ -222,8 +221,8 @@ const DairyScreen = () => {
       setIsComment(false);
     }
     if (item.diaryId !== null && item.profileId !== null) {
-      setCommentDiaryId(item.diaryId);
-      setCommentProfileId(item.profileId);
+      setDiaryId(item.diaryId);
+      setProfileId(item.profileId);
     }
   };
 
@@ -286,20 +285,12 @@ const DairyScreen = () => {
             _onDelete={handleDelete}
           />
 
-          {/* 댓글 모달 */}
-          {/* <AddComment 
-            //visible={isVisibleComment} 
-            //onClose={() => setIsVisibleComment(false)}
-            commentDiaryId={commentDiaryId}
-            isComment={isComment}
-            commentProfileId={commentProfileId}
-          /> */}
           <CommentList
             visible={isVisibleComment} 
             setIsVisibleComment={setIsVisibleComment}
-            commentDiaryId={commentDiaryId}
+            diaryId={diaryId}
             isComment={isComment}
-            commentProfileId={commentProfileId} 
+            profileId={profileId}
           />
         </View>
       </SafeAreaView>

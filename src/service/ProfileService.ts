@@ -18,7 +18,7 @@ export namespace ProfileService {
 		updateNickname: async (formData: FormData) => {
 			console.log(formData);
 			try {
-				const response = await AxiosContext.put(`/api/v1/account/update-nickname`, formData, {
+				const response = await AxiosContext.patch(`/api/v1/account/update-nickname`, formData, {
 					headers: {
 						'Content-Type': 'application/json'
 					},
