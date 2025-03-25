@@ -1,9 +1,7 @@
-import { ImageProps } from "react-native";
-
 export interface IPet {
     id: number;
     name: string;
-    image?: ImageProps;
+    imageUrl?: string;
 }
 
 export interface IBreed {
@@ -16,11 +14,19 @@ export interface ISpecies {
     name : string;
 }
 
-export interface IPetRequest {
+export interface IPetDetails {
+    imageId: number;
+    name: string;
+    gender: number;
+    birthday: string;
+    weight: number;
+}
+
+export interface IPetRequest extends IPetDetails {
     breedId : number;
-    imageId : number;
-    name : string;
-    gender : number;
-    birthday : string;
-    weight : number;
+}
+
+export interface IPetResponse extends IPetDetails {
+    breed: IBreed;
+    species: ISpecies;
 }

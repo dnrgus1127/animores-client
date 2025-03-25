@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, {AxiosRequestConfig, isAxiosError} from 'axios';
 import { AuthService } from '../../service/AuthService';
 import {EXPO_PUBLIC_BASE_URL} from '@env';
 
@@ -18,10 +18,10 @@ const instance = axios.create({
 instance.interceptors.request.use(
 	async (config) => {
 		
-		const accessToken = await AsyncStorage.getItem('accessToken');
-		if (accessToken) {
-			config.headers.Authorization = `Bearer ${accessToken}`;
-		}
+		// const accessToken = await AsyncStorage.getItem('accessToken');
+		// if (accessToken) {
+			config.headers.userId = "13";
+		// }
 		return config;
 	},
 	(error) => {
@@ -33,34 +33,36 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
 	(response) => response,
 	async (error) => {
+		if (isAxiosError(error)) {
+			console.log(error.code);
+		}
 		const originRequest = error.config;
 		console.log('AxiosContext.interceptors.response:', error);
 		if (error.response.status === 401 && !originRequest._retry) {
 			originRequest._retry = true;
-			const refreshToken = await AsyncStorage.getItem('refreshToken');
-			if (refreshToken) {
+			// const refreshToken = await AsyncStorage.getItem('refreshToken');
+			// if (refreshToken) {
 				try {
-					const response = await AuthService.Auth.refreshToken(refreshToken);
-					console.log('AxiosContext.interceptors.response:', response);
-					if (response && response.data.success) {
-						const { accessToken } = response.data.data;
+					// const response = await AuthService.Auth.refreshToken(refreshToken);
+					// if (response && response.success) {
+						// const { accessToken } = response.data;
 
-						await AsyncStorage.setItem('accessToken', accessToken);
-						originRequest.headers.Authorization = `Bearer ${accessToken}`;
+						// await AsyncStorage.setItem('accessToken', accessToken);
+						originRequest.headers.userId = "13";
 
 						return instance(originRequest);
-					} else {
-						await AsyncStorage.removeItem('accessToken');
-						await AsyncStorage.removeItem('refreshToken');
-					}
+					// } else {
+					// 	await AsyncStorage.removeItem('accessToken');
+					// 	await AsyncStorage.removeItem('refreshToken');
+					// }
 				} catch (error) {
 					await AsyncStorage.removeItem('accessToken');
 					await AsyncStorage.removeItem('refreshToken');
 				}
 			}
 		}
-		return Promise.reject(error);
-	}
+		// return Promise.reject(error);
+	// }
 )
 
 export default instance;

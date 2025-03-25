@@ -28,6 +28,7 @@ interface IMypageList {
   name: string;
   image: React.FC<SvgProps>;
   screen?: any;
+  detailScreen? : string;
 }
 
 const MypageScreen = () => {
@@ -45,7 +46,8 @@ const MypageScreen = () => {
       id: 2,
       name: "펫 관리",
       image: PetIcon,
-      screen: ScreenName.PatManagement,
+      screen: ScreenName.PetManagement,
+      detailScreen : "Home"
     },
     {
       id: 3,
@@ -109,7 +111,7 @@ const MypageScreen = () => {
               return (
                 <Pressable
                   key={m.id}
-                  onPress={() => navigation.navigate(m.screen)}
+                  onPress={() => navigation.navigate(m.screen, m.detailScreen)}
                   style={[
                     styles.myPageContainer,
                     { paddingTop: index === 0 ? 30 : 0 },
