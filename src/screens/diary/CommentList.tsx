@@ -3,7 +3,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import React from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Dimensions,
   Image,
@@ -35,9 +35,10 @@ import { Easing } from "react-native-reanimated";
 export interface CommentProps {
   visible: boolean;
   setIsVisibleComment: (isVisibleComment: boolean) => void;
-  commentDiaryId: number;
+  diaryId: number;
   isComment: boolean;
-  commentProfileId: number;
+  profileId: number;
+  setSelectedCommentId: () => void;
 }
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -46,16 +47,25 @@ const TIMING_DURATION = 500;
 const baseUrl = process.env.IMAGE_BASE_URL;
 
 const CommentList = (props: CommentProps) => {
-  const { visible, setIsVisibleComment, commentDiaryId, isComment, commentProfileId } = props;
+  const { visible, setIsVisibleComment, diaryId, isComment, profileId } = props;
+  // 선택된 댓글이 있으면 대댓글 모드, 없으면 댓글 모드
+  const [selectedCommentId, setSelectedCommentId] = useState<number | null>(null);
+  const [selectedCommentName, setSelectedCommentName] = useState<string | null>(null);
 
   //(댓글 클릭 시) 댓글 불러오기
   const { data: commentList, refetch } = useQuery({
-    queryKey: [QueryKey.COMMENT_LIST, commentDiaryId],
-    queryFn: () => DiaryService.diary.commentList(commentDiaryId, commentProfileId, 1, 15),
-    enabled: !!commentDiaryId,
+    queryKey: [QueryKey.COMMENT_LIST, diaryId],
+    queryFn: () => DiaryService.diary.commentList(diaryId, profileId, 1, 15),
+    enabled: !!diaryId,
   });
 
   const comments: DiaryModel.IDiaryCommentModel[] = commentList?.data?.comments || [];
+
+  useEffect(() => {
+    if (!visible) {
+      setSelectedCommentId(null);
+    }
+  }, [visible])
 
   return (
     <View>
@@ -81,13 +91,38 @@ const CommentList = (props: CommentProps) => {
               <ScrollView>
                   {isComment ?
                     comments.map(item => (
-                      <CommentBar item={item} setIsVisibleComment={setIsVisibleComment}/>
+                      <CommentBar 
+                      item={item} 
+                      setIsVisibleComment={setIsVisibleComment} 
+                      setSelectedCommentId={setSelectedCommentId}
+                      setSelectedCommentName={setSelectedCommentName}
+                      profileId={profileId}
+                    />
                     )
                   ) : null}
               </ScrollView>
 
-              {/* 댓글 입력창 */}
-              <AddComment commentDiaryId={commentDiaryId} refetch={refetch} />
+              {/* 댓글/대댓글 입력창 
+                댓글달기, 대댓글달기(답글달기) 함수 호출 시
+                AddComment 컴포넌트에 해당 파라미터 전달
+                - 댓글일 경우 파라미터에 게시글 작성자 id를 전달
+                - 대댓글일 경우 파라미터에 댓글 작성자 id를 전달
+              */}
+              {selectedCommentId !== null ? (
+                <AddComment 
+                  diaryCommentId={selectedCommentId} 
+                  diaryCommentName={selectedCommentName}
+                  setSelectedCommentId={setSelectedCommentId}
+                  refetch={refetch} 
+                /> // * 대댓글일 경우
+              ) : (
+                <AddComment 
+                  diaryId={diaryId} 
+                  diaryCommentName={selectedCommentName}
+                  setSelectedCommentId={setSelectedCommentId}
+                  refetch={refetch} 
+                /> // * 댓글일 경우
+              )}
             </View>
           </View>
         </View>
@@ -187,10 +222,6 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: '#FF4040',
   },
-  hiddenMenuText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
 });
 
 // 댓글 상단 라인
@@ -218,7 +249,8 @@ function timeAgo(isoDate: string) {
   return `${days}일 전`;
 }
 
-const CommentBar = ({item, setIsVisibleComment} : {item: DiaryModel.IDiaryCommentModel, setIsVisibleComment: (isVisibleComment: boolean) => void}) => {
+const CommentBar = (props: CommentProps) => {
+  const { item, setIsVisibleComment, setSelectedCommentId, setSelectedCommentName, profileId } = props;
   const queryClient = useQueryClient();
   const currentProfile = useRecoilValue(CurrentProfileAtom);
   const xOffset = useSharedValue(0);
@@ -253,37 +285,53 @@ const CommentBar = ({item, setIsVisibleComment} : {item: DiaryModel.IDiaryCommen
     };
   });
 
-    //댓글 삭제
-    const { mutate } = useMutation(
-      ({ commentId, profileId }: { commentId: number, profileId: number }) =>
-        DiaryService.diary.commentDelete(commentId, profileId),
-      {
-        onSuccess: async (data) => {
-          if (data && data.status === 200) {
-            Toast.show({
-              type: "success",
-              text1: "삭제되었습니다.",
-            });
-  
-            setIsVisibleComment(false);
-            await queryClient.invalidateQueries([QueryKey.COMMENT_LIST]);
-            //일지 목록 쿼리를 무효화함
-          }
-        },
-        onError: (error) => {
-          console.error("Delete error:", error);
-        },
-      }
-    );
-    // 댓글 삭제
-    const handleDelete = async (commentId: number, profileId: number) => {
-      console.log(commentId, profileId);
-      if (commentId !== null && profileId !== null) {
-        mutate({ commentId: commentId, profileId: profileId });
-      } else {
-        console.log('diary deleted error')
-      }
-    };
+  //댓글 삭제
+  const { mutate } = useMutation(
+    ({ commentId, profileId }: { commentId: number, profileId: number }) =>
+      DiaryService.diary.commentDelete(commentId, profileId),
+    {
+      onSuccess: async (data) => {
+        if (data && data.status === 200) {
+          Toast.show({
+            type: "success",
+            text1: "삭제되었습니다.",
+          });
+
+          setIsVisibleComment(false);
+          await queryClient.invalidateQueries([QueryKey.COMMENT_LIST]);
+          //일지 목록 쿼리를 무효화함
+        }
+      },
+      onError: (error) => {
+        console.error("Delete error:", error);
+      },
+    }
+  );
+  // 댓글 삭제
+  const handleDelete = async (commentId: number, profileId: number) => {
+    console.log(commentId, profileId);
+    if (commentId !== null && profileId !== null) {
+      mutate({ commentId: commentId, profileId: profileId });
+    } else {
+      console.log('diary deleted error')
+    }
+  };
+
+  //(댓글 클릭 시) 대댓글 불러오기
+  const { data: replyList, refetch } = useQuery({
+    queryKey: [QueryKey.REPLY_LIST, item.commentId],
+    queryFn: () => DiaryService.diary.replyList(item.commentId, profileId, 1, 15),
+  });
+
+  const replies: DiaryModel.IDiaryReplyModel[] = replyList?.data || [];
+
+  // 답글쓰기 클릭 시
+  const onClickReply = (diaryCommentId: Number, diaryCommentName: string) => {
+    // 대댓글 모드
+    console.log('{diaryCommentId}:', diaryCommentId);
+    setSelectedCommentId(diaryCommentId);
+    setSelectedCommentName(diaryCommentName);
+  }
 
   return (
     <GestureHandlerRootView>
@@ -321,7 +369,7 @@ const CommentBar = ({item, setIsVisibleComment} : {item: DiaryModel.IDiaryCommen
                 />
               </View>
               <Pressable
-                onPress={() => console.log('11')}
+                onPress={() => onClickReply(item.commentId, item.name)}
                 style={{ marginLeft: 12, alignSelf: "flex-end" }}
               >
                 <Title
@@ -335,10 +383,6 @@ const CommentBar = ({item, setIsVisibleComment} : {item: DiaryModel.IDiaryCommen
         </GestureDetector>
 
         <View style={styles.hidden_card}>
-          {/* <Pressable onPress={() => console.log('11')}>
-                        <Text style={styles.hiddenMenuText}>수정</Text>
-                      </Pressable>
-                      <Separator /> */}
           <Pressable
             onPress={() => handleDelete(item.commentId, currentProfile?.id ?? -1)}
             style={styles.hiddenButton}
@@ -346,6 +390,85 @@ const CommentBar = ({item, setIsVisibleComment} : {item: DiaryModel.IDiaryCommen
             <IconTrash />
           </Pressable>
         </View>
+      </View>
+      <View>
+        <Title
+          text={replies.totalCount}
+          fontSize={14}
+          color="#000000"
+          style={{marginLeft: 50}}
+        />
+
+        {/* // 임시데이터 */}
+        {replies.totalCount > 0 ?
+          <View style={[styles.commentContainer, {marginLeft: 50}]}>
+            {item.imageUrl !== null ? (
+              <Image
+                source={{ uri: `${baseUrl}/${item.imageUrl}` }}
+                style={styles.profileImage}
+              />
+            ) : (
+              <User />
+            )}
+            <View style={styles.itemContent}>
+              <View style={{ flexDirection: "row" }}>
+                <Title
+                  text={'엄마'}
+                  fontSize={14}
+                  fontWeight="bold"
+                  color="#000000"
+                />
+                <Title
+                  text={timeAgo('2025-03-22T07:20:27.169Z')}
+                  fontSize={12}
+                  color={Colors.AEAEAE}
+                  style={{ marginLeft: 12 }}
+                />
+              </View>
+              <Title
+                text={'밥먹었어??'}
+                fontSize={14}
+                style={{ marginTop: 8 }}
+              />
+            </View>
+          </View>
+        : null}
+
+        {replies.totalCount > 0 ?
+          replies.replies.map(item => (
+            <View style={[styles.commentContainer, {marginLeft: 50}]}>
+              {item.imageUrl !== null ? (
+                <Image
+                  source={{ uri: `${baseUrl}/${item.imageUrl}` }}
+                  style={styles.profileImage}
+                />
+              ) : (
+                <User />
+              )}
+              <View style={styles.itemContent}>
+                <View style={{ flexDirection: "row" }}>
+                  <Title
+                    text={item.name}
+                    fontSize={14}
+                    fontWeight="bold"
+                    color="#000000"
+                  />
+                  <Title
+                    text={timeAgo(item.createdAt)}
+                    fontSize={12}
+                    color={Colors.AEAEAE}
+                    style={{ marginLeft: 12 }}
+                  />
+                </View>
+                <Title
+                  text={item.content}
+                  fontSize={14}
+                  style={{ marginTop: 8 }}
+                />
+              </View>
+            </View>
+          )
+        ) : null}
       </View>
     </GestureHandlerRootView>
   )

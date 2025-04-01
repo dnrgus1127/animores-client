@@ -3,9 +3,9 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import React, { useState } from "react";
-import { Pressable, StyleSheet, View, Image, TextInput } from "react-native";
+import { Pressable, StyleSheet, View, Image, TextInput, Text } from "react-native";
 import Toast from "react-native-toast-message";
-import { User } from "../../assets/svg";
+import { User, DeleteIcon } from "../../assets/svg";
 import Title from "../../components/text/Title";
 import { DiaryService } from "../../service/DiaryService";
 import { QueryKey } from "../../statics/constants/Querykey";
@@ -15,14 +15,17 @@ import { useController, Controller, Control, useForm } from "react-hook-form";
 import InputBox from "../../components/Input/InputBox";
 
 export interface CommentProps {
-  commentDiaryId: number;
+  diaryId?: number | null;
+  diaryCommentId?: number | null;
+  diaryCommentName: string;
+  setSelectedCommentId: () => void;
   refetch: () => void;
 }
 
 const AddComment = (props: CommentProps) => {
   const baseUrl = process.env.IMAGE_BASE_URL;
   
-  const { commentDiaryId, refetch } = props;
+  const { diaryId, refetch, diaryCommentId, diaryCommentName, setSelectedCommentId } = props;
   const [isInputText, setIsInputText] = useState<boolean>(false);
 
   const methods = useForm({
@@ -39,7 +42,7 @@ const AddComment = (props: CommentProps) => {
   });
 
   // 댓글 등록
-  const { mutate } = useMutation(
+  const { mutate: addCommentMutate } = useMutation(
     ({profileId, diaryId, content}: {profileId: number, diaryId: number, content: string}) =>
       DiaryService.diary.addComment(1, diaryId, content),
     {
@@ -55,7 +58,25 @@ const AddComment = (props: CommentProps) => {
       onError: (error) => {
         console.error('Comment error:', error);
       },
-      //onSettled: () => { console.log('결과에 관계 없이 무언가 실행됨') }
+    }
+  )
+  // 대댓글 등록
+  const { mutate: addReplyMutate } = useMutation(
+    ({profileId, diaryCommentId, content}: {profileId: number, diaryCommentId: number, content: string}) =>
+      DiaryService.diary.addReply(1, diaryCommentId, content),
+    {
+      onSuccess: async (data) => {
+        if (data && data.status === 200) {
+          Toast.show({
+            type: 'success',
+            text1: '대댓글이 등록되었습니다.',
+          });
+          refetch();
+        }
+      },
+      onError: (error) => {
+        console.error('Reply error:', error);
+      },
     }
   )
 
@@ -68,8 +89,13 @@ const AddComment = (props: CommentProps) => {
       const profileId = parsedProfile.id
       const content = methods.getValues('comment');
 
-      mutate({profileId: profileId, diaryId: commentDiaryId, content: content});
-      //console.log('data:', profileId, commentDiaryId, content);
+      if (diaryCommentId) { // 대댓글일 경우
+      console.log('reply...', profileId, diaryCommentId, content);
+        addReplyMutate({profileId: profileId, diaryCommentId: diaryCommentId, content: content});
+      } else { // 댓글일 경우
+      console.log('comment...', profileId, diaryId, content);
+        addCommentMutate({profileId: profileId, diaryId: diaryId, content: content});
+      }
     } else {
       console.error("comment error!");
     }
@@ -84,26 +110,44 @@ const AddComment = (props: CommentProps) => {
     }
   }
 
+  const closeReply = () => {
+    setSelectedCommentId('');
+  }
+
   return (
-    <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 10, paddingVertical: 10 }}>
-      <TextInput
-        //multiline
-        //numberOfLines={20}
-        value={field.value}
-        onChangeText={(value) => field.onChange(value) && handleOnChangeComment(value)}
-        placeholder="내용을 작성해주세요"
-        style={[styles.inputBox, { width: "77%", marginRight: "3%" }]}
-      />
-      <Pressable
-        onPress={addComment}
-        style={[isInputText ? styles.submitButton : styles.submitButtonDisabled, { width: "20%" }]}
-        disabled={!isInputText}
-      >
-        <Title 
-          text="입력" 
-          color={Colors.White} 
+    <View style={{ paddingHorizontal: 10, paddingVertical: 10 }}>
+      {/* 대댓글일 경우에만 보임 */}             
+      {diaryCommentId && 
+        <View style={{ flexDirection: "row", justifyContent: "space-between", backgroundColor: "#ccc", borderRadius: 15, padding: 8, marginBottom: 10 }}> 
+          <Title text={`${diaryCommentName}님에게 답글 남기는 중`} />
+          <Pressable onPress={() => closeReply()}>
+            <DeleteIcon />
+          </Pressable>
+        </View>
+      }
+
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <TextInput
+          //multiline
+          //numberOfLines={20}
+          value={field.value}
+          onChangeText={(value) => field.onChange(value) && handleOnChangeComment(value)}
+          placeholder={
+            diaryCommentId ? '대댓글을 입력하세요' : '댓글을 입력하세요'
+          }
+          style={[styles.inputBox, { width: "77%", marginRight: "3%" }]}
         />
-      </Pressable>
+        <Pressable
+          onPress={addComment} // 파라미터를 함수에 전달, comment일 경우 댓글작성 / reply일 경우 대댓글 작성
+          style={[isInputText ? styles.submitButton : styles.submitButtonDisabled, { width: "20%" }]}
+          disabled={!isInputText}
+        >
+          <Title 
+            text="입력" 
+            color={Colors.White} 
+          />
+        </Pressable>
+      </View>
     </View>
   )
 }
@@ -125,7 +169,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.AEAEAE,
   },
   inputBox: {
-    //paddingVertical: 14,
     height: 45,
     paddingHorizontal: 20,
     backgroundColor: Colors.F4F4F4,

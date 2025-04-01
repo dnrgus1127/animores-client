@@ -29,4 +29,13 @@ export namespace DiaryModel {
 		imageUrl: string
 		replyCount: number
 	}
+
+	export interface IDiaryReplyModel {
+		replyId: number
+		content: string
+		createdAt: string
+		profileId: number
+		name: string
+		imageUrl: string
+	}
 }
