@@ -50,6 +50,7 @@ const CommentList = (props: CommentProps) => {
   const { visible, setIsVisibleComment, diaryId, isComment, profileId } = props;
   // 선택된 댓글이 있으면 대댓글 모드, 없으면 댓글 모드
   const [selectedCommentId, setSelectedCommentId] = useState<number | null>(null);
+  const [selectedCommentName, setSelectedCommentName] = useState<string | null>(null);
 
   //(댓글 클릭 시) 댓글 불러오기
   const { data: commentList, refetch } = useQuery({
@@ -94,6 +95,7 @@ const CommentList = (props: CommentProps) => {
                       item={item} 
                       setIsVisibleComment={setIsVisibleComment} 
                       setSelectedCommentId={setSelectedCommentId}
+                      setSelectedCommentName={setSelectedCommentName}
                       profileId={profileId}
                     />
                     )
@@ -107,9 +109,19 @@ const CommentList = (props: CommentProps) => {
                 - 대댓글일 경우 파라미터에 댓글 작성자 id를 전달
               */}
               {selectedCommentId !== null ? (
-                <AddComment diaryCommentId={selectedCommentId} refetch={refetch} /> // * 대댓글일 경우
+                <AddComment 
+                  diaryCommentId={selectedCommentId} 
+                  diaryCommentName={selectedCommentName}
+                  setSelectedCommentId={setSelectedCommentId}
+                  refetch={refetch} 
+                /> // * 대댓글일 경우
               ) : (
-                <AddComment diaryId={diaryId} refetch={refetch} /> // * 댓글일 경우
+                <AddComment 
+                  diaryId={diaryId} 
+                  diaryCommentName={selectedCommentName}
+                  setSelectedCommentId={setSelectedCommentId}
+                  refetch={refetch} 
+                /> // * 댓글일 경우
               )}
             </View>
           </View>
@@ -238,7 +250,7 @@ function timeAgo(isoDate: string) {
 }
 
 const CommentBar = (props: CommentProps) => {
-  const { item, setIsVisibleComment, setSelectedCommentId, profileId } = props;
+  const { item, setIsVisibleComment, setSelectedCommentId, setSelectedCommentName, profileId } = props;
   const queryClient = useQueryClient();
   const currentProfile = useRecoilValue(CurrentProfileAtom);
   const xOffset = useSharedValue(0);
@@ -314,10 +326,11 @@ const CommentBar = (props: CommentProps) => {
   const replies: DiaryModel.IDiaryReplyModel[] = replyList?.data || [];
 
   // 답글쓰기 클릭 시
-  const onClickReply = (diaryCommentId: Number) => {
+  const onClickReply = (diaryCommentId: Number, diaryCommentName: string) => {
     // 대댓글 모드
     console.log('{diaryCommentId}:', diaryCommentId);
     setSelectedCommentId(diaryCommentId);
+    setSelectedCommentName(diaryCommentName);
   }
 
   return (
@@ -356,7 +369,7 @@ const CommentBar = (props: CommentProps) => {
                 />
               </View>
               <Pressable
-                onPress={() => onClickReply(item.commentId)}
+                onPress={() => onClickReply(item.commentId, item.name)}
                 style={{ marginLeft: 12, alignSelf: "flex-end" }}
               >
                 <Title
@@ -382,10 +395,11 @@ const CommentBar = (props: CommentProps) => {
         <Title
           text={replies.totalCount}
           fontSize={14}
-          fontWeight="bold"
           color="#000000"
+          style={{marginLeft: 50}}
         />
 
+        {/* // 임시데이터 */}
         {replies.totalCount > 0 ?
           <View style={[styles.commentContainer, {marginLeft: 50}]}>
             {item.imageUrl !== null ? (
@@ -422,26 +436,36 @@ const CommentBar = (props: CommentProps) => {
 
         {replies.totalCount > 0 ?
           replies.replies.map(item => (
-            <View style={styles.itemContent}>
-              <View style={{ flexDirection: "row" }}>
-                <Title
-                  text={item.name}
-                  fontSize={14}
-                  fontWeight="bold"
-                  color="#000000"
+            <View style={[styles.commentContainer, {marginLeft: 50}]}>
+              {item.imageUrl !== null ? (
+                <Image
+                  source={{ uri: `${baseUrl}/${item.imageUrl}` }}
+                  style={styles.profileImage}
                 />
+              ) : (
+                <User />
+              )}
+              <View style={styles.itemContent}>
+                <View style={{ flexDirection: "row" }}>
+                  <Title
+                    text={item.name}
+                    fontSize={14}
+                    fontWeight="bold"
+                    color="#000000"
+                  />
+                  <Title
+                    text={timeAgo(item.createdAt)}
+                    fontSize={12}
+                    color={Colors.AEAEAE}
+                    style={{ marginLeft: 12 }}
+                  />
+                </View>
                 <Title
-                  text={timeAgo(item.createdAt)}
-                  fontSize={12}
-                  color={Colors.AEAEAE}
-                  style={{ marginLeft: 12 }}
+                  text={item.content}
+                  fontSize={14}
+                  style={{ marginTop: 8 }}
                 />
               </View>
-              <Title
-                text={item.content}
-                fontSize={14}
-                style={{ marginTop: 8 }}
-              />
             </View>
           )
         ) : null}
