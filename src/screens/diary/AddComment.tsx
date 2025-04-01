@@ -5,7 +5,7 @@ import {
 import React, { useState } from "react";
 import { Pressable, StyleSheet, View, Image, TextInput, Text } from "react-native";
 import Toast from "react-native-toast-message";
-import { User } from "../../assets/svg";
+import { User, DeleteIcon } from "../../assets/svg";
 import Title from "../../components/text/Title";
 import { DiaryService } from "../../service/DiaryService";
 import { QueryKey } from "../../statics/constants/Querykey";
@@ -17,13 +17,15 @@ import InputBox from "../../components/Input/InputBox";
 export interface CommentProps {
   diaryId?: number | null;
   diaryCommentId?: number | null;
+  diaryCommentName: string;
+  setSelectedCommentId: () => void;
   refetch: () => void;
 }
 
 const AddComment = (props: CommentProps) => {
   const baseUrl = process.env.IMAGE_BASE_URL;
   
-  const { diaryId, refetch, diaryCommentId } = props;
+  const { diaryId, refetch, diaryCommentId, diaryCommentName, setSelectedCommentId } = props;
   const [isInputText, setIsInputText] = useState<boolean>(false);
 
   const methods = useForm({
@@ -108,19 +110,21 @@ const AddComment = (props: CommentProps) => {
     }
   }
 
+  const closeReply = () => {
+    setSelectedCommentId('');
+  }
+
   return (
     <View style={{ paddingHorizontal: 10, paddingVertical: 10 }}>
-      {/* 대댓글일 경우에만 보임 */}
-             
+      {/* 대댓글일 경우에만 보임 */}             
       {diaryCommentId && 
-        <View style={{ flexDirection: "row", justifyContent: "space-between", backgroundColor: "#ccc", borderRadius: 5, padding: 5, marginBottom: 10 }}> 
-          <Title text={`${diaryCommentId}님에게 답글 남기는 중`} />
-          <Pressable onPress={() => console.log('대댓글 닫기')}>
-            <Text>X</Text>
+        <View style={{ flexDirection: "row", justifyContent: "space-between", backgroundColor: "#ccc", borderRadius: 15, padding: 8, marginBottom: 10 }}> 
+          <Title text={`${diaryCommentName}님에게 답글 남기는 중`} />
+          <Pressable onPress={() => closeReply()}>
+            <DeleteIcon />
           </Pressable>
         </View>
       }
-
 
       <View style={{ flexDirection: "row", alignItems: "center" }}>
         <TextInput
@@ -128,7 +132,9 @@ const AddComment = (props: CommentProps) => {
           //numberOfLines={20}
           value={field.value}
           onChangeText={(value) => field.onChange(value) && handleOnChangeComment(value)}
-          placeholder="내용을 작성해주세요"
+          placeholder={
+            diaryCommentId ? '대댓글을 입력하세요' : '댓글을 입력하세요'
+          }
           style={[styles.inputBox, { width: "77%", marginRight: "3%" }]}
         />
         <Pressable
