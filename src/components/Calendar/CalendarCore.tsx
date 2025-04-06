@@ -5,10 +5,10 @@ import {Pressable, StyleSheet, Text, View} from "react-native";
 import {DateData} from "react-native-calendars/src/types";
 import {useCalendar} from "./hooks/useCalendars";
 import {CalenderProps} from "./type";
-import {renderCustomArrow, renderCustomHeader} from "./default";
+import {renderCustomArrow, renderCustomHeader} from "./base";
 import {CALENDAR_THEME} from "./style";
 import {getDayStyle} from "./utils";
-import {useCurrent} from "./CurrentContextProvider";
+import {useCalendarDate} from "./CurrentContextProvider";
 
 function DayComponent(props: CalenderProps.Day & { height: number, onDayPress: (date: DateData) => void }) {
     const dayStyleList = getDayStyle(props);
@@ -28,7 +28,7 @@ export function CalenderBase(props: CalenderProps.Base) {
     const {renderHeader, renderArrow} = props;
     const {markedDates, selectDay} = useCalendar();
     const [height, setHeight] = useState(0);
-    const [value] = useCurrent();
+    const [value] = useCalendarDate();
 
     const handleLayout = (event: LayoutChangeEvent) => {
         setHeight(event.nativeEvent.layout.height);
