@@ -1,5 +1,10 @@
 import {DateData} from "react-native-calendars/src/types";
 import {LocaleConfig} from "react-native-calendars/src";
+import {CalenderProps} from "./type";
+import {TextStyle} from "react-native";
+import {dayStyle} from "./style";
+import {Colors} from "../../styles/Colors";
+import {getTextColor} from "../../js/styleUtils";
 
 LocaleConfig.locales['ko'] = {
     monthNames: [
@@ -18,8 +23,17 @@ LocaleConfig.locales['ko'] = {
 // Locale 기본값 설정
 LocaleConfig.defaultLocale = 'ko';
 
-// 일(0) ~ 토(6)
-type DayOfWeek = 0 | 1 | 2 | 3 | 4 | 5 | 6
+export enum DayOfWeek {
+    Sun = 0,
+    Mon,
+    Tue,
+    Wen,
+    Thu,
+    Fri,
+    Sat
+}
+
+export enum DayState {}
 
 const convertCalendarDateToKorean = ({year, month, day}: DateData) => {
     return `${year}년 ${month}월 ${day}일`;
@@ -59,10 +73,50 @@ const daySinceBirth = (dateString: string) => {
     return Math.floor(diffTime / (1000 * 60 * 60 * 24));
 }
 
+// 날짜 정보를 바탕으로 해당 날짜에 맞는 스타일 반환
+const getDayStyle = ({state, date, marking}: CalenderProps.Day) => {
+    const styleList: Array<TextStyle> = [dayStyle.default];
+    const colorInfo = {
+        backgroundColor: "#FFFFFF",
+        color: "#000000"
+    }
+
+    if (getDayOfWeek(date?.dateString || "1900-01-01") === DayOfWeek.Sun) {
+        colorInfo.color = Colors.FF4040
+    }
+
+    if (state === "today") {
+        // colorInfo.backgroundColor = Colors.Pink;
+        colorInfo.color = Colors.Pink;
+        styleList.push(dayStyle.today);
+    }
+    if (state === "disabled") {
+        styleList.push(dayStyle.disabled);
+    }
+
+    if (marking?.selected) {
+        styleList.push(dayStyle.select);
+        colorInfo.backgroundColor = Colors.Black;
+        colorInfo.color = getTextColor(colorInfo.backgroundColor);
+    }
+
+    // set text Color
+    switch (state) {
+        case "disabled" : {
+            colorInfo.color = Colors.LightGery;
+            break;
+        }
+    }
+
+    styleList.push(colorInfo);
+    return styleList;
+}
+
 export {
     convertCalendarDateToKorean,
     convertYYYYMMDDToKorean,
     getDayOfWeek,
     formatToYYYYMMDD,
-    daySinceBirth
+    daySinceBirth,
+    getDayStyle
 }

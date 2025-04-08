@@ -1,6 +1,8 @@
 import React from "react";
 import {Pressable, StyleSheet, Text, View, ViewStyle} from "react-native";
 import {Colors} from "../../styles/Colors";
+import { LeftArrow } from "../../assets/svg/component/LeftArrow";
+import { RightArrow } from "../../assets/svg/component/RightArrow";
 
 interface IButton {
     children?: React.ReactNode;
@@ -15,6 +17,11 @@ interface IPlainButton extends IButton {
 
 interface IIconButton extends IPlainButton {
     icon: React.ReactNode;
+}
+
+interface IArrowButton {
+    direction: "left" | "right";
+    onPress: () => void;
 }
 
 /**
@@ -49,6 +56,15 @@ const IconButton: React.FC<IIconButton> = ({text, icon, ...rest}) => {
     </Button>
 }
 
+const ArrowButton: React.FC<IArrowButton> = ({ direction, onPress }) => {
+    const ArrowComponent = direction === "left" ? LeftArrow : RightArrow;
+    return (
+        <Pressable onPress={onPress}>
+            <ArrowComponent />
+        </Pressable>
+    );
+}
+
 const styles = StyleSheet.create({
     buttonContainer: {
         flexDirection: "row",
@@ -71,5 +87,6 @@ const styles = StyleSheet.create({
 
 export {
     PlainButton,
-    IconButton
+    IconButton,
+    ArrowButton
 }
