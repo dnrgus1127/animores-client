@@ -92,7 +92,7 @@ const DatePickerBody: React.FC<MonthPicker> = ({ year, month, type, onPress }) =
         {itemList.map((item) => {
             const isCurrent = type === PickerType.Month ? (month === item) : (year === item);
 
-            return <TouchableOpacity style={dropDownHeaderStyles.box} onPress={() => {
+            return <TouchableOpacity key={item} style={dropDownHeaderStyles.box} onPress={() => {
                 onPress(item);
             }}>
                 <Text style={{
@@ -115,6 +115,7 @@ const dropDownHeaderStyles = StyleSheet.create({
         gap: 20,
         alignItems: "center",
         borderColor: Colors.LightGery,
+        borderBottomWidth: 1,
         zIndex: 1,
         position: "relative",
         top: 0,

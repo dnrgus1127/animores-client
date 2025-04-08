@@ -16,5 +16,6 @@ export enum Colors {
 	Warning = '#fda38a',
 	DarkGrey = '#3c3c3c',
 	LightGery = '#cfcfcf',
-	TextColor = '1E1E1E'
+	TextColor = '#1E1E1E',
+	TextRed = '#FF4040'
 }

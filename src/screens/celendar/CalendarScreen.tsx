@@ -1,26 +1,31 @@
-import React, {useState} from 'react';
-import {Text, View} from 'react-native';
-import {HeaderLessCalendar} from "../../components/Calendar/HeaderLessCalendar";
-import {CurrentContextProvider} from "../../components/Calendar/CurrentContextProvider";
-import {CalendarDropDownHeader} from "../../components/Calendar/CalendarHeaders";
-import {CalendarToggle} from '../../components/Calendar/CalendarToggle';
+import React, { useState } from 'react';
+import { View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { CalendarDropDownHeader } from "../../components/Calendar/CalendarHeaders";
+import { CurrentContextProvider } from "../../components/Calendar/CurrentContextProvider";
+import { HeaderLessCalendar } from "../../components/Calendar/HeaderLessCalendar";
+import { CalendarToggle } from './CalendarToggle';
+import { Colors } from '../../styles/Colors';
+import { DefaultDayOfWeek } from '../../components/Calendar/base';
 
 const CalendarScreen = () => {
     const [selectedTab, setSelectedTab] = useState<'todo' | 'diary'>('todo');
 
     return (
-        <View style={{flex: 1}}>
+        <SafeAreaView style={{ flex: 1}}>
             <CurrentContextProvider>
-                <CalendarDropDownHeader styles={{flex: 1}}/>
+                <CalendarDropDownHeader styles={{ padding: 20 }} />
                 <CalendarToggle
+                    style={{ padding: 15 }}
                     selectedTab={selectedTab}
                     onTabChange={setSelectedTab}
                 />
-                <View style={{flex: 8}}>
-                    <HeaderLessCalendar currentMonth={"2025-03"}/>
+                <View style={{ flex: 1 }}>
+                    <DefaultDayOfWeek/>
+                    <HeaderLessCalendar currentMonth={"2025-03"} />
                 </View>
             </CurrentContextProvider>
-        </View>
+        </SafeAreaView>
     );
 };
 
