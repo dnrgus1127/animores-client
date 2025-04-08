@@ -7,7 +7,7 @@ import {useCalendar} from "./hooks/useCalendars";
 import {CalenderProps} from "./type";
 import {renderCustomArrow, renderCustomHeader} from "./base";
 import {CALENDAR_THEME} from "./style";
-import {getDayStyle} from "./utils";
+import {formatDateToString, getDayStyle} from "./utils";
 import {useCalendarDate} from "./CurrentContextProvider";
 
 function DayComponent(props: CalenderProps.Day & { height: number, onDayPress: (date: DateData) => void }) {
@@ -37,7 +37,7 @@ export function CalenderBase(props: CalenderProps.Base) {
     return (
         <View onLayout={handleLayout} style={{height: "100%"}}>
             <Calendar
-                initialDate={value}
+                initialDate={formatDateToString(value)}
                 style={{height}}
                 markedDates={markedDates}
                 dayComponent={(props: CalenderProps.Day) => <DayComponent {...props} height={(height / 8)}
@@ -45,7 +45,7 @@ export function CalenderBase(props: CalenderProps.Base) {
                 showSixWeeks={true}
                 renderHeader={renderHeader ?? renderCustomHeader}
                 renderArrow={renderArrow ?? renderCustomArrow}
-                // renderWeek={}
+                renderWeek={() => null}
                 theme={CALENDAR_THEME}
             ></Calendar>
         </View>

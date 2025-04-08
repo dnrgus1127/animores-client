@@ -15,5 +15,6 @@ export enum Colors {
 	SoftCoral = '#FEEAED',
 	Warning = '#fda38a',
 	DarkGrey = '#3c3c3c',
-	LightGery = '#cfcfcf'
+	LightGery = '#cfcfcf',
+	TextColor = '1E1E1E'
 }
