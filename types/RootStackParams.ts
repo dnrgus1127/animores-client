@@ -5,6 +5,7 @@ export type RootStackParams = {
 	Login: undefined;
 	Join: undefined;
 	CreateDiary: undefined;
+	UpdateDiary: undefined;
 	AddTodo: undefined;
 	AlertSetting: undefined;
 	CustomerService: undefined;

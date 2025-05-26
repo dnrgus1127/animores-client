@@ -1,5 +1,6 @@
 import { atom } from "recoil";
 import { IProfile } from "../../types/Profile";
+import { DiaryModel } from "../../model/DiaryModel";
 
 export const UserEmailAtom = atom<string>({
     key: 'UserEmailAtom',

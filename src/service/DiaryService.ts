@@ -13,27 +13,41 @@ export namespace DiaryService {
 				return { data: null, status: error || 500 };
 			}
 		},
-		create: async (profileId: number, content: string) => {
-			const formData = new FormData();
-			formData.append('profileId', profileId.toString());
-			formData.append('content', content);
-
+		create: async (formData: formData) => {
 			try {
 				const response = await AxiosContext.post(`/api/v1/diaries`, formData, {
 					headers: {
 						'Content-Type': 'multipart/form-data',
 					}
 				});
-				console.log('response', response)
+				console.log('response', response);
 				return { data: response.data, status: response.status };
 			} catch (error) {
 				console.error('DiaryService.diary.create:', error);
-				return { data: null, status: error || 500 };
+				return { 
+					data: null,
+					status: error.response?.status || 500,
+					message: error.message || 'Unknown error',
+				};
+			}
+		},
+		update: async (diaryId: number, payload: { profileId: number; content: string }) => {
+			try {
+				const response = await AxiosContext.patch(
+					`/api/v1/diaries/${diaryId}`, 
+					JSON.stringify(payload), 
+					{
+						headers: {
+							'Content-Type': 'application/json',
+						},
+					});
+				return { data: response.data, status: response.status };
+			} catch (error) {
+				console.error('DiaryService.diary.update:', error);
+				return { data: null, status: error.response?.status || 500 };
 			}
 		},
 		delete: async (diaryId: number, profileId: number) => {
-			console.log("diaryId", diaryId)
-			console.log("profileId", profileId)
 			try {
 				const response = await AxiosContext.delete(`/api/v1/diaries/${diaryId}`, {
 					data: {
