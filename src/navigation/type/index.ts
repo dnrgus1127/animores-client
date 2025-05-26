@@ -6,6 +6,7 @@ export type RootStackParamList = {
     [ScreenName.Join]: undefined;
     [ScreenName.JoinCompleted]: undefined;
     [ScreenName.CreateDiary]: undefined;
+    [ScreenName.UpdateDiary]: undefined;
     [ScreenName.AddTodo]: undefined;
 	[ScreenName.Mypage]: undefined;
 	[ScreenName.Home]: undefined;
