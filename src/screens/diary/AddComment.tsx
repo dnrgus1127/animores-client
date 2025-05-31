@@ -44,7 +44,7 @@ const AddComment = (props: CommentProps) => {
   // 댓글 등록
   const { mutate: addCommentMutate } = useMutation(
     ({profileId, diaryId, content}: {profileId: number, diaryId: number, content: string}) =>
-      DiaryService.diary.addComment(1, diaryId, content),
+      DiaryService.diary.addComment(profileId, diaryId, content),
     {
       onSuccess: async (data) => {
         if (data && data.status === 200) {

@@ -13,25 +13,30 @@ import { AddImage } from "../../assets/svg";
 import Title from "../../components/text/Title";
 import HeaderNavigation from "../../navigation/HeaderNavigation";
 import { Colors } from "../../styles/Colors";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from "../../navigation/type";
 import { ScreenName } from "../../statics/constants/ScreenName";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { DiaryService } from "../../service/DiaryService";
 import Toast from "react-native-toast-message";
 import { FormProvider, useController, useForm, useFormContext } from "react-hook-form";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { DiaryModel } from "../../model/DiaryModel";
 
-const CreatDiary = () => {
-  const navigation = useNavigation<StackNavigationProp<RootStackParamList, ScreenName.CreateDiary>>();
+const UpdateDiary = () => {
+  const route = useRoute();
+  const queryClient = useQueryClient();
+  const { item } = route.params as { item: DiaryModel.IDiaryModel };
+
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList, ScreenName.UpdateDiary>>();
 
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
 
   const methods = useForm({
     defaultValues: {
-      diary: '',
+      diary: item.content,
     },
   });
 
@@ -71,51 +76,46 @@ const CreatDiary = () => {
     setImageUrls([...imageUrls, cameraImage.assets[0].uri]);
   };
 
-  // 일지 등록
+  // 일지 수정
   const { mutate } = useMutation({
-    mutationFn: async (data: FormData) => {
-      return DiaryService.diary.create(data).data;
+    mutationFn: async (data: { diaryId: string; payload: { profileId: number; content: string } }) => {
+      return DiaryService.diary.update(Number(data.diaryId), data.payload);
     }
   });
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (diaryId: string) => {
     try {
+      // 프로필·컨텐츠
       const profile = await AsyncStorage.getItem("userInfo");
-
-      if (!profile) {
-        console.error("Profile not found");
-        return;
-      }
-
-      const parsedProfile = JSON.parse(profile);
+      const parsedProfile = profile ? JSON.parse(profile) : null;
       const profileId = parsedProfile?.id;
-      const content = methods.getValues('diary');
+      const content = methods.getValues('diary')
 
-      if (!content) {
-        console.error("Content is empty");
+      if (!profileId || !content) {
+        Toast.show({ type: "error", text1: "내용을 입력해주세요." });
         return;
       }
 
-      const formData = new FormData();
-      formData.append("profileId", String(profileId));
-      formData.append("content", content);
+      // JSON payload 생성
+      const payload = { profileId, content };
 
-      console.log("profileId:", profileId, "content:", content);
-
-      mutate(formData, {
+      // mutate 호출
+      mutate({ diaryId, payload }, {
         onSuccess: (response) => {
-          console.log('서버응답', response);
-          if (response?.data){
             Toast.show({
               type: 'success',
-              text1: '일지가 등록되었습니다.',
+              text1: '일지가 수정되었습니다.',
             });
-          } else {
-            console.warn("응답에 data 없음");
-          }
+            // ✅ 일지 목록 다시 패치
+            queryClient.invalidateQueries({ queryKey: ['DIARY_LIST'] });
+            navigation.goBack();
         },
         onError: (error) => {
-          console.error('Delete error:', error?.response?.data || error.message);
+          console.error('Update error:', error);
+            Toast.show({
+                type: 'error',
+                text1: '일지 수정이 실패했습니다.'
+            });
         }
       });
     } catch (error) {
@@ -127,13 +127,13 @@ const CreatDiary = () => {
     <FormProvider {...methods}>
       <SafeAreaView style={styles.container}>
         <HeaderNavigation
-          middletitle="일지 작성하기"
+          middletitle="일지 수정하기"
           rightTitle={"완료"}
           hasBackButton={true}
           onPressBackButton={() => {
             navigation.goBack();
           }}
-          onPressRightButton={handleSubmit}
+          onPressRightButton={() => handleSubmit(item.diaryId)}
           content={methods.getValues('diary')}
         />
         <ScrollView>
@@ -142,7 +142,7 @@ const CreatDiary = () => {
             numberOfLines={20}
             value={field.value}
             onChangeText={field.onChange}
-            placeholder="내용을 작성해주세요"
+            placeholder={'내용을 작성해주세요'}
             style={{
               padding: 16,
               textAlignVertical: "top",
@@ -176,7 +176,7 @@ const CreatDiary = () => {
   );
 };
 
-export default CreatDiary;
+export default UpdateDiary;
 
 const styles = StyleSheet.create({
   container: {

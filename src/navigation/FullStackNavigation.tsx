@@ -7,6 +7,7 @@ import JoinCompleted from "../screens/auth/JoinCompleted";
 import JoinScreen from "../screens/auth/JoinScreen";
 import LoginScreen from "../screens/auth/LoginScreen";
 import CreateDiary from "../screens/diary/CreateDiary";
+import UpdateDiary from "../screens/diary/UpdateDiary";
 import HomeScreen from "../screens/home/HomeScreen";
 import NewPassword from "../screens/myPage/password/NewPassword";
 import ResetPassword from "../screens/myPage/password/ResetPassword";
@@ -98,6 +99,11 @@ const FullStackNavigation: React.FC<FullStackNavigationProps> = ({ isAuthenticat
         <RootStack.Screen
           name={ScreenName.CreateDiary}
           component={CreateDiary}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
+          name={ScreenName.UpdateDiary}
+          component={UpdateDiary}
           options={{ headerShown: false }}
         />
         <RootStack.Screen

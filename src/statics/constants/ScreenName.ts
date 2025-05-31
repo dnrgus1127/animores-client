@@ -7,6 +7,7 @@ export enum ScreenName {
 	Join = 'Join',
 	JoinCompleted = 'JoinCompleted',
 	CreateDiary = 'CreateDiary',
+	UpdateDiary = 'UpdateDiary',
 	Diary = 'Diary',
 	AddTodo = 'AddTodo',
 	AlertSetting = 'AlertSetting',

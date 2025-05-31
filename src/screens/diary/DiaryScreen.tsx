@@ -22,6 +22,9 @@ import { QueryKey } from "../../statics/constants/Querykey";
 import { Colors } from "../../styles/Colors";
 import CenterModal from "../../components/modal/CenterModal";
 import CommentList from "./CommentList";
+import { ScreenName } from "../../statics/constants/ScreenName";
+import { useNavigation } from "@react-navigation/native";
+import { useRecoilState } from "recoil";
 
 dayjs.locale("ko");
 dayjs.extend(utc);
@@ -34,16 +37,26 @@ const DairyScreen = () => {
   
   const baseUrl = "https://animores-image.s3.ap-northeast-2.amazonaws.com";
 
+  const navigation = useNavigation();
+
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
-  const [isFirstVisibleMore, setIsFirstVisibleMore] = useState<boolean>(false); //더보기 모달
-  const [isSecondVisibleMore, setIsSecondVisibleMore] = useState<boolean>(false);
+  const [isFirstVisibleMore, setIsFirstVisibleMore] = useState<boolean>(false); //더보기(수정/삭제) 모달
+  const [isVisibleDelete, setIsVisibleDelete] = useState<boolean>(false); // 일지삭제 확인 모달 보이기
   const [isVisibleMenu, setIsVisibleMenu] = useState<boolean>(false); //플로팅버튼
   const [isVisibleComment, setIsVisibleComment] = useState<boolean>(false); //댓글 모달
   const [isComment, setIsComment] = useState<boolean>(false); //댓글 유무
   const [diaryId, setDiaryId] = useState<number | null>(null);  //댓글 diary Id
   const [profileId, setProfileId] = useState<number | null>(null);  //댓글 profile Id
-  const [deletedDiaryId, setDeletedDiaryId] = useState<number | null>(null);  //삭제 diary Id
-  const [deletedProfileId, setDeletedProfileId] = useState<number | null>(null);  //삭제 profile Id
+  const [selectedDiaryId, setSelectedDiaryId] = useState<number | null>(null);  //선택된 diary Id
+  const [selectedProfileId, setSelectedProfileId] = useState<number | null>(null);  //선택된 profile Id
+  const [selectedItem, setSelectedItem] = useState<DiaryModel.IDiaryModel>({
+    item: {
+      diaryId: '',
+      name: '',
+      content: '',
+      createdAt: '',
+    }
+  });
   
   //일지 리스트
   //TODO: profile api 가져와서 profileId에 넣기
@@ -65,8 +78,32 @@ const DairyScreen = () => {
       }
     );
 
+  //일지 수정
+  const { mutate: updateDiaryMutate } = useMutation(
+    ({ diaryId }: { diaryId: number }) =>
+      DiaryService.diary.update(diaryId),
+    {
+      onSuccess: async (data) => {
+        if (data && data.status === 200) {
+          Toast.show({
+            type: "success",
+            text1: "수정되었습니다.",
+          });
+
+          setIsFirstVisibleMore(false);
+          setIsVisibleDelete(false);
+          await queryClient.invalidateQueries([QueryKey.DIARY_LIST]);
+          //일지 목록 쿼리를 무효화함
+        }
+      },
+      onError: (error) => {
+        console.error("Delete error:", error);
+      },
+    }
+  );
+
   //일지 삭제
-  const { mutate } = useMutation(
+  const { mutate: deleteDiaryMutate } = useMutation(
     ({ diaryId, profileId }: { diaryId: number, profileId: number }) =>
       DiaryService.diary.delete(diaryId, profileId),
     {
@@ -78,7 +115,7 @@ const DairyScreen = () => {
           });
 
           setIsFirstVisibleMore(false);
-          setIsSecondVisibleMore(false);
+          setIsVisibleDelete(false);
           await queryClient.invalidateQueries([QueryKey.DIARY_LIST]);
           //일지 목록 쿼리를 무효화함
         }
@@ -137,8 +174,16 @@ const DairyScreen = () => {
           <Pressable
             onPress={() => {
               setIsFirstVisibleMore(true);
-              setDeletedDiaryId(item.diaryId);
-              setDeletedProfileId(item.profileId);
+              setSelectedProfileId(item.profileId);
+              setSelectedItem(prev => ({
+                ...prev,
+                item: {
+                  diaryId: item.diaryId,
+                  name: item.name,
+                  content: item.content,
+                  createdAt: item.createdAt,
+                }
+              }))
             }}
           >
             <More style={styles.moreIcon} />
@@ -180,24 +225,38 @@ const DairyScreen = () => {
     );
   };
 
+  const getSelectedItem = (item: DiaryModel.IDiaryModel) => {
+    navigation.navigate(ScreenName.UpdateDiary as never, item)
+    setIsFirstVisibleMore(false)
+  }
+
   //더보기 모달 footer
-  const footerMore = (): React.ReactNode => {
+  const FooterMore: React.ReactNode = (props: IProps) => {
+    const { item } = props;
+
     return (
       <View style={styles.bottomModalContainer}>
         <View style={styles.footerTopLine} />
         <View style={[styles.footer, { marginTop: 33 }]}>
           <View style={[styles.buttonContainer, { marginRight: 10 }]}>
-            <Title
-              text={"수정"}
-              fontSize={16}
-              color={Colors.White}
-              style={{ textAlign: "center" }}
-            />
+            <Pressable
+              onPress={
+                () => getSelectedItem(item)
+              }
+              style={styles.buttonContainer}
+            >
+              <Title
+                text={"수정"}
+                fontSize={16}
+                color={Colors.White}
+                style={{ textAlign: "center" }}
+              />
+            </Pressable>
           </View>
           <Pressable
             onPress={() => {
-              console.log(deletedDiaryId, isSecondVisibleMore);
-              setIsSecondVisibleMore(true);
+              console.log(selectedDiaryId, isVisibleDelete);
+              setIsVisibleDelete(true);
             }}
             style={styles.buttonContainer}
           >
@@ -231,11 +290,19 @@ const DairyScreen = () => {
     fetchNextPage();
   };
 
-  const handleDelete = async () => {
-    if (deletedDiaryId !== null && deletedProfileId !== null) {
-      mutate({ diaryId: deletedDiaryId, profileId: deletedProfileId });
+  const handleUpdate = async () => {
+    if (selectedDiaryId !== null) {
+      updateDiaryMutate({ diaryId: selectedDiaryId });
     } else {
-      console.log('diary deleted error')
+      console.log('diary update error')
+    }
+  };
+
+  const handleDelete = async () => {
+    if (selectedDiaryId !== null && selectedProfileId !== null) {
+      deleteDiaryMutate({ diaryId: selectedDiaryId, profileId: selectedProfileId });
+    } else {
+      console.log('diary delete error')
     }
   };
 
@@ -275,15 +342,18 @@ const DairyScreen = () => {
             onClose={() => {
               setIsFirstVisibleMore(false);
             }}
-            footer={footerMore}
 
             // 중첩 모달
-            _isVisible={isSecondVisibleMore}
-            _onClose={() => setIsSecondVisibleMore(false)}
+            _isVisible={isVisibleDelete}
+            _onClose={() => setIsVisibleDelete(false)}
             _title="게시물을 삭제하시겠어요?"
             _subTitle="삭제 이후에는 게시물이 영구적으로 삭제되며, 복원하실 수 없습니다."
             _onDelete={handleDelete}
-          />
+          >
+            <FooterMore 
+              item={selectedItem} // useEffect안에 정의 해도 됨
+            />
+          </BottomModal>
 
           <CommentList
             visible={isVisibleComment} 
