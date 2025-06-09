@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios, {AxiosRequestConfig, isAxiosError} from 'axios';
+import axios, { AxiosRequestConfig, isAxiosError } from 'axios';
 import { AuthService } from '../../service/AuthService';
-import {EXPO_PUBLIC_BASE_URL} from '@env';
+import { EXPO_PUBLIC_BASE_URL } from '@env';
 
 // Axios 인스턴스 생성
 const instance = axios.create({
@@ -17,11 +17,15 @@ const instance = axios.create({
 //요청 인터셉터
 instance.interceptors.request.use(
 	async (config) => {
-		
-		// const accessToken = await AsyncStorage.getItem('accessToken');
-		// if (accessToken) {
+		const userToken = await AsyncStorage.getItem('userToken');
+		if (userToken) {
+			config.headers.Authorization = `Bearer ${userToken}`;
+			// TODO 완전한 소셜 로그인 교체 후 삭제
 			config.headers.userId = "13";
-		// }
+		} else {
+			config.headers.userId = "13";
+		}
+		console.log('AxiosContext.interceptors.request:', config);
 		return config;
 	},
 	(error) => {
@@ -38,31 +42,14 @@ instance.interceptors.response.use(
 		}
 		const originRequest = error.config;
 		console.log('AxiosContext.interceptors.response:', error);
-		if (error.response.status === 401 && !originRequest._retry) {
-			originRequest._retry = true;
-			// const refreshToken = await AsyncStorage.getItem('refreshToken');
-			// if (refreshToken) {
-				try {
-					// const response = await AuthService.Auth.refreshToken(refreshToken);
-					// if (response && response.success) {
-						// const { accessToken } = response.data;
+		// if (error.response.status === 401 && !originRequest._retry) {
+		// 	originRequest._retry = true;
 
-						// await AsyncStorage.setItem('accessToken', accessToken);
-						originRequest.headers.userId = "13";
-
-						return instance(originRequest);
-					// } else {
-					// 	await AsyncStorage.removeItem('accessToken');
-					// 	await AsyncStorage.removeItem('refreshToken');
-					// }
-				} catch (error) {
-					await AsyncStorage.removeItem('accessToken');
-					await AsyncStorage.removeItem('refreshToken');
-				}
-			}
-		}
-		// return Promise.reject(error);
-	// }
+		// 	originRequest.headers.userId = "13";
+			
+		// 	return instance(originRequest);
+		// }
+	}
 )
 
 export default instance;

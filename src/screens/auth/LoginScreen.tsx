@@ -1,31 +1,31 @@
-import {useMutation} from "@tanstack/react-query";
-import React from "react";
-import {useForm} from "react-hook-form";
-import {Pressable, StyleSheet, View} from "react-native";
-import {SafeAreaView} from "react-native-safe-area-context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import { useForm } from "react-hook-form";
+import { Pressable, StyleSheet, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
-import {EmptyCircleIcon, IconSnsApple, IconSnsFacebook, IconSnsKakao, IconSnsNaver,} from "../../assets/svg";
+import { EmptyCircleIcon } from "../../assets/svg";
 import InputBox from "../../components/Input/InputBox";
 import Title from "../../components/text/Title";
-import {AuthModel} from "../../model/AuthModel";
-import {AuthService} from "../../service/AuthService";
-import {ScreenName} from "../../statics/constants/ScreenName";
-import {Colors} from "../../styles/Colors";
-import {commonStyles} from "../../styles/commonStyles";
-import {setTokens} from "../../utils/storage/Storage";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
+import { AuthModel } from "../../model/AuthModel";
+import { AuthService } from "../../service/AuthService";
+import { ScreenName } from "../../statics/constants/ScreenName";
+import { Colors } from "../../styles/Colors";
+import { commonStyles } from "../../styles/commonStyles";
+import { setTokens } from "../../utils/storage/Storage";
+import SocialLogin from "./SocialLogin";
 
 const LoginScreen = ({ navigation }: any) => {
   const { control, handleSubmit } = useForm<AuthModel.ILoginModel>();
   const loginFunction = async (input: AuthModel.ILoginModel): Promise<AuthModel.ILoginResponseModel> => {
     return await AuthService.Auth.login(input.email, input.password);
   };
-  
-  const { isLoading, mutate } = useMutation<AuthModel.ILoginResponseModel,Error,AuthModel.ILoginModel>(loginFunction,{
+
+  const { isLoading, mutate } = useMutation<AuthModel.ILoginResponseModel, Error, AuthModel.ILoginModel>(loginFunction, {
     onSuccess: (response) => {
       if (response.success) {
-        const {accessToken, refreshToken} = response.data;
+        const { accessToken, refreshToken } = response.data;
         if (accessToken && refreshToken) {
           setTokens(accessToken, refreshToken);
           AsyncStorage.setItem("userToken", accessToken);
@@ -43,7 +43,7 @@ const LoginScreen = ({ navigation }: any) => {
       }
     },
     onError: (error: Error) => {
-      if(axios.isAxiosError(error)) {
+      if (axios.isAxiosError(error)) {
         console.log(error.response?.data);
       }
       Toast.show({
@@ -106,22 +106,13 @@ const LoginScreen = ({ navigation }: any) => {
           <View style={commonStyles.separator} />
         </View>
       </View>
-      <View style={commonStyles.commonRowContainer}>
-        <View style={styles.loginContainer}>
-          <Pressable>
-            <IconSnsNaver />
-          </Pressable>
-          <Pressable>
-            <IconSnsKakao />
-          </Pressable>
-          <Pressable>
-            <IconSnsFacebook />
-          </Pressable>
-          <Pressable>
-            <IconSnsApple />
-          </Pressable>
-        </View>
-      </View>
+      <SocialLogin 
+        onNaverLogin={() => console.log('Naver login')}
+        onKakaoLogin={() => console.log('Kakao login')}
+        onFacebookLogin={() => console.log('Facebook login')}
+        onAppleLogin={() => console.log('Apple login')}
+        navigation={navigation}
+      />
       <View style={[commonStyles.commonRowContainer, { marginTop: 92 }]}>
         <Pressable>
           <Title text="아이디 찾기" color={Colors.AEAEAE} />

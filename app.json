@@ -22,7 +22,10 @@
       "jsEngine": "hermes"
     },
     "ios": {
-      "bundleIdentifier": "com.petmilly.application"
+      "bundleIdentifier": "com.petmilly.application",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "extra": {
       "eas": {

@@ -31,6 +31,7 @@ import IconSnsApple from './sns_apple.svg'
 import IconSnsFacebook from './sns_facebook.svg'
 import IconSnsKakao from './sns_kakao.svg'
 import IconSnsNaver from './sns_naver.svg'
+import IconSnsGoogle from './sns_google.svg'
 import ProfileImage from './ProfileImage.svg'
 import Cancle from './cancle.svg'
 import IconComplete from './Frame1206.svg'
@@ -50,6 +51,7 @@ import WalkIcon from './icon_walk.svg'
 import MedicineIcon from './icon_medicine.svg'
 import BathIcon from './icon_bath.svg'
 import TrashCan from './trashCan.svg'
+
 
 export {
 	BackButton,
@@ -103,5 +105,6 @@ export {
 	WalkIcon,
 	MedicineIcon,
 	BathIcon,
-	TrashCan
+	TrashCan,
+	IconSnsGoogle
 }
