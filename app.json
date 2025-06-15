@@ -1,14 +1,43 @@
 {
-    "expo": {
-      "name": "AnimoresApp",
-      "slug": "animores-app",
-      "version": "1.0.0",
-      "orientation": "portrait",
-      "splash": {
-        "image": "./src/assets/images/splash.png",
-        "resizeMode": "contain",
-        "backgroundColor": "#E84178"
+  "expo": {
+    "name": "AnimoresApp",
+    "slug": "animores-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "splash": {
+      "image": "./src/assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#E84178"
+    },
+    "fonts": [
+      {
+        "family": "Pretendard",
+        "fonts": [
+          {
+            "weight": "400",
+            "style": "normal",
+            "file": "./src/assets/fonts/Pretendard-Regular.otf"
+          },
+          {
+            "weight": "500",
+            "style": "normal",
+            "file": "./src/assets/fonts/Pretendard-Medium.otf"
+          },
+          {
+            "weight": "600",
+            "style": "normal",
+            "file": "./src/assets/fonts/Pretendard-SemiBold.otf"
+          },
+          {
+            "weight": "700",
+            "style": "normal",
+            "file": "./src/assets/fonts/Pretendard-Bold.otf"
+          }
+        ]
       }
-    }
+    ],
+    "plugins": [
+      "expo-font"
+    ]
+  }
 }
-  

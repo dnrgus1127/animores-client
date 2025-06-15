@@ -1,6 +1,6 @@
 import React from "react";
 import { Pressable, StyleProp, StyleSheet, View, ViewStyle, Dimensions } from "react-native";
-import Modal from "react-native-modal";
+import Modal, { Direction } from "react-native-modal";
 import { Colors } from "../../styles/Colors";
 import Title from "../text/Title";
 
