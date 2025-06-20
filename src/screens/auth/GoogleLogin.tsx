@@ -28,6 +28,7 @@ export const GoogleLogin: React.FC<GoogleLoginProps> = ({ onSuccess, navigation 
       // Firebase에 사용자 로그인
       const auth = getAuth();
       const userCredential = await signInWithCredential(auth, googleCredential);
+      console.log("userCredential", userCredential);
       
       // Firebase ID 토큰 획득
       const firebaseIdToken = await userCredential.user.getIdToken();

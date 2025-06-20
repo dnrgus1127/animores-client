@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { IconSnsApple, IconSnsFacebook, IconSnsKakao, IconSnsNaver } from '../../assets/svg';
 import { commonStyles } from '../../styles/commonStyles';
 import { GoogleLogin } from './GoogleLogin';
+import { KakaoLogin } from './KakaoLogin';
 
 interface SocialLoginProps {
     onNaverLogin?: () => void;
@@ -26,12 +27,13 @@ const SocialLogin: React.FC<SocialLoginProps> = ({
                 {/* <Pressable onPress={onNaverLogin}>
                     <IconSnsNaver />
                 </Pressable> */}
-                <Pressable onPress={onKakaoLogin}>
+                {/* <Pressable onPress={onKakaoLogin}>
                     <IconSnsKakao />
-                </Pressable>
+                </Pressable> */}
                 {/* <Pressable onPress={onFacebookLogin}>
                     <IconSnsFacebook />
                 </Pressable> */}
+                <KakaoLogin />
                 <Pressable onPress={onAppleLogin}>
                     <IconSnsApple />
                 </Pressable>
