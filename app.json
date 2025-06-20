@@ -34,7 +34,26 @@
     },
     "scheme": "com.petmilly.app",
     "plugins": [
-      "@react-native-google-signin/google-signin"
+      "@react-native-google-signin/google-signin",
+      "expo-build-properties",
+      [
+        "@react-native-seoul/kakao-login",
+        {
+          "kakaoAppKey": "21ee4115e7413df6fafbd0b53ed8f330",
+          "overrideKakaoSDKVersion": "2.20.1",
+          "kotlinVersion": "1.9.0"
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "extraMavenRepos": [
+              "https://devrepo.kakao.com/nexus/content/groups/public/"
+            ]
+          }
+        }
+      ]
     ]
   }
 }
