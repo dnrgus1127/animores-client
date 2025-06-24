@@ -35,7 +35,6 @@ export const GoogleLogin: React.FC<GoogleLoginProps> = ({ onSuccess, navigation 
       
       // 토큰 저장
       await AsyncStorage.setItem("userToken", firebaseIdToken);
-    //   console.log("firebaseIdToken", firebaseIdToken);
 
       Toast.show({
         type: "success",
@@ -45,6 +44,7 @@ export const GoogleLogin: React.FC<GoogleLoginProps> = ({ onSuccess, navigation 
       if (onSuccess) {
         onSuccess();
       } else if (navigation) {
+        console.log("navigation", navigation);
         navigation.navigate(ScreenName.Profiles);
       }
     } catch (error: any) {

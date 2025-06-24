@@ -33,7 +33,7 @@ const SocialLogin: React.FC<SocialLoginProps> = ({
                 {/* <Pressable onPress={onFacebookLogin}>
                     <IconSnsFacebook />
                 </Pressable> */}
-                <KakaoLogin />
+                <KakaoLogin navigation={navigation} />
                 <Pressable onPress={onAppleLogin}>
                     <IconSnsApple />
                 </Pressable>
