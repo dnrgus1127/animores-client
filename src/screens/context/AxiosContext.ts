@@ -18,6 +18,7 @@ const instance = axios.create({
 instance.interceptors.request.use(
 	async (config) => {
 		const userToken = await AsyncStorage.getItem('userToken');
+		console.log('userToken', userToken);
 		if (userToken) {
 			config.headers.Authorization = `Bearer ${userToken}`;
 			// TODO 완전한 소셜 로그인 교체 후 삭제

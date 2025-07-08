@@ -1,18 +1,16 @@
 import { getProfile, login } from '@react-native-seoul/kakao-login';
 import { OIDCAuthProvider, signInWithCredential, getAuth } from "@react-native-firebase/auth";
-import { Pressable } from 'react-native';
-import { IconSnsKakao } from '../../assets/svg';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import Toast from 'react-native-toast-message';
-import { ScreenName } from '../../statics/constants/ScreenName';
+import { IconSnsKakao } from '../../../assets/svg';
 import React from 'react';
+import { socialLoginStyles } from './style';
+import { SocialLoginButton } from './SocialLoginButton';
+import { useSocialLogin } from '../hooks/useSocialLogin';
 
 interface KakaoLoginProps {
   onSuccess?: () => void;
-  navigation?: any;
 }
 
-const signInWithKakao = async (onSuccess?: () => void, navigation?: any) => {
+export const signInWithKakao = async () => {
     try {
         // 1. 카카오 로그인 실행
         const token = await login();
@@ -42,20 +40,6 @@ const signInWithKakao = async (onSuccess?: () => void, navigation?: any) => {
             lastLoginAt: new Date().toISOString(),
         };
 
-        // 7. 토큰 저장
-        await AsyncStorage.setItem("userToken", token.accessToken);
-
-        Toast.show({
-          type: "success",
-          text1: "카카오 로그인 성공",
-        });
-
-        if (onSuccess) {
-          onSuccess();
-        } else if (navigation) {
-          navigation.navigate(ScreenName.Profiles);
-        }
-
         return {
             user,
             userData,
@@ -64,13 +48,29 @@ const signInWithKakao = async (onSuccess?: () => void, navigation?: any) => {
 
     } catch (error) {
         console.error('카카오 로그인 에러:', error);
+        throw error;
     }
 };
 
-export const KakaoLogin: React.FC<KakaoLoginProps> = ({ onSuccess, navigation }) => {
+export const KakaoLogin: React.FC<KakaoLoginProps> = ({ onSuccess }) => {
+    const { handleSuccess, handleError } = useSocialLogin({ onSuccess });
+
+    const handleKakaoLogin = async () => {
+        try {
+            const result = await signInWithKakao();
+            await handleSuccess(result.token, '카카오');
+        } catch (error) {
+            handleError(error, '카카오');
+        }
+    };
+
     return (
-        <Pressable onPress={() => signInWithKakao(onSuccess, navigation)}>
-            <IconSnsKakao />
-        </Pressable>
+        <SocialLoginButton
+            icon={<IconSnsKakao width={24} height={24} />}
+            text="카카오로 시작하기"
+            buttonStyle={socialLoginStyles.kakaoButton}
+            textStyle={socialLoginStyles.kakaoText}
+            onPress={handleKakaoLogin}
+        />
     );
 };
