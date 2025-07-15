@@ -1,5 +1,6 @@
 import axios from "axios";
 import {IAddTodo, IListToDoParam} from "../../types/AddToDo";
+import { IToDoListResponse } from "../../types/ToDo";
 import AxiosContext from "../screens/context/AxiosContext";
 
 export namespace ToDoService {
@@ -20,7 +21,7 @@ export namespace ToDoService {
                 throw error;
             }
         },
-        list: async (params: IListToDoParam) => { 
+        list: async (params: IListToDoParam): Promise<IToDoListResponse> => { 
             try {
                 var queryString = `/api/v1/todos?page=${params.page}&size=${params.size}`;
                 if(params.done !==  null) {
@@ -32,7 +33,7 @@ export namespace ToDoService {
                     }
                 }
                 const response = await AxiosContext.get(queryString);
-                return response.data;
+                return response.data.data;
             } catch (error) {
                 console.error('ToDoService.todo.list:', error);
                 if	(axios.isAxiosError(error)) {
@@ -42,6 +43,7 @@ export namespace ToDoService {
 						console.error('ToDoService.todo.list:', error.message);
 					}
 				}
+                throw error;
             }
         },
         today: async (page: number, size: number) => {
