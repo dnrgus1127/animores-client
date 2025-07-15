@@ -2,22 +2,18 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import HeaderNavigation from "../../navigation/HeaderNavigation";
 import { ToDoService } from "../../service/ToDoService";
-
-import { FlatList } from "react-native-gesture-handler";
 import styled from "styled-components/native";
 import { IPet } from "../../../types/PetTypes";
 import FloatingButton from "../../components/button/FloatingButton";
 import CenterModal from "../../components/modal/CenterModal";
 import { usePetList } from "../../hooks/usePetList";
-import { useTodoList } from "../../hooks/useTodoList";
 import PetListModal from "./modal/PetListModal";
-import ToDoCard from "./ToDoCard";
+import ToDoCardList from "./ToDoCardList";
 
 
 export default function ToDoScreen() {
   const [pets, setPets] = useState<number[]>([]);
   const { petList } = usePetList();
-  const { isLoading, data: toDoList } = useTodoList(pets);
   const [isVisibleMenu, setIsVisibleMenu] = useState<boolean>(false); //플로팅버튼
   const [todoIdToDelete, setTodoIdToDelete] = useState<number | null>(null); //삭제할 todo id
 
@@ -25,8 +21,6 @@ export default function ToDoScreen() {
     setPets(petIds);
   }, []);
 
-  
-  if(isLoading || toDoList === undefined) return <Text>Loading...</Text>;
   return (
     <>
       <HeaderNavigation
@@ -38,19 +32,8 @@ export default function ToDoScreen() {
           />}
         hasBackButton={false}
       />
-      <View style={{ display: 'flex', alignItems: 'center' }}>
-        <FlatList
-          data={toDoList}
-          renderItem={({ item }) => (
-            <ToDoCard
-              todo={item}
-              onDelete={() => {
-                setTodoIdToDelete(item.id)
-              }}
-            />
-          )}
-          keyExtractor={(item) => `todo-${item.id}`}
-        />
+      <View style={{ display: 'flex', alignItems: 'center', width: '100%', flex: 1 }}>
+        <ToDoCardList pets={pets} setTodoIdToDelete={setTodoIdToDelete} />
       </View>
       <FloatingButtonContainer isVisibleMenu={isVisibleMenu}>
         <FloatingButton
@@ -83,8 +66,8 @@ function getPetListString(pets: number[], petList: IPet[]): string {
     pets.length === 0
       ? "전체"
       : pets
-          .map((pet) => petList.find((petType) => petType.id === pet)?.name)
-          .join(", ");
+        .map((pet) => petList.find((petType) => petType.id === pet)?.name)
+        .join(", ");
 
   if (petListString.length > 10 && pets !== null && pets.length > 1) {
     const firstPet = petList.find((pet) => pets && pet.id === pets[0]);
@@ -128,7 +111,7 @@ function PetListButtonComponent({
           {displayText} V
         </Text>
       </Pressable>
-      
+
       {showPetListWindow && (
         <PetListModal
           queryIdList={pets}
