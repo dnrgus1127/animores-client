@@ -3,6 +3,7 @@ import { Pressable, Text, View } from "react-native";
 import HeaderNavigation from "../../navigation/HeaderNavigation";
 import { ToDoService } from "../../service/ToDoService";
 
+import { FlatList } from "react-native-gesture-handler";
 import styled from "styled-components/native";
 import { IPet } from "../../../types/PetTypes";
 import FloatingButton from "../../components/button/FloatingButton";
@@ -10,7 +11,6 @@ import CenterModal from "../../components/modal/CenterModal";
 import { usePetList } from "../../hooks/usePetList";
 import { useTodoList } from "../../hooks/useTodoList";
 import PetListModal from "./modal/PetListModal";
-import { FlatList } from "react-native-gesture-handler";
 import ToDoCard from "./ToDoCard";
 
 
@@ -25,14 +25,6 @@ export default function ToDoScreen() {
     setPets(petIds);
   }, []);
 
-  const [time, setTime] = useState(new Date());
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTime(new Date());
-    }, 60000);
-    return () => clearInterval(interval);
-  }
-  , []);
   
   if(isLoading || toDoList === undefined) return <Text>Loading...</Text>;
   return (
@@ -52,7 +44,6 @@ export default function ToDoScreen() {
           renderItem={({ item }) => (
             <ToDoCard
               todo={item}
-              curTime={time}
               onDelete={() => {
                 setTodoIdToDelete(item.id)
               }}

@@ -11,15 +11,19 @@ import Animated, {
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { ToDoService } from "../../service/ToDoService";
 import { IMAGE_BASE_URL } from "@env";
+import { minuteTickSelector } from "../../recoil/MinuteTickAtom";
+import { useRecoilValue } from "recoil";
 
 
 const { width } = Dimensions.get('window');
 const HIDDEN_MENU_WIDTH = 70;
 const TIMING_DURATION = 500;
 
-const ToDoCard = ({ todo, curTime, onDelete, style }: { todo: IToDo, curTime: Date, onDelete: () => void, style?: StyleProp<ViewStyle> }) => {
+const ToDoCard = ({ todo,  onDelete, style }: { todo: IToDo,  onDelete: () => void, style?: StyleProp<ViewStyle> }) => {
     //TODO: pet_colors를 어떻게 처리할지 고민해보기
     const pet_colors = ["#FFD700", "#FF69B4", "#00FF00", "#1E90FF", "#FF4500", "#FF6347", "#8A2BE2", "#FF1493", "#FF8C00", "#FF00FF", "#00FFFF", "#00FF7F", "#FF0000", "#0000FF", "#FF00FF", "#FFD700", "#FF69B4", "#00FF00", "#1E90FF", "#FF4500", "#FF6347", "#8A2BE2", "#FF1493", "#FF8C00", "#FF00FF", "#00FFFF", "#00FF7F", "#FF0000", "#0000FF", "#FF00FF", "#FFD700", "#FF69B4", "#00FF00", "#1E90FF", "#FF4500", "#FF6347", "#8A2BE2", "#FF1493", "#FF8C00", "#FF00FF", "#00FFFF", "#00FF7F", "#FF0000", "#0000FF", "#FF00FF", "#FFD700", "#FF69B4", "#00FF00", "#1E90FF", "#FF4500", "#FF6347", "#8A2BE2", "#FF1493", "#FF8C00", "#FF00FF", "#00FFFF", "#00FF7F", "#FF0000", "#0000FF", "#FF00FF", "#FFD700", "#FF69B4", "#00FF00", "#1E90FF", "#FF4500", "#FF6347", "#8A2BE2", "#FF1493", "#FF8C00", "#FF00FF", "#00FFFF", "#00FF7F", "#FF0000", "#0000FF", "#FF00FF", "#FFD700", "#FF69B4", "#00FF00", "#1E90FF", "#FF4500", "#FF6347", "#8A2BE2", "#FF1493", "#FF8C00", "#FF00FF", "#00FFFF", "#00FF7F", "#FF0000", "#0000FF", "#FF00FF", "#FFD700", "#FF69B4", "#00FF00", "#1E"];
+    const curTime = useRecoilValue(minuteTickSelector);
+
     const formatTime = (time: string) => {
         // const timeArr = time.split(':');
         const timeArr = ["12", "00"];
@@ -90,7 +94,7 @@ const ToDoCard = ({ todo, curTime, onDelete, style }: { todo: IToDo, curTime: Da
                     <View>
                         <View style={{ flexDirection: "row" }}>
                             <FontAwesome name="clock-o" size={24} color="black" />
-                            <Text style={{ fontSize: 20, color: isPast(curTime, todo.time) ? Colors.FF9999 : Colors.Black, marginHorizontal: 10, fontWeight: 500, fontFamily: "Pretendard-Bold" }}>{formatTime(todo.time)}</Text>
+                            <Text style={{ fontSize: 20, color: isPast(curTime, todo.time) ? Colors.FF9999 : Colors.Black, marginHorizontal: 10, fontWeight: 500 }}>{formatTime(todo.time)}</Text>
                         </View>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <View style={{ flexDirection: 'row', marginVertical: 10 }}>
