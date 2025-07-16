@@ -13,7 +13,7 @@ import {PlainButton} from "../button/Button";
 import Title from "../text/Title";
 import {Colors} from "../../styles/Colors";
 import {CalanderIcon} from "../../assets/svg";
-import CustomCalender from "../Calendar/CustomCalender";
+// import CustomCalender from "../Calendar/CustomCalender";
 import BottomModal from "../modal/BottomModal";
 import {DateData} from "react-native-calendars/src/types";
 import {convertCalendarDateToKorean} from "../Calendar/utils";
@@ -161,10 +161,11 @@ const DatePicker: React.FC<IDatePickerProps> = ({name, label, rules}) => {
                                {error && error.message && <ValidationMessage message={error.message}/>}
                                {/* 캘린더 오픈 */}
                                <BottomModal onClose={() => setIsVisible(false)} isVisible={isVisible}>
-                                   <CustomCalender onDayPress={(day?: DateData) => {
+                                   {/* TODO 캘린더 공통화 이후 처리 /*/}
+                                   {/* <CustomCalender onDayPress={(day?: DateData) => {
                                        day && setValue(name, convertCalendarDateToKorean(day), {shouldValidate: true});
                                        setIsVisible(false);
-                                   }}/>
+                                   }}/> */}
                                </BottomModal>
                            </FiledWrapper>
                        }}/>

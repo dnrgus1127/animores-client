@@ -50,6 +50,7 @@ import WalkIcon from './icon_walk.svg'
 import MedicineIcon from './icon_medicine.svg'
 import BathIcon from './icon_bath.svg'
 import TrashCan from './trashCan.svg'
+import ClockIcon from './clockIcon.svg'
 
 export {
 	BackButton,
@@ -103,5 +104,6 @@ export {
 	WalkIcon,
 	MedicineIcon,
 	BathIcon,
-	TrashCan
+	TrashCan,
+	ClockIcon
 }

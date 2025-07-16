@@ -1,175 +1,243 @@
-import { View, Text, Pressable, Image, StyleSheet, Dimensions  } from "react-native";
-import { IToDo } from "../../../types/ToDo";
+import { IMAGE_BASE_URL } from "@env";
 import React from "react";
-import { Colors } from "../../styles/Colors";
-import { GestureDetector, Gesture } from 'react-native-gesture-handler';
-import Animated, { 
-    useAnimatedStyle, 
-    useSharedValue, 
-    withTiming  
-  } from 'react-native-reanimated';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { Image, Pressable, StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
+import { useRecoilValue } from "recoil";
+import { IToDo } from "../../../types/ToDo";
+import { ClockIcon } from "../../assets/svg";
+import SwipeableCard from "../../components/SwipeableCard";
+import { minuteTickSelector } from "../../recoil/MinuteTickAtom";
 import { ToDoService } from "../../service/ToDoService";
+import { Colors } from "../../styles/Colors";
 
+const HIDDEN_MENU_WIDTH = 70;
+const TIMING_DURATION = 500;
 
-  const { width } = Dimensions.get('window');
-  const HIDDEN_MENU_WIDTH = 70;
-  const TIMING_DURATION = 500;
+// TODO 색상 처리 utils로 나중에 옮겨야 함
+// RGB to HSL 변환 함수
+const rgbToHsl = (r: number, g: number, b: number): [number, number, number] => {
+    r /= 255;
+    g /= 255;
+    b /= 255;
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    let h = 0, s = 0, l = (max + min) / 2;
 
-const ToDoCard = ({ todo, curTime, onDelete }: { todo: IToDo, curTime: Date, onDelete: () => void}) => {
-    //TODO: pet_colors를 어떻게 처리할지 고민해보기
-    const pet_colors = ["#FFD700", "#FF69B4", "#00FF00", "#1E90FF", "#FF4500", "#FF6347", "#8A2BE2", "#FF1493", "#FF8C00", "#FF00FF", "#00FFFF", "#00FF7F", "#FF0000", "#0000FF", "#FF00FF", "#FFD700", "#FF69B4", "#00FF00", "#1E90FF", "#FF4500", "#FF6347", "#8A2BE2", "#FF1493", "#FF8C00", "#FF00FF", "#00FFFF", "#00FF7F", "#FF0000", "#0000FF", "#FF00FF", "#FFD700", "#FF69B4", "#00FF00", "#1E90FF", "#FF4500", "#FF6347", "#8A2BE2", "#FF1493", "#FF8C00", "#FF00FF", "#00FFFF", "#00FF7F", "#FF0000", "#0000FF", "#FF00FF", "#FFD700", "#FF69B4", "#00FF00", "#1E90FF", "#FF4500", "#FF6347", "#8A2BE2", "#FF1493", "#FF8C00", "#FF00FF", "#00FFFF", "#00FF7F", "#FF0000", "#0000FF", "#FF00FF", "#FFD700", "#FF69B4", "#00FF00", "#1E90FF", "#FF4500", "#FF6347", "#8A2BE2", "#FF1493", "#FF8C00", "#FF00FF", "#00FFFF", "#00FF7F", "#FF0000", "#0000FF", "#FF00FF", "#FFD700", "#FF69B4", "#00FF00", "#1E90FF", "#FF4500", "#FF6347", "#8A2BE2", "#FF1493", "#FF8C00", "#FF00FF", "#00FFFF", "#00FF7F", "#FF0000", "#0000FF", "#FF00FF", "#FFD700", "#FF69B4", "#00FF00", "#1E"];
-    const formatTime = (time: string) => {
-        const timeArr = time.split(':');
-        const hour = timeArr[0];
-        if(parseInt(hour) > 12) {
-            return `오후 ${parseInt(hour) - 12}:${timeArr[1]}`;
-        } else {
-            return `오전 ${hour}:${timeArr[1]}`;
+    if (max !== min) {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+            case g: h = (b - r) / d + 2; break;
+            case b: h = (r - g) / d + 4; break;
         }
+        h /= 6;
     }
 
-    const isPast = (currentTime: Date, time: string) => {
-        const curHour = currentTime.getHours();
-        const curMin = currentTime.getMinutes();
-        const timeArr = time.split(':');
-        const hour = parseInt(timeArr[0]);
-        const min = parseInt(timeArr[1]);
-        if(curHour > hour) {
-            return true;
-        } else if(curHour === hour) {
-            if(curMin > min) {
-                return true;
-            }
-        }
-        return false;
-    }
+    return [h * 360, s * 100, l * 100];
+};
 
-    const checkToDo = (id: number) => {
-        ToDoService.todo.check(id);
-    }
+// TODO 색상 처리 utils로 나중에 옮겨야 함
+// HSL to RGB 변환 함수
+const hslToRgb = (h: number, s: number, l: number): [number, number, number] => {
+    h /= 360;
+    s /= 100;
+    l /= 100;
+    let r, g, b;
 
-  // xOffset은 카드의 X 좌표 위치
-    const xOffset = useSharedValue(0);
-
-    // 슬라이드 제스처 핸들러
-    const pan = Gesture.Pan()
-        .onUpdate(e => {
-            xOffset.value =Math.max(-HIDDEN_MENU_WIDTH, Math.min(0, e.translationX)); 
-        })
-        .onEnd(e => {
-            if (xOffset.value < -HIDDEN_MENU_WIDTH / 2) {
-                xOffset.value = withTiming(-HIDDEN_MENU_WIDTH, { duration: TIMING_DURATION }); 
-            } else {
-                xOffset.value = withTiming(0, { duration: TIMING_DURATION })  // 원래 상태로 복귀
-            }}
-        );
-
-    // 애니메이션 스타일
-    const animatedStyle = useAnimatedStyle(() => {
-        return {
-        transform: [{ translateX: xOffset.value }],
+    if (s === 0) {
+        r = g = b = l;
+    } else {
+        const hue2rgb = (p: number, q: number, t: number) => {
+            if (t < 0) t += 1;
+            if (t > 1) t -= 1;
+            if (t < 1 / 6) return p + (q - p) * 6 * t;
+            if (t < 1 / 2) return q;
+            if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+            return p;
         };
-    });
 
-
-    const Separator = () => {
-        return (
-            <View style={{width: 24, height: 1, backgroundColor: Colors.White, marginVertical: 15}}/>
-        );
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+        r = hue2rgb(p, q, h + 1 / 3);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1 / 3);
     }
+
+    return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+};
+
+
+// 색상을 더 진하게 만드는 함수
+const getDarkerColor = (hex: string): string => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+
+    const [h, s, l] = rgbToHsl(r, g, b);
+    // 명도(l)를 40% 감소시키되, 최소 20%는 유지
+    const newL = Math.max(20, l - 40);
+    const [newR, newG, newB] = hslToRgb(h, s, newL);
+
+    return `#${newR.toString(16).padStart(2, '0')}${newG.toString(16).padStart(2, '0')}${newB.toString(16).padStart(2, '0')}`;
+};
+
+
+const formatTime = (time: string) => {
+    const timeArr = time.split(':');
+    const hour = timeArr[0];
+    if (parseInt(hour) > 12) {
+        return `오후 ${parseInt(hour) - 12}:${timeArr[1]}`;
+    } else {
+        return `오전 ${hour}:${timeArr[1]}`;
+    }
+}
+
+const isPast = (currentTime: Date, time: string) => {
+    const curHour = currentTime.getHours();
+    const curMin = currentTime.getMinutes();
+    const timeArr = time.split(':');
+    const hour = parseInt(timeArr[0]);
+    const min = parseInt(timeArr[1]);
+    if (curHour > hour) {
+        return true;
+    } else if (curHour === hour) {
+        if (curMin > min) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// PetBadge 컴포넌트
+const PetBadge = ({ pet }: { pet: { id: number; name: string } }) => {
+    const PET_COLORS = ["#f9f4c5", "#edebff", "#e1f0ff", "#e0f5e0", "#f7f3d7", "#e6e1ff", "#d9ecff", "#d8f0d8", "#f5f0c8", "#e3e0ff", "#cfe8ff", "#cfeacf"];
+
+    const backgroundColor = PET_COLORS[pet.id % PET_COLORS.length] || '#E8F4FD';
+    const textColor = getDarkerColor(backgroundColor);
 
     return (
-        <View style={styles.container}>
-            <GestureDetector gesture={pan}>
-                <Animated.View style={[styles.card, animatedStyle]}>
-                    <View>
-                        <View style={{flexDirection: "row"}}>
-                            <FontAwesome name="clock-o" size={24} color="black" />
-                            <Text style={{fontSize: 25, color: isPast(curTime, todo.time) ? "red" : "black", marginHorizontal: 10}}>{formatTime(todo.time)}</Text>
+        <View style={[styles.petBadge, { backgroundColor }]}>
+            <Text style={[styles.petBadgeText, { color: textColor }]}>{pet.name}</Text>
+        </View>
+    );
+};
+
+const ToDoCard = ({ todo, onDelete, style }: { todo: IToDo, onDelete: () => void, style?: StyleProp<ViewStyle> }) => {
+    // 현재 시간 획득 및 매 분(00초) 마다 리렌더링
+    const curTime = useRecoilValue(minuteTickSelector);
+    const todoTime = todo.time || "18:00";
+    const isPastDue = isPast(curTime, todoTime);
+
+    const hiddenContent = (
+        <View style={styles.hiddenContent}>
+            <Pressable onPress={() => onDelete()}>
+                <Text style={styles.hiddenMenuText}>삭제</Text>
+            </Pressable>
+            <View style={{ width: 24, height: 1, backgroundColor: Colors.White, marginVertical: 15 }} />
+            <Pressable onPress={() => ToDoService.todo.check(todo.id)}>
+                <Text style={styles.hiddenMenuText}>수정</Text>
+            </Pressable>
+        </View>
+    );
+
+    return (
+        <SwipeableCard
+            containerStyle={[styles.container, style]}
+            cardStyle={styles.card}
+            hiddenCardStyle={styles.hidden_card}
+            hiddenMenuWidth={HIDDEN_MENU_WIDTH}
+            timingDuration={TIMING_DURATION}
+            hiddenContent={hiddenContent}
+        >
+            <View style={styles.cardContent}>
+                <View>
+                    <View style={{ flexDirection: "row", alignItems: 'center' }}>
+                        <ClockIcon width={24} height={24} color={isPast(curTime, todoTime) ? Colors.FF9999 : Colors.Black} />
+                        {/* TODO 폰트 font-family: Pretendard-Bold */}
+                        <Text style={{ fontSize: 26, textDecorationLine: isPastDue ? "line-through" : "none", color: isPastDue ? Colors.FF9999 : Colors.Black, fontWeight: 600, marginLeft: 8, lineHeight: 36 }}>{formatTime(todoTime)}</Text>
+                    </View>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                        <View style={{ flexDirection: 'row' }}>
+                            {todo.pets.map((pet, index) => (
+                                <PetBadge key={`pet-${pet.id}-${index}`} pet={pet} />
+                            ))}
                         </View>
-                        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                            <View style={{flexDirection:'row', marginVertical: 10}}>
-                                {todo.pets.map((pet) => {
-                                    return <View style={{...styles.pet_cell, flexDirection: 'row', justifyContent: 'center', alignItems: 'center',backgroundColor: pet_colors.at(pet.id % pet_colors.length)}}>
-                                                <Text>{pet.name}</Text>
-                                            </View>
-                                })}
-                            </View>
-                            <View style={{height: 20, marginVertical: 10}}>
-                                <Text style={{fontSize: 15}}>{todo.title}</Text>
-                            </View>
+                        <View style={{ height: 20, marginVertical: 10 }}>
+                            <Text style={{ fontSize: 16, lineHeight: 20 }}>{todo.title}</Text>
                         </View>
                     </View>
-                    <View>
-                        {todo.completeProfileImage ? 
+                </View>
+                <View>
+                    {todo.completeProfileImage ?
                         <View style={styles.profile}>
-                            <Image source={require(`../../assets/images/2a820159-1f51-473a-a11c-764539054ca0.jpg`)} style={{position:'absolute' ,height: 30, width: 30, zIndex: 3}}/>
-                            <Image source={{uri:  `${process.env.IMAGE_BASE_URL}/${todo.completeProfileImage}`}} style={{height: 30, width: 30}}/>
+                            <Image source={require(`../../assets/images/2a820159-1f51-473a-a11c-764539054ca0.jpg`)} style={{ position: 'absolute', height: 30, width: 30, zIndex: 3 }} />
+                            <Image source={{ uri: `${IMAGE_BASE_URL}/${todo.completeProfileImage}` }} style={{ height: 30, width: 30 }} />
                         </View>
                         :
-                        <Pressable onPress={() => checkToDo(todo.id)} style={{...styles.profile, ...styles.check_box}}/>
-                        }
-                    </View>
-                </Animated.View>
-            </GestureDetector>
-            <View style={styles.hidden_card}>
-                <Pressable onPress = {() => 
-                    onDelete()
-                }>
-                    <Text style={styles.hiddenMenuText}>삭제</Text>
-                </Pressable>
-                <Separator/>
-                <Pressable onPress = {() => checkToDo(todo.id)}>
-                    <Text style={styles.hiddenMenuText}>수정</Text>
-                </Pressable>
+                        <Pressable onPress={() => ToDoService.todo.check(todo.id)} style={{ ...styles.profile, ...styles.check_box }} />
+                    }
+                </View>
             </View>
-        </View>
+        </SwipeableCard>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        width: width,
-        height: 120,
-        justifyContent: 'center',
-        alignItems: 'center',
-        position: 'relative', // 카드와 메뉴의 상대 위치 설정
-        marginVertical: 5,
-      },
-      card: {
-        position: 'absolute',
+        width: '100%',
+    },
+    card: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        zIndex: 2,
-        
-        width: 350,
-        height: 120,
+        width: '100%',
+        minHeight: 80,
         borderRadius: 10,
         backgroundColor: Colors.White,
         paddingHorizontal: 20,
-
-        
+        paddingVertical: 16,
         elevation: 3,
         shadowColor: '#000',
         shadowOpacity: 0.1,
         shadowOffset: { width: 0, height: 2 },
         shadowRadius: 5,
-
-      },
+    },
+    cardContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%',
+    },
+    hiddenContent: {
+        alignItems: 'flex-end',
+        paddingRight: 20,
+        justifyContent: 'center',
+        minHeight: 80,
+    },
     color_circle: {
         width: 20, height: 20, borderRadius: 10,
     },
     pet_cell: {
-        width: 45, 
-        height: 20, 
-        borderRadius: 10, 
-        marginRight: 10, 
+        width: 45,
+        height: 20,
+        borderRadius: 10,
+        marginRight: 10,
+    },
+    petBadge: {
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 16,
+        marginRight: 8,
+    },
+    petBadgeText: {
+        // fontFamily: 'Pretendard-Regular',
+        fontSize: 14,
+        fontWeight: '400',
+        lineHeight: 18,
     },
     profile: {
-        width: 30, 
-        height: 30, 
+        width: 30,
+        height: 30,
         borderRadius: 15,
         position: 'relative',
     },
@@ -180,19 +248,17 @@ const styles = StyleSheet.create({
     },
     hidden_card: {
         alignItems: 'flex-end',
-        paddingRight: 20,
         justifyContent: 'center',
-        position: 'absolute',
-        width: 350,
-        height: 120,
+        width: '100%',
+        minHeight: 80,
+        paddingVertical: 16,
         borderRadius: 10,
         backgroundColor: Colors.Black,
-        zIndex: 1,
-      },
-      hiddenMenuText: {
+    },
+    hiddenMenuText: {
         color: 'white',
         fontWeight: 'bold',
-      },
+    },
 });
 
 export default ToDoCard;

@@ -15,3 +15,11 @@ interface IPet {
     id: number;
     name: string;
 }
+
+export interface IToDoListResponse {
+  curPage: number;
+  size: number;
+  totalCount: number;
+  totalPage: number;
+  toDoList: IToDo[];
+}
