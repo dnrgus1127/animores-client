@@ -12,6 +12,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationContainer } from "@react-navigation/native";
 import { LogBox } from "react-native";
 import FullStackNavigation from "./src/navigation/FullStackNavigation";
+import MinuteTickProvider from "./src/recoil/MinuteTickProvider";
 
 const queryClient = new QueryClient();
 
@@ -52,6 +53,7 @@ const App = () => {
   return (
     <>
     <RecoilRoot>
+      <MinuteTickProvider />
       <QueryClientProvider client={queryClient}>
         <NavigationContainer>
           <GestureHandlerRootView style={{ flex: 1 }}>
