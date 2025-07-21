@@ -487,7 +487,9 @@ const AddTodo = () => {
                         </Pressable>
                       )}
                     />
-                    {timePickerSelected && (
+                  </View>
+                  {timePickerSelected && (
+                    <View style={styles.dateTimePickerWrap}>
                       <DateTimePicker
                         value={date}
                         mode={timePickerMode as any}
@@ -498,9 +500,10 @@ const AddTodo = () => {
                           setTimePickerSelected(false);
                           setDate(currentDate);
                         }}
+                        style={styles.dateTimePicker}
                       />
-                    )}
-                  </View>
+                    </View>
+                  )}
                 </View>
                 {Separator}
                 <View style={styles.timeSectionContainer}>
@@ -720,6 +723,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.White,
   },
   timeBox: {
+    position: 'relative',
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
@@ -728,6 +732,14 @@ const styles = StyleSheet.create({
     marginTop: 10,
     backgroundColor: '#F4F4F4',
     borderRadius: 10,
+  },
+  dateTimePickerWrap: {
+    width: '100%',
+    height: 50,
+    textAlign: 'center',
+  },
+  dateTimePicker: {
+    margin: 'auto',
   },
   footerTopLine: {
     backgroundColor: '#838383',
