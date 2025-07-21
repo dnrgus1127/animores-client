@@ -122,7 +122,7 @@ const PetBadge = ({ pet }: { pet: { id: number; name: string } }) => {
     );
 };
 
-const ToDoCard = ({ todo, onDelete, style }: { todo: IToDo, onDelete: () => void, style?: StyleProp<ViewStyle> }) => {
+const ToDoCard = ({ todo, onDelete, style, timeFontSize = 26 }: { todo: IToDo, onDelete: () => void, style?: StyleProp<ViewStyle>, timeFontSize?: number }) => {
     // 현재 시간 획득 및 매 분(00초) 마다 리렌더링
     const curTime = useRecoilValue(minuteTickSelector);
     const todoTime = todo.time || "18:00";
@@ -154,7 +154,7 @@ const ToDoCard = ({ todo, onDelete, style }: { todo: IToDo, onDelete: () => void
                     <View style={{ flexDirection: "row", alignItems: 'center' }}>
                         <ClockIcon width={24} height={24} color={isPast(curTime, todoTime) ? Colors.FF9999 : Colors.Black} />
                         {/* TODO 폰트 font-family: Pretendard-Bold */}
-                        <Text style={{ fontSize: 26, textDecorationLine: isPastDue ? "line-through" : "none", color: isPastDue ? Colors.FF9999 : Colors.Black, fontWeight: 600, marginLeft: 8, lineHeight: 36 }}>{formatTime(todoTime)}</Text>
+                        <Text style={{ fontSize: timeFontSize, textDecorationLine: isPastDue ? "line-through" : "none", color: isPastDue ? Colors.FF9999 : Colors.Black, fontWeight: 600, marginLeft: 8, lineHeight: timeFontSize + 10 }}>{formatTime(todoTime)}</Text>
                     </View>
                     <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
                         <View style={{ flexDirection: 'row' }}>

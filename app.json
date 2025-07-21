@@ -1,14 +1,29 @@
 {
-    "expo": {
-      "name": "AnimoresApp",
-      "slug": "animores-app",
-      "version": "1.0.0",
-      "orientation": "portrait",
-      "splash": {
-        "image": "./src/assets/images/splash.png",
-        "resizeMode": "contain",
-        "backgroundColor": "#E84178"
-      }
+  "expo": {
+    "name": "AnimoresApp",
+    "slug": "animores-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "splash": {
+      "image": "./src/assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#E84178"
+    },
+
+    "plugins": [
+      [
+        "expo-font",
+        {"fonts":
+        ["./src/assets/fonts/Pretendard-Regular.otf",
+          "./src/assets/fonts/Pretendard-Medium.otf",
+          "./src/assets/fonts/Pretendard-SemiBold.otf",
+          "./src/assets/fonts/Pretendard-Bold.otf"
+        ]}
+      ],
+      "expo-asset"
+    ],
+    "android": {
+      "package": "com.petmilly.application"
     }
+  }
 }
-  

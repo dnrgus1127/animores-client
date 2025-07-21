@@ -26,7 +26,7 @@ function DayComponent(props: CalenderProps.Day & { onDayPress: (date: DateData) 
 
 // 현재 날짜, 선택한 날짜 등을 업데이트 할 수 있는 컴포넌트
 export function CalenderBase(props: CalenderProps.Base) {
-    const { renderHeader, renderArrow } = props;
+    const { renderHeader, renderArrow, onSelectDay } = props;
     const { markedDates, selectDay } = useCalendar();
     const [height, setHeight] = useState(0);
     const [value] = useCalendarDate();
@@ -35,13 +35,19 @@ export function CalenderBase(props: CalenderProps.Base) {
         setHeight(event.nativeEvent.layout.height);
     }
 
+    // 날짜 선택 시 selectDay와 onSelectDay를 모두 실행
+    const handleDayPress = (date: DateData) => {
+        selectDay(date);
+        if (onSelectDay) onSelectDay(date);
+    };
+
     return (
         <View onLayout={handleLayout} style={{ flex: 1 }}>
             <Calendar
                 initialDate={formatDateToString(value)}
                 markedDates={markedDates}
                 style={{ height: "100%" }}
-                dayComponent={(props: CalenderProps.Day) => <DayComponent {...props} onDayPress={selectDay} />}
+                dayComponent={(props: CalenderProps.Day) => <DayComponent {...props} onDayPress={handleDayPress} />}
                 showSixWeeks={true}
                 // renderHeader={renderHeader ?? renderCustomHeader}
                 // renderArrow={renderArrow ?? renderCustomArrow}

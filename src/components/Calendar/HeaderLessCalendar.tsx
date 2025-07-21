@@ -10,6 +10,6 @@ import { Colors } from "../../styles/Colors";
 export function HeaderLessCalendar({ currentMonth, ...props }: CalenderProps.HeaderLess) {
     return (
         <CalenderBase {...props} renderArrow={(direction: CalenderDirection) => null}
-            renderHeader={(date: Date) => null} />
+            renderHeader={(date: Date) => null} onSelectDay={props.onSelectDay} />
     )
 }
