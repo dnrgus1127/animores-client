@@ -90,7 +90,6 @@ export namespace DiaryService {
 						profileId
 					}
 				});
-				console.log('삭제됨')
 				return { data: response.data, status: response.status };
 			} catch (error) {
 				console.error('DiaryService.diary.commentDelete:', error);
@@ -106,6 +105,21 @@ export namespace DiaryService {
 				return { data: response.data, status: response.status };
 			} catch (error) {
 				console.error('DiaryService.diary.addReply:', error);
+				return { data: null, status: error || 500 };
+			}
+		},
+		replyDelete: async (replyId: number) => {
+			console.log("replyId", replyId)
+			try {
+				const response = await AxiosContext.delete(`/api/v1/diary-reply/${replyId}`, {
+					data: {
+						replyId
+					}
+				});
+				console.log(response.data)
+				return { data: response.data, status: response.status };
+			} catch (error) {
+				console.error('DiaryService.diary.replyDelete:', error);
 				return { data: null, status: error || 500 };
 			}
 		},
