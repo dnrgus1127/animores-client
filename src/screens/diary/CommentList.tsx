@@ -14,7 +14,7 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import Animated from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming, withSpring } from 'react-native-reanimated';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Toast from "react-native-toast-message";
 import { useRecoilValue } from "recoil";
@@ -25,9 +25,9 @@ import { DiaryService } from "../../service/DiaryService";
 import { QueryKey } from "../../statics/constants/Querykey";
 import { Colors } from "../../styles/Colors";
 import AddComment from "./AddComment";
+import SwipeableComment from "./SwipeableComment";
 
 // icon
-import { useAnimatedStyle, useSharedValue, withTiming, withSpring } from "react-native-reanimated";
 import { IconTrash } from "../../assets/icons";
 import { User } from "../../assets/svg";
 import { Easing } from "react-native-reanimated";
@@ -249,6 +249,8 @@ function timeAgo(isoDate: string) {
   return `${days}일 전`;
 }
 
+
+/** Comment Bar */
 const CommentBar = (props: CommentProps) => {
   const { item, setIsVisibleComment, setSelectedCommentId, setSelectedCommentName, profileId } = props;
   const queryClient = useQueryClient();
@@ -286,7 +288,7 @@ const CommentBar = (props: CommentProps) => {
   });
 
   //댓글 삭제
-  const { mutate } = useMutation(
+  const { mutate: deleteCommentMutate } = useMutation(
     ({ commentId, profileId }: { commentId: number, profileId: number }) =>
       DiaryService.diary.commentDelete(commentId, profileId),
     {
@@ -294,7 +296,7 @@ const CommentBar = (props: CommentProps) => {
         if (data && data.status === 200) {
           Toast.show({
             type: "success",
-            text1: "삭제되었습니다.",
+            text1: "댓글이 삭제되었습니다.",
           });
 
           setIsVisibleComment(false);
@@ -303,7 +305,7 @@ const CommentBar = (props: CommentProps) => {
         }
       },
       onError: (error) => {
-        console.error("Delete error:", error);
+        console.error("Delete Comment error:", error);
       },
     }
   );
@@ -311,9 +313,9 @@ const CommentBar = (props: CommentProps) => {
   const handleDelete = async (commentId: number, profileId: number) => {
     console.log(commentId, profileId);
     if (commentId !== null && profileId !== null) {
-      mutate({ commentId: commentId, profileId: profileId });
+      deleteCommentMutate({ commentId: commentId, profileId: profileId });
     } else {
-      console.log('diary deleted error')
+      console.log('Comment deleted error')
     }
   };
 
@@ -333,140 +335,58 @@ const CommentBar = (props: CommentProps) => {
     setSelectedCommentName(diaryCommentName);
   }
 
+  //대댓글 삭제
+  const { mutate: deleteReplyMutate } = useMutation(
+    ({ replyId }: { replyId: number }) =>
+      DiaryService.diary.replyDelete(replyId),
+    {
+      onSuccess: async (data) => {
+        if (data && data.status === 200) {
+          Toast.show({
+            type: "success",
+            text1: "대댓글이 삭제되었습니다.",
+          });
+
+          //setIsVisibleComment(false);
+          //await queryClient.invalidateQueries([QueryKey.COMMENT_LIST]);
+          //일지 목록 쿼리를 무효화함
+        }
+      },
+      onError: (error) => {
+        console.error("Delete reply error:", error);
+      },
+    }
+  );
+
+  // 대댓글 삭제
+  const handleDeleteReply = async (replyId: number) => {
+    console.log(replyId);
+    if (replyId !== null) {
+      deleteReplyMutate({ replyId: replyId });
+    } else {
+      console.log('reply deleted error')
+    }
+  };
+
   return (
     <GestureHandlerRootView>
       <View style={styles.cardContainer}>
-        <GestureDetector gesture={pan}>
-          <Animated.View style={[styles.itemContainer, rStyle]}>
-            <View style={styles.commentContainer}>
-              {item.imageUrl !== null ? (
-                <Image
-                  source={{ uri: `${baseUrl}/${item.imageUrl}` }}
-                  style={styles.profileImage}
-                />
-              ) : (
-                <User />
-              )}
-              <View style={styles.itemContent}>
-                <View style={{ flexDirection: "row" }}>
-                  <Title
-                    text={item.name}
-                    fontSize={14}
-                    fontWeight="bold"
-                    color="#000000"
-                  />
-                  <Title
-                    text={timeAgo(item.createdAt)}
-                    fontSize={12}
-                    color={Colors.AEAEAE}
-                    style={{ marginLeft: 12 }}
-                  />
-                </View>
-                <Title
-                  text={item.content}
-                  fontSize={14}
-                  style={{ marginTop: 8 }}
-                />
-              </View>
-              <Pressable
-                onPress={() => onClickReply(item.commentId, item.name)}
-                style={{ marginLeft: 12, alignSelf: "flex-end" }}
-              >
-                <Title
-                  text={"답글 달기"}
-                  fontSize={14}
-                  color={Colors.AEAEAE}
-                />
-              </Pressable>
-            </View>
-          </Animated.View>
-        </GestureDetector>
-
-        <View style={styles.hidden_card}>
-          <Pressable
-            onPress={() => handleDelete(item.commentId, currentProfile?.id ?? -1)}
-            style={styles.hiddenButton}
-          >
-            <IconTrash />
-          </Pressable>
-        </View>
-      </View>
-      <View>
-        <Title
-          text={replies.totalCount}
-          fontSize={14}
-          color="#000000"
-          style={{marginLeft: 50}}
+        <SwipeableComment
+          item={item}
+          onDelete={(id) => handleDelete(id, currentProfile?.id ?? -1)}
+          isReply={false}
         />
+      </View>
 
-        {/* // 임시데이터 */}
+      <View>
         {replies.totalCount > 0 ?
-          <View style={[styles.commentContainer, {marginLeft: 50}]}>
-            {item.imageUrl !== null ? (
-              <Image
-                source={{ uri: `${baseUrl}/${item.imageUrl}` }}
-                style={styles.profileImage}
-              />
-            ) : (
-              <User />
-            )}
-            <View style={styles.itemContent}>
-              <View style={{ flexDirection: "row" }}>
-                <Title
-                  text={'엄마'}
-                  fontSize={14}
-                  fontWeight="bold"
-                  color="#000000"
-                />
-                <Title
-                  text={timeAgo('2025-03-22T07:20:27.169Z')}
-                  fontSize={12}
-                  color={Colors.AEAEAE}
-                  style={{ marginLeft: 12 }}
-                />
-              </View>
-              <Title
-                text={'밥먹었어??'}
-                fontSize={14}
-                style={{ marginTop: 8 }}
-              />
-            </View>
-          </View>
-        : null}
-
-        {replies.totalCount > 0 ?
-          replies.replies.map(item => (
-            <View style={[styles.commentContainer, {marginLeft: 50}]}>
-              {item.imageUrl !== null ? (
-                <Image
-                  source={{ uri: `${baseUrl}/${item.imageUrl}` }}
-                  style={styles.profileImage}
-                />
-              ) : (
-                <User />
-              )}
-              <View style={styles.itemContent}>
-                <View style={{ flexDirection: "row" }}>
-                  <Title
-                    text={item.name}
-                    fontSize={14}
-                    fontWeight="bold"
-                    color="#000000"
-                  />
-                  <Title
-                    text={timeAgo(item.createdAt)}
-                    fontSize={12}
-                    color={Colors.AEAEAE}
-                    style={{ marginLeft: 12 }}
-                  />
-                </View>
-                <Title
-                  text={item.content}
-                  fontSize={14}
-                  style={{ marginTop: 8 }}
-                />
-              </View>
-            </View>
+          replies.replies.map((reply, index) => (
+            <SwipeableComment
+              key={index}
+              item={reply}
+              onDelete={() => handleDeleteReply(reply.replyId)}
+              isReply={true}
+            />
           )
         ) : null}
       </View>
