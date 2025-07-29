@@ -146,6 +146,7 @@ const CreatDiary = () => {
             style={{
               padding: 16,
               textAlignVertical: "top",
+              minHeight: 150,
             }}
           />
           <View style={styles.bottomLine} />

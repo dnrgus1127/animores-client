@@ -151,20 +151,21 @@ const ToDoCard = ({ todo, onDelete, style }: { todo: IToDo, onDelete: () => void
         >
             <View style={styles.cardContent}>
                 <View>
-                    <View style={{ flexDirection: "row", alignItems: 'center' }}>
-                        <ClockIcon width={24} height={24} color={isPast(curTime, todoTime) ? Colors.FF9999 : Colors.Black} />
-                        {/* TODO 폰트 font-family: Pretendard-Bold */}
-                        <Text style={{ fontSize: 26, textDecorationLine: isPastDue ? "line-through" : "none", color: isPastDue ? Colors.FF9999 : Colors.Black, fontWeight: 600, marginLeft: 8, lineHeight: 36 }}>{formatTime(todoTime)}</Text>
+                    <View style={{ marginVertical: 10 }}>
+                        <Text style={{ fontSize: 20,  fontWeight: 'bold' }}>{todo.title}</Text>
                     </View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <View style={{ flexDirection: 'row' }}>
                             {todo.pets.map((pet, index) => (
                                 <PetBadge key={`pet-${pet.id}-${index}`} pet={pet} />
                             ))}
                         </View>
-                        <View style={{ height: 20, marginVertical: 10 }}>
-                            <Text style={{ fontSize: 16, lineHeight: 20 }}>{todo.title}</Text>
-                        </View>
+                    </View>
+                    <View style={{ flexDirection: "row", alignItems: 'center', marginTop: 5 }}>
+                        <ClockIcon width={24} height={24} color={isPast(curTime, todoTime) ? Colors.FF9999 : Colors.Black} />
+                        {/* TODO 폰트 font-family: Pretendard-Bold */}
+                        <Text style={{ fontSize: 16, textDecorationLine: isPastDue ? "line-through" : "none", color: isPastDue ? Colors.FF9999 : Colors.Black, fontWeight: 600, marginLeft: 8, lineHeight: 36 }}>{formatTime(todoTime)}</Text>
+                        <Text style={{ fontSize: 14, color: Colors.Gray838383, marginLeft: 8, lineHeight: 36 }}>월, 수, 금</Text>
                     </View>
                 </View>
                 <View>
@@ -204,7 +205,7 @@ const styles = StyleSheet.create({
     },
     cardContent: {
         flexDirection: 'row',
-        alignItems: 'center',
+        alignItems: 'start',
         justifyContent: 'space-between',
         width: '100%',
     },

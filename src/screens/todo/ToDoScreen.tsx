@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Text, View, useWindowDimensions, StyleSheet } from "react-native";
+import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import HeaderNavigation from "../../navigation/HeaderNavigation";
 import { ToDoService } from "../../service/ToDoService";
 import styled from "styled-components/native";
@@ -16,22 +17,23 @@ export default function ToDoScreen() {
   const { petList } = usePetList();
   const [isVisibleMenu, setIsVisibleMenu] = useState<boolean>(false); //플로팅버튼
   const [todoIdToDelete, setTodoIdToDelete] = useState<number | null>(null); //삭제할 todo id
+  const layout = useWindowDimensions();
+  const [index, setIndex] = React.useState(0);
 
-  const handlePetIdsChange = useCallback((petIds: number[]) => {
-    setPets(petIds);
-  }, []);
+  const [routes] = React.useState([
+    { key: 'first', title: '오늘할일' },
+    { key: 'second', title: '모든할일' },
+  ]);
 
-  return (
-    <>
-      <HeaderNavigation
-        middletitle={
-          <PetListButtonComponent
-            pets={pets}
-            petList={petList}
-            onPetIdsChange={handlePetIdsChange}
-          />}
-        hasBackButton={false}
-      />
+
+  const FirstRoute = () => (
+    <View style={[styles.scene, { backgroundColor: '#673ab7' }]}>
+      <Text style={styles.text}>오늘 할 일</Text>
+    </View>
+  );
+
+  const SecondRoute = () => (
+    <View style={styles.scene}>
       <View style={{ display: 'flex', alignItems: 'center', width: '100%', flex: 1 }}>
         <ToDoCardList pets={pets} setTodoIdToDelete={setTodoIdToDelete} />
       </View>
@@ -54,6 +56,43 @@ export default function ToDoScreen() {
           // setToDoList(toDoList.filter((todo) => todo.id !== todoIdToDelete));
           setTodoIdToDelete(null);
         }}
+      />
+    </View>
+  );
+
+  const renderScene = SceneMap({
+    first: FirstRoute,
+    second: SecondRoute,
+  });
+
+  const handlePetIdsChange = useCallback((petIds: number[]) => {
+    setPets(petIds);
+  }, []);
+
+  return (
+    <>
+      <HeaderNavigation
+        middletitle={
+          <PetListButtonComponent
+            pets={pets}
+            petList={petList}
+            onPetIdsChange={handlePetIdsChange}
+          />}
+        hasBackButton={false}
+      />
+      <TabView
+        navigationState={{ index, routes }}
+        renderScene={renderScene}
+        onIndexChange={setIndex}
+        initialLayout={{ width: layout.width }}
+        renderTabBar={props => (
+          <TabBar
+            {...props}
+            indicatorStyle={{ backgroundColor: 'white' }}
+            style={{ backgroundColor: 'black' }}
+            labelStyle={{ color: 'white', fontWeight: 'bold' }}
+          />
+        )}
       />
     </>
   );
@@ -136,3 +175,15 @@ const FloatingButtonContainer = styled.View<IFloatingButtonContainer>`
   z-index:${(props) => (props.isVisibleMenu ? 1 : 0)};
   top:${(props) => (props.isVisibleMenu ? 0 : null)};
 `;
+
+const styles = StyleSheet.create({
+  scene: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  text: {
+    color: 'white',
+    fontSize: 18,
+  },
+});

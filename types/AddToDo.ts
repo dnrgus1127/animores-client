@@ -10,9 +10,10 @@ type RepeatUnitType = {
 
 
 export const RepeatUnit: RepeatUnitType = {
-    HOURS: {name: 'HOURS', display: "매시간", intervalText: "시간마다"},
+    //HOURS: {name: 'HOURS', display: "매시간", intervalText: "시간마다"},
     DAY: {name: 'DAY', display: "매일", intervalText: "일마다"},
     WEEK: {name:'WEEK', display: "매주", intervalText: "주마다"},
+    MONTH: {name:'MONTH', display: "매달", intervalText: "달마다"},
 }
 
 export enum WeekDay {

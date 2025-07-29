@@ -63,7 +63,7 @@ const AddComment = (props: CommentProps) => {
   // 대댓글 등록
   const { mutate: addReplyMutate } = useMutation(
     ({profileId, diaryCommentId, content}: {profileId: number, diaryCommentId: number, content: string}) =>
-      DiaryService.diary.addReply(1, diaryCommentId, content),
+      DiaryService.diary.addReply(profileId, diaryCommentId, content),
     {
       onSuccess: async (data) => {
         if (data && data.status === 200) {
