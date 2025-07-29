@@ -8,10 +8,10 @@ import HeaderNavigation from "../../navigation/HeaderNavigation";
 import { RootStackParamList } from "../../navigation/type";
 import { ScreenName } from "../../statics/constants/ScreenName";
 import { ScrollView, Switch, TextInput } from "react-native-gesture-handler";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { QueryKey } from "../../statics/constants/Querykey";
+import { useMutation } from "@tanstack/react-query";
 import Title from "../../components/text/Title";
 import ToDoType from "../../statics/constants/ToDoType";
+import { IPet } from "../../../types/PetTypes";
 import { Controller, Form, FormProvider, set, useController, useFieldArray, useForm } from "react-hook-form";
 import { commonStyles } from "../../styles/commonStyles";
 import { AlarmIcon, PaletteIcon, RepeatIcon, RightArrow, ScheduleIcon } from "../../assets/svg";
@@ -20,10 +20,10 @@ import BottomModal from "../../components/modal/BottomModal";
 import ToDoColors from "../../statics/constants/ToDoColors";
 import { IAddTodo, RepeatUnit, WeekDay } from "../../../types/AddToDo";
 import ColorPicker from 'react-native-wheel-color-picker';
-import { PetService } from "../../service/PetService";
 import { ToDoService } from "../../service/ToDoService";
 import Toast from "react-native-toast-message";
 import axios from "axios";
+import { usePetList } from "../../hooks/usePetList";
 
 const AddTodo = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList, ScreenName.AddTodo>>();
@@ -45,19 +45,7 @@ const AddTodo = () => {
   const { control, handleSubmit, setValue, getValues, watch} = methods;
   
   //펫 정보 불러오기
-  useQuery({
-    queryKey: [QueryKey.PET_LIST],
-    queryFn: () => PetService.get.petList(),
-    initialData: [],
-    onSuccess: (data) => {
-      setPets(data.map(pet => {
-        return {
-          ...pet,
-          isPressed: false
-        }
-      }));
-    }
-  });
+  const { petList } = usePetList();
 
   interface IPressablePet {
     id: number;
@@ -67,6 +55,16 @@ const AddTodo = () => {
 
   const [pets, setPets] = useState<IPressablePet[]>([]);
   const [date, setDate] = useState<Date>(new Date());
+
+  // petList가 변할 때 pets 상태 업데이트
+  useEffect(() => {
+    setPets(petList.map((pet: IPet) => {
+      return {
+        ...pet,
+        isPressed: false
+      }
+    }));
+  }, [petList]);
 
   // 현재 날짜와 시간을 형식에 맞춰 date, time 에 넣어주기
   useEffect(() => {

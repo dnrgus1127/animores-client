@@ -1,144 +1,49 @@
-import { useNavigation } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
-import React, { useEffect, useState } from "react";
-import { View, Text, Pressable } from "react-native";
-import { RootStackParamList } from "../../navigation/type";
-import { ScreenName } from "../../statics/constants/ScreenName";
-import { useQuery } from "@tanstack/react-query";
-import { ToDoService } from "../../service/ToDoService";
-import { QueryKey } from "../../statics/constants/Querykey";
-import { IListToDoParam } from "../../../types/AddToDo";
+import React, { useCallback, useEffect, useState } from "react";
+import { Pressable, Text, View, useWindowDimensions, StyleSheet } from "react-native";
+import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import HeaderNavigation from "../../navigation/HeaderNavigation";
-import { PetService } from "../../service/PetService";
-import { useRecoilState } from "recoil";
-
-import { FlatList, ScrollView } from "react-native-gesture-handler";
-import { IToDo } from "../../../types/ToDo";
-import { IPet } from "../../../types/PetTypes";
-import { PetListAtom } from "../../recoil/PetAtom";
-import PetListModal from "./modal/PetListModal";
-import ToDoCard from "./ToDoCard";
-import FloatingButton from "../../components/button/FloatingButton";
+import { ToDoService } from "../../service/ToDoService";
 import styled from "styled-components/native";
+import { IPet } from "../../../types/PetTypes";
+import FloatingButton from "../../components/button/FloatingButton";
 import CenterModal from "../../components/modal/CenterModal";
+import { usePetList } from "../../hooks/usePetList";
+import PetListModal from "./modal/PetListModal";
+import ToDoCardList from "./ToDoCardList";
 
-const AllTodoScreen = () => {
-  const navigation =
-    useNavigation<
-      StackNavigationProp<RootStackParamList, ScreenName.ToDoList>
-    >();
-  const [queryParam, setQueryParam] = useState<IListToDoParam>({
-    done: null,
-    pets: null,
-    page: 1,
-    size: 15,
-  });
 
-  const [petList, setPetList] = useRecoilState<IPet[]>(PetListAtom);
-  useEffect(() => {
-    if (petList.length === 0) {
-      PetService.get.petList().then(setPetList);
-    }
-  }, []);
-
-  const [usePetListWindow, setUsePetListWindow] = useState<boolean>(false);
-  const [clickedPetIds, setClickedPetIds] = useState<number[]>([]);
-  useEffect(() => {
-    setQueryParam({
-      ...queryParam,
-      pets: clickedPetIds.length === 0 ? null : clickedPetIds,
-    });
-  }, [clickedPetIds]);
-
-  const PetListButton = () => {
-    var petListString =
-      queryParam.pets == undefined
-        ? "전체"
-        : queryParam.pets
-            .map((pet) => petList.find((petType) => petType.id === pet)?.name)
-            .join(", ");
-
-    if (petListString.length > 10 && queryParam.pets !== null && queryParam.pets.length > 1) {
-      const firstPet = petList.find((pet) => queryParam.pets && pet.id === queryParam.pets[0]);
-      if (firstPet) {
-        petListString = firstPet.name + " 외 " + (queryParam.pets.length - 1);
-      }
-    }
-
-    return (
-      <Pressable onPress={() => setUsePetListWindow(true)}>
-        <Text
-          style={{ fontSize: 18, alignItems: "center", textAlign: "center" }}
-        >
-          {petListString} V
-        </Text>
-      </Pressable>
-    );
-  };
-
-  interface IToDoListResponse {
-    curPage: number;
-    size: number;
-    totalPage: number;
-    totalCount: number;
-    toDoList: IToDo[];
-  }
-
-  const { isLoading, data: toDoData } = useQuery({
-    queryKey: [QueryKey.TODO_LIST, queryParam],
-    queryFn: () => ToDoService.todo.list(queryParam),
-  });
-
-  const pageResonse: IToDoListResponse = toDoData?.data;
-  const [toDoList, setToDoList] = useState<IToDo[]>([]);
-  useEffect(() => {
-    setToDoList(pageResonse?.toDoList || []);
-  }, [toDoData]);
-
-  const [time, setTime] = useState(new Date());
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTime(new Date());
-    }, 60000);
-    return () => clearInterval(interval);
-  }
-  , []);
-
+export default function ToDoScreen() {
+  const [pets, setPets] = useState<number[]>([]);
+  const { petList } = usePetList();
   const [isVisibleMenu, setIsVisibleMenu] = useState<boolean>(false); //플로팅버튼
   const [todoIdToDelete, setTodoIdToDelete] = useState<number | null>(null); //삭제할 todo id
-  return (
-    <>
-      <HeaderNavigation  middletitle={<PetListButton />} hasBackButton={false} />
-      <View style={{display: 'flex', alignItems: 'center'}}>
-        {isLoading ? <Text>Loading...</Text> : toDoList.length === 0 && <Text>할 일이 없습니다.</Text>}
-        <FlatList
-          data={toDoList}
-          renderItem={({ item }) => (
-            <ToDoCard
-              todo={item}
-              curTime={time}
-              onDelete={() => {
-                setTodoIdToDelete(item.id)
-              }}
-            />
-          )}
-          keyExtractor={(item) => `todo-${item.id}`}
-        />
+  const layout = useWindowDimensions();
+  const [index, setIndex] = React.useState(0);
+
+  const [routes] = React.useState([
+    { key: 'first', title: '오늘할일' },
+    { key: 'second', title: '모든할일' },
+  ]);
+
+
+  const FirstRoute = () => (
+    <View style={[styles.scene, { backgroundColor: '#673ab7' }]}>
+      <Text style={styles.text}>오늘 할 일</Text>
+    </View>
+  );
+
+  const SecondRoute = () => (
+    <View style={styles.scene}>
+      <View style={{ display: 'flex', alignItems: 'center', width: '100%', flex: 1 }}>
+        <ToDoCardList pets={pets} setTodoIdToDelete={setTodoIdToDelete} />
       </View>
       <FloatingButtonContainer isVisibleMenu={isVisibleMenu}>
         <FloatingButton
           isVisibleMenu={isVisibleMenu}
           onPressCancel={() => setIsVisibleMenu(false)}
           onPressFloating={() => setIsVisibleMenu(!isVisibleMenu)}
-          />
-      </FloatingButtonContainer>
-      {usePetListWindow && (
-        <PetListModal
-          queryIdList={queryParam.pets || []}
-          setClickedPetIds={setClickedPetIds}
-          setUsePetListWindow={setUsePetListWindow}
         />
-      )}
+      </FloatingButtonContainer>
       <CenterModal
         visible={todoIdToDelete != null}
         title="할 일을 삭제하시겠어요?"
@@ -147,16 +52,115 @@ const AllTodoScreen = () => {
         onDelete={() => {
           if (todoIdToDelete === null) return;
           ToDoService.todo.delete(todoIdToDelete);
-          setToDoList(toDoList.filter((todo) => todo.id !== todoIdToDelete));
+          // TODO delete 이후 데이터 갱신하는 로직으로 수정
+          // setToDoList(toDoList.filter((todo) => todo.id !== todoIdToDelete));
           setTodoIdToDelete(null);
         }}
       />
+    </View>
+  );
 
+  const renderScene = SceneMap({
+    first: FirstRoute,
+    second: SecondRoute,
+  });
+
+  const handlePetIdsChange = useCallback((petIds: number[]) => {
+    setPets(petIds);
+  }, []);
+
+  return (
+    <>
+      <HeaderNavigation
+        middletitle={
+          <PetListButtonComponent
+            pets={pets}
+            petList={petList}
+            onPetIdsChange={handlePetIdsChange}
+          />}
+        hasBackButton={false}
+      />
+      <TabView
+        navigationState={{ index, routes }}
+        renderScene={renderScene}
+        onIndexChange={setIndex}
+        initialLayout={{ width: layout.width }}
+        renderTabBar={props => (
+          <TabBar
+            {...props}
+            indicatorStyle={{ backgroundColor: 'white' }}
+            style={{ backgroundColor: 'black' }}
+            labelStyle={{ color: 'white', fontWeight: 'bold' }}
+          />
+        )}
+      />
     </>
   );
-};
+}
 
-export default AllTodoScreen;
+
+// PetListButton 관련 유틸리티 함수
+function getPetListString(pets: number[], petList: IPet[]): string {
+  let petListString =
+    pets.length === 0
+      ? "전체"
+      : pets
+        .map((pet) => petList.find((petType) => petType.id === pet)?.name)
+        .join(", ");
+
+  if (petListString.length > 10 && pets !== null && pets.length > 1) {
+    const firstPet = petList.find((pet) => pets && pet.id === pets[0]);
+    if (firstPet) {
+      petListString = firstPet.name + " 외 " + (pets.length - 1);
+    }
+  }
+
+  return petListString;
+}
+
+
+// PetListButton 컴포넌트 인터페이스
+interface PetListButtonProps {
+  pets: number[];
+  petList: IPet[];
+  onPetIdsChange: (petIds: number[]) => void;
+}
+
+
+function PetListButtonComponent({
+  pets,
+  petList,
+  onPetIdsChange,
+}: PetListButtonProps) {
+  const [showPetListWindow, setShowPetListWindow] = useState(false);
+  const [clickedPetIds, setClickedPetIds] = useState<number[]>(pets || []);
+
+  const displayText = getPetListString(pets, petList);
+
+  useEffect(() => {
+    onPetIdsChange(clickedPetIds.length === 0 ? [] : clickedPetIds);
+  }, [clickedPetIds, onPetIdsChange]);
+
+  return (
+    <View>
+      <Pressable onPress={() => setShowPetListWindow(true)}>
+        <Text
+          style={{ fontSize: 18, alignItems: "center", textAlign: "center" }}
+        >
+          {displayText} V
+        </Text>
+      </Pressable>
+
+      {showPetListWindow && (
+        <PetListModal
+          queryIdList={pets}
+          setClickedPetIds={setClickedPetIds}
+          setUsePetListWindow={setShowPetListWindow}
+        />
+      )}
+    </View>
+  );
+}
 
 interface IFloatingButtonContainer {
   isVisibleMenu: boolean;
@@ -168,6 +172,18 @@ const FloatingButtonContainer = styled.View<IFloatingButtonContainer>`
   right: 0;
   left: 0;
   background-color: ${(props) => (props.isVisibleMenu ? "rgba(0, 0, 0, 0.5)" : "rgba(0, 0, 0, 0.0)")};
-  z-index:${(props) => (props.isVisibleMenu ?  1 : 0)};
+  z-index:${(props) => (props.isVisibleMenu ? 1 : 0)};
   top:${(props) => (props.isVisibleMenu ? 0 : null)};
 `;
+
+const styles = StyleSheet.create({
+  scene: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  text: {
+    color: 'white',
+    fontSize: 18,
+  },
+});
