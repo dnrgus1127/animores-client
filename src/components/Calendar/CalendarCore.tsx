@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { Calendar } from "react-native-calendars";
-import type { LayoutChangeEvent } from 'react-native'
+import React, { useState } from 'react';
+import type { LayoutChangeEvent } from 'react-native';
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Calendar } from "react-native-calendars";
 import { DateData } from "react-native-calendars/src/types";
-import { useCalendar } from "./hooks/useCalendars";
-import { CalenderProps } from "./type";
-import { renderCustomArrow, renderCustomHeader } from "./base";
-import { CALENDAR_THEME } from "./style";
-import { formatDateToString, getDayStyle } from "./utils";
+import { renderCustomHeader } from "./base";
 import { useCalendarDate } from "./CurrentContextProvider";
-import { Colors } from '../../styles/Colors';
+import { useCalendar } from "./hooks/useCalendars";
+import { CALENDAR_THEME } from "./style";
+import { CalenderProps } from "./type";
+import { formatDateToString, getDayStyle } from "./utils";
 
 function DayComponent(props: CalenderProps.Day & { onDayPress: (date: DateData) => void }) {
     const dayStyleList = getDayStyle(props);
@@ -43,8 +42,6 @@ export function CalenderBase(props: CalenderProps.Base) {
                 style={{ height: "100%" }}
                 dayComponent={(props: CalenderProps.Day) => <DayComponent {...props} onDayPress={selectDay} />}
                 showSixWeeks={true}
-                // renderHeader={renderHeader ?? renderCustomHeader}
-                // renderArrow={renderArrow ?? renderCustomArrow}
                 customHeader={renderHeader ?? renderCustomHeader}
                 hideDayNames={true}
                 theme={CALENDAR_THEME}
