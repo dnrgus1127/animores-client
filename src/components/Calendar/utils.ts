@@ -136,19 +136,16 @@ const getDayStyle = ({ state, date, marking }: CalenderProps.Day) => {
     }
 
     if (state === "today") {
-        // colorInfo.backgroundColor = Colors.Pink;
-        colorInfo.color = Colors.Pink;
+        colorInfo.backgroundColor = Colors.Black;
+        colorInfo.color = Colors.White;
         styleList.push(dayStyle.today);
     }
     if (state === "disabled") {
         styleList.push(dayStyle.disabled);
     }
 
-    if (marking?.selected) {
-        styleList.push(dayStyle.select);
-        colorInfo.backgroundColor = Colors.Black;
-        colorInfo.color = getTextColor(colorInfo.backgroundColor);
-    }
+    // selected 상태에서는 별도 스타일 없이 기본 날짜 스타일만 적용
+    // (marking?.selected 조건문 제거)
 
     // set text Color
     switch (state) {

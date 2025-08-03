@@ -67,8 +67,8 @@ export const dayStyle = StyleSheet.create({
         ...base.circle
     },
     today: {
-        backgroundColor: Colors.AEAEAE,
-        color: Colors.C1C1C1,
+        backgroundColor: Colors.Black,
+        color: Colors.White,
         fontWeight: "bold",
         ...base.circle
     },
