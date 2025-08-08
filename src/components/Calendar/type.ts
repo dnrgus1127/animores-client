@@ -1,12 +1,21 @@
 import {DateData} from "react-native-calendars/src/types";
 import {JSX} from "react";
 import {DayProps} from "react-native-calendars/src/calendar/day";
+import React from "react";
+
+// CustomDayComponent props 타입 정의
+export interface DayComponentProps extends CalenderProps.Day {
+    onDayPress: (date: DateData) => void;
+    content?: React.ReactNode;
+}
 
 export namespace CalenderProps {
     export interface Base {
         onSelectDay?: (date: DateData) => void;
         renderHeader?: (date: Date) => JSX.Element | null;
         renderArrow?: (direction: CalenderDirection) => JSX.Element | null;
+        dayContent?: (date: DateData) => React.ReactNode;
+        customDayComponent?: React.ComponentType<DayComponentProps>;
     }
 
     export interface Plain extends Base {
@@ -15,6 +24,8 @@ export namespace CalenderProps {
 
     export interface HeaderLess extends Base {
         currentMonth: string;
+        dayContent?: (date: DateData) => React.ReactNode;
+        customDayComponent?: React.ComponentType<DayComponentProps>;
     }
 
     /**

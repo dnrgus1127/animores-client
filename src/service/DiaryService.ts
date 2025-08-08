@@ -13,7 +13,7 @@ export namespace DiaryService {
 				return { data: null, status: error || 500 };
 			}
 		},
-		create: async (formData: formData) => {
+		create: async (formData: FormData) => {
 			try {
 				const response = await AxiosContext.post(`/api/v1/diaries`, formData, {
 					headers: {
@@ -22,12 +22,12 @@ export namespace DiaryService {
 				});
 				console.log('response', response);
 				return { data: response.data, status: response.status };
-			} catch (error) {
+			} catch (error: any) {
 				console.error('DiaryService.diary.create:', error);
 				return { 
 					data: null,
-					status: error.response?.status || 500,
-					message: error.message || 'Unknown error',
+					status: error?.response?.status || 500,
+					message: error?.message || 'Unknown error',
 				};
 			}
 		},
@@ -42,9 +42,9 @@ export namespace DiaryService {
 						},
 					});
 				return { data: response.data, status: response.status };
-			} catch (error) {
+			} catch (error: any) {
 				console.error('DiaryService.diary.update:', error);
-				return { data: null, status: error.response?.status || 500 };
+				return { data: null, status: error?.response?.status || 500 };
 			}
 		},
 		delete: async (diaryId: number, profileId: number) => {
@@ -131,6 +131,19 @@ export namespace DiaryService {
 			} catch (error) {
 				console.error('DiaryService.diary.replyList:', error);
 				return { data: null, status: error || 500 };
+			}
+		},
+		calendar: async (profileId: number, date: string) => {
+			try {
+				const response = await AxiosContext.get(`/api/v1/diaries/calendar?profileId=${profileId}&date=${date}`);
+				return { data: response.data, status: response.status };
+			} catch (error: any) {
+				console.error('DiaryService.diary.calendar:', error);
+				return { 
+					data: null, 
+					status: error?.response?.status || 500,
+					message: error?.message || 'Unknown error',
+				};
 			}
 		},
 	}

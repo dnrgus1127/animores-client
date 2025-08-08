@@ -17,6 +17,19 @@ const CalendarScreen = () => {
 
     const date = selectedDay ? new Date(selectedDay) : null;
 
+    // 예시 dayContent 함수 - red view로 부모 크기 채우기
+    const renderDayContent = (date: any) => {
+        return (
+            <View style={{
+                width: 10,
+                height: 4,
+                backgroundColor: 'red',
+                borderRadius: 2,
+                marginTop: 2
+            }} />
+        );
+    };
+
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <CurrentContextProvider>
@@ -31,6 +44,7 @@ const CalendarScreen = () => {
                     <HeaderLessCalendar 
                         currentMonth={"2025-03"} 
                         onSelectDay={(date) => setSelectedDay(date.dateString)}
+                        dayContent={selectedTab === 'diary' ? renderDayContent : undefined}
                     />
                 </View>
 
