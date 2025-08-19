@@ -64,12 +64,14 @@ export const CalendarDropDownHeader: React.FC<DropDownHeaderProps> = ({ styles }
         });
     };
 
-    return <View style={[dropDownHeaderStyles.container, styles]}>
-        <ArrowButton direction="left" onPress={() => onPressArrow("left")} />
-        <Pressable onPress={() => setPickerType(state => state < PickerType.Year ? state + 1 : state)}>
-            <Text style={dropDownHeaderStyles.text}>{dateString}</Text>
-        </Pressable>
-        <ArrowButton direction="right" onPress={() => onPressArrow("right")} />
+    return <View style={[dropDownHeaderStyles.container]}>
+        <View style={[dropDownHeaderStyles.abc, { paddingVertical: 20 }]}>
+            <ArrowButton direction="left" onPress={() => onPressArrow("left")} />
+            <Pressable onPress={() => setPickerType(state => state < PickerType.Year ? state + 1 : state)}>
+                <Text style={dropDownHeaderStyles.text}>{dateString}</Text>
+            </Pressable>
+            <ArrowButton direction="right" onPress={() => onPressArrow("right")} />
+        </View>
         <DatePickerBody year={year} month={month} type={pickerType} onPress={onPressItem} />
         {pickerType !== PickerType.Day && <Pressable onPress={() => setPickerType(PickerType.Day)} style={overlayStyles.overlay}></Pressable>}
     </View>;
@@ -92,7 +94,7 @@ const DatePickerBody: React.FC<MonthPicker> = ({ year, month, type, onPress }) =
         {itemList.map((item) => {
             const isCurrent = type === PickerType.Month ? (month === item) : (year === item);
 
-            return <TouchableOpacity style={dropDownHeaderStyles.box} onPress={() => {
+            return <TouchableOpacity key={item} style={dropDownHeaderStyles.box} onPress={() => {
                 onPress(item);
             }}>
                 <Text style={{
@@ -110,15 +112,18 @@ const DatePickerBody: React.FC<MonthPicker> = ({ year, month, type, onPress }) =
 const dropDownHeaderStyles = StyleSheet.create({
     container: {
         backgroundColor: Colors.White,
-        flexDirection: "row",
-        justifyContent: "center",
-        gap: 20,
-        alignItems: "center",
         borderColor: Colors.LightGery,
+        borderBottomWidth: 1,
         zIndex: 1,
         position: "relative",
         top: 0,
         left: 0,
+    },
+    abc: {
+        justifyContent: "center",
+        gap: 20,
+        alignItems: "center",
+        flexDirection: "row",
     },
     text: {
         fontSize: 16,

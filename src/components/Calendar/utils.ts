@@ -1,10 +1,10 @@
-import {DateData} from "react-native-calendars/src/types";
-import {LocaleConfig} from "react-native-calendars/src";
-import {CalenderProps} from "./type";
-import {TextStyle} from "react-native";
-import {dayStyle} from "./style";
-import {Colors} from "../../styles/Colors";
-import {getTextColor} from "../../js/styleUtils";
+import { DateData } from "react-native-calendars/src/types";
+import { LocaleConfig } from "react-native-calendars/src";
+import { CalenderProps } from "./type";
+import { TextStyle } from "react-native";
+import { dayStyle } from "./style";
+import { Colors } from "../../styles/Colors";
+import { getTextColor } from "../../js/styleUtils";
 
 LocaleConfig.locales['ko'] = {
     monthNames: [
@@ -33,15 +33,58 @@ export enum DayOfWeek {
     Sat
 }
 
-export enum DayState {}
+const DayOfWeekKoreanShort = {
+    Sun: "일",
+    Mon: "월",
+    Tue: "화",
+    Wen: "수",
+    Thu: "목",
+    Fri: "금",
+    Sat: "토"
+} as const;
 
-const convertCalendarDateToKorean = ({year, month, day}: DateData) => {
-    return `${year}년 ${month}월 ${day}일`;
+const DayOfWeekNumberToKorean = {
+    0: "일",
+    1: "월",
+    2: "화",
+    3: "수",
+    4: "목",
+    5: "금",
+    6: "토"
+} as const;
+
+type DayOfWeekKoreanShort = typeof DayOfWeekKoreanShort[keyof typeof DayOfWeekKoreanShort];
+type DayOfWeekNumber = keyof typeof DayOfWeekNumberToKorean;
+
+export enum DayState { }
+
+interface DateDataProps {
+    year?: number;
+    month?: number;
+    day?: number;
+    weekDay?: DayOfWeek;
 }
 
-const convertYYYYMMDDToKorean = (yyyymmdd : string) => {
-    const [yyyy,mm,dd] = yyyymmdd.split("-").map(token => Number(token));
-    return convertCalendarDateToKorean({ year : yyyy, month : mm, day: dd} as DateData);
+const convertCalendarDateToKorean = ({ year, month, day, weekDay }: DateDataProps) => {
+    const result = [];
+    if (year) {
+        result.push(`${year}년`);
+    }
+    if (month) {
+        result.push(`${month}월`);
+    }
+    if (day) {
+        result.push(`${day}일`);
+    }
+    if (weekDay !== undefined) {
+        result.push(`(${DayOfWeekNumberToKorean[weekDay as DayOfWeekNumber]})`);
+    }
+    return result.join(" ");
+}
+
+const convertYYYYMMDDToKorean = (yyyymmdd: string) => {
+    const [yyyy, mm, dd] = yyyymmdd.split("-").map(token => Number(token));
+    return convertCalendarDateToKorean({ year: yyyy, month: mm, day: dd } as DateData);
 }
 
 /**
@@ -53,13 +96,20 @@ const formatToYYYYMMDD = (day: string) => {
     let match;
     match = day.trim().match(koreanDateFormatRegex);
     if (match) {
-        let [,yyyy,mm,dd] = match;
+        let [, yyyy, mm, dd] = match;
         mm = mm.length < 2 ? "0" + mm : mm;
         dd = dd.length < 2 ? "0" + dd : dd;
         return `${yyyy}-${mm}-${dd}`
     }
     return day
 }
+
+const formatDateToString = (date: Date): string => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
 
 const getDayOfWeek = (dateString: string): DayOfWeek => {
     const date = new Date(dateString);
@@ -74,7 +124,7 @@ const daySinceBirth = (dateString: string) => {
 }
 
 // 날짜 정보를 바탕으로 해당 날짜에 맞는 스타일 반환
-const getDayStyle = ({state, date, marking}: CalenderProps.Day) => {
+const getDayStyle = ({ state, date, marking }: CalenderProps.Day) => {
     const styleList: Array<TextStyle> = [dayStyle.default];
     const colorInfo = {
         backgroundColor: "#FFFFFF",
@@ -86,23 +136,20 @@ const getDayStyle = ({state, date, marking}: CalenderProps.Day) => {
     }
 
     if (state === "today") {
-        // colorInfo.backgroundColor = Colors.Pink;
-        colorInfo.color = Colors.Pink;
+        colorInfo.backgroundColor = Colors.Black;
+        colorInfo.color = Colors.White;
         styleList.push(dayStyle.today);
     }
     if (state === "disabled") {
         styleList.push(dayStyle.disabled);
     }
 
-    if (marking?.selected) {
-        styleList.push(dayStyle.select);
-        colorInfo.backgroundColor = Colors.Black;
-        colorInfo.color = getTextColor(colorInfo.backgroundColor);
-    }
+    // selected 상태에서는 별도 스타일 없이 기본 날짜 스타일만 적용
+    // (marking?.selected 조건문 제거)
 
     // set text Color
     switch (state) {
-        case "disabled" : {
+        case "disabled": {
             colorInfo.color = Colors.LightGery;
             break;
         }
@@ -118,5 +165,6 @@ export {
     getDayOfWeek,
     formatToYYYYMMDD,
     daySinceBirth,
-    getDayStyle
+    getDayStyle,
+    formatDateToString
 }

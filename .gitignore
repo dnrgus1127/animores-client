@@ -36,3 +36,10 @@ yarn-error.*
 *.tsbuildinfo
 yarn.lock
 package.lock
+
+# 추후 build 환경 완성되면 android/, ios/ 제거
+android/
+ios/
+
+.idea
+.idea/

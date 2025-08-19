@@ -1,32 +1,19 @@
-import React, {useEffect, useState} from 'react';
-import {Calendar} from "react-native-calendars";
-import type {LayoutChangeEvent} from 'react-native'
-import {Pressable, StyleSheet, Text, View} from "react-native";
-import {DateData} from "react-native-calendars/src/types";
-import {useCalendar} from "./hooks/useCalendars";
-import {CalenderProps} from "./type";
-import {renderCustomArrow, renderCustomHeader} from "./base";
-import {CALENDAR_THEME} from "./style";
-import {getDayStyle} from "./utils";
-import {useCalendarDate} from "./CurrentContextProvider";
-
-function DayComponent(props: CalenderProps.Day & { height: number, onDayPress: (date: DateData) => void }) {
-    const dayStyleList = getDayStyle(props);
-
-    const onPress = () => {
-        props.state !== "disabled" && props.onDayPress(props.date);
-    }
-
-    return <Pressable onPress={onPress}
-                      style={[{height: props.height, ...styles.dayContainer}]}>
-        <Text style={[...dayStyleList, {aspectRatio: 1, textAlign: "center"}]}>{props.date?.day}</Text>
-    </Pressable>
-}
+import React, { useState } from 'react';
+import type { LayoutChangeEvent } from 'react-native';
+import { View } from "react-native";
+import { Calendar } from "react-native-calendars";
+import { renderCustomHeader } from "./base";
+import { useCalendarDate } from "./CurrentContextProvider";
+import { DayComponent } from "./DayComponent";
+import { useCalendar } from "./hooks/useCalendars";
+import { CALENDAR_THEME } from "./style";
+import { CalenderProps } from "./type";
+import { formatDateToString } from "./utils";
 
 // 현재 날짜, 선택한 날짜 등을 업데이트 할 수 있는 컴포넌트
 export function CalenderBase(props: CalenderProps.Base) {
-    const {renderHeader, renderArrow} = props;
-    const {markedDates, selectDay} = useCalendar();
+    const { renderHeader, renderArrow, onSelectDay, dayContent } = props;
+    const { markedDates, selectDay } = useCalendar();
     const [height, setHeight] = useState(0);
     const [value] = useCalendarDate();
 
@@ -34,30 +21,27 @@ export function CalenderBase(props: CalenderProps.Base) {
         setHeight(event.nativeEvent.layout.height);
     }
 
+    // onSelectDay prop이 있으면 그것을 사용하고, 없으면 기존의 selectDay 사용
+    const handleDayPress = onSelectDay || selectDay;
+
     return (
-        <View onLayout={handleLayout} style={{height: "100%"}}>
+        <View onLayout={handleLayout} style={{ flex: 1 }}>
             <Calendar
-                initialDate={value}
-                style={{height}}
+                initialDate={formatDateToString(value)}
                 markedDates={markedDates}
-                dayComponent={(props: CalenderProps.Day) => <DayComponent {...props} height={(height / 8)}
-                                                                          onDayPress={selectDay}/>}
+                style={{ height: "100%" }}
+                dayComponent={(props: CalenderProps.Day) => (
+                    <DayComponent 
+                        {...props} 
+                        onDayPress={handleDayPress}
+                        content={dayContent ? dayContent(props.date) : undefined}
+                    />
+                )}
                 showSixWeeks={true}
-                renderHeader={renderHeader ?? renderCustomHeader}
-                renderArrow={renderArrow ?? renderCustomArrow}
-                // renderWeek={}
+                customHeader={renderHeader ?? renderCustomHeader}
+                hideDayNames={true}
                 theme={CALENDAR_THEME}
             ></Calendar>
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    dayContainer: {
-        paddingLeft: 5,
-        paddingTop: 3,
-        alignItems: "center",
-        flexDirection: "column"
-    },
-})
-
