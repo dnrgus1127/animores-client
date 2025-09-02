@@ -1,59 +1,7 @@
 {
-  "expo": {
-    "jsEngine": "hermes",
-    "name": "PetMillyApp",
-    "slug": "petmilly-app",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "splash": {
-      "image": "./src/assets/images/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#E84178"
-    },
-    "android": {
-      "googleServicesFile": "./android/app/google-services.json",
-      "package": "com.petmilly.application",
-      "permissions": [
-        "android.permission.INTERNET"
-      ],
-      "webView": {
-        "enabled": true
-      },
-      "jsEngine": "hermes"
-    },
-    "ios": {
-      "bundleIdentifier": "com.petmilly.application",
-      "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
-      }
-    },
-    "extra": {
-      "eas": {
-        "projectId": "426cd31c-4ae7-4437-a613-e2b1938bbb42"
-      }
-    },
-    "scheme": "com.petmilly.app",
-    "plugins": [
-      "@react-native-google-signin/google-signin",
-      "expo-build-properties",
-      [
-        "@react-native-seoul/kakao-login",
-        {
-          "kakaoAppKey": "21ee4115e7413df6fafbd0b53ed8f330",
-          "overrideKakaoSDKVersion": "2.20.1",
-          "kotlinVersion": "1.9.0"
-        }
-      ],
-      [
-        "expo-build-properties",
-        {
-          "android": {
-            "extraMavenRepos": [
-              "https://devrepo.kakao.com/nexus/content/groups/public/"
-            ]
-          }
-        }
-      ]
-    ]
-  }
+	"expo": {
+		"name": "PetMillyApp",
+		"slug": "petmilly-app",
+		"version": "1.0.0"
+	}
 }
