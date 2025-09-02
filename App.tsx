@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import * as SplashScreen from 'expo-splash-screen';
+import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
@@ -12,7 +12,7 @@ import FullStackNavigation from "./src/navigation/FullStackNavigation";
 
 // firebase
 import useAuthStatus from "./src/hooks/useAuthStatus";
-import './src/service/firebase'; // Firebase 초기화를 위해 import
+import "./src/service/firebase"; // Firebase 초기화를 위해 import
 
 const queryClient = new QueryClient();
 

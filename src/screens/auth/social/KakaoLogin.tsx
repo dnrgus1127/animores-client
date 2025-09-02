@@ -1,5 +1,9 @@
 import { getProfile, login } from '@react-native-seoul/kakao-login';
-import { OIDCAuthProvider, signInWithCredential, getAuth } from "@react-native-firebase/auth";
+import {
+	OIDCAuthProvider,
+	signInWithCredential,
+	getAuth,
+} from '@react-native-firebase/auth';
 import { IconSnsKakao } from '../../../assets/svg';
 import React from 'react';
 import { socialLoginStyles } from './style';
@@ -7,70 +11,73 @@ import { SocialLoginButton } from './SocialLoginButton';
 import { useSocialLogin } from '../hooks/useSocialLogin';
 
 interface KakaoLoginProps {
-  onSuccess?: () => void;
+	onSuccess?: () => void;
 }
 
 export const signInWithKakao = async () => {
-    try {
-        // 1. 카카오 로그인 실행
-        const token = await login();
-    
-        // 2. 카카오 사용자 프로필 정보 가져오기
-        const profile = await getProfile();
-    
-        // 3. Firebase 커스텀 토큰 생성
-        const credential = OIDCAuthProvider.credential(
-            'kakao',
-            token.idToken
-        );
+	try {
+		// 1. 카카오 로그인 실행
+		const token = await login();
 
-        // 4. Firebase 로그인
-        const userCredential = await signInWithCredential(getAuth(), credential);
+		// 2. 카카오 사용자 프로필 정보 가져오기
+		const profile = await getProfile();
 
-        // 5. 사용자 정보 저장
-        const user = userCredential.user;
+		// 3. Firebase 커스텀 토큰 생성
+		const credential = OIDCAuthProvider.credential('kakao', token.idToken);
 
-        // 6. 추가 사용자 정보 저장 (Firestore 등에 저장하는 경우)
-        const userData = {
-            uid: user.uid,
-            email: profile.email,
-            nickname: profile.nickname,
-            profileImage: profile.profileImageUrl,
-            kakaoId: profile.id,
-            lastLoginAt: new Date().toISOString(),
-        };
+		// 4. Firebase 로그인
+		const userCredential = await signInWithCredential(getAuth(), credential);
 
-        return {
-            user,
-            userData,
-            token: token.accessToken
-        };
+		// 5. 사용자 정보 저장
+		const user = userCredential.user;
 
-    } catch (error) {
-        console.error('카카오 로그인 에러:', error);
-        throw error;
-    }
+		// 6. 추가 사용자 정보 저장 (Firestore 등에 저장하는 경우)
+		const userData = {
+			uid: user.uid,
+			email: profile.email,
+			nickname: profile.nickname,
+			profileImage: profile.profileImageUrl,
+			kakaoId: profile.id,
+			lastLoginAt: new Date().toISOString(),
+		};
+
+		return {
+			user,
+			userData,
+			token: token.accessToken,
+		};
+	} catch (error) {
+		if (error && typeof error === 'object') {
+			for (const key in error) {
+				if (Object.prototype.hasOwnProperty.call(error, key)) {
+					//   console.log(`\nerror[${key}]:`, (error as any)[key]);
+				}
+			}
+		}
+		console.error('카카오 로그인 에러:', error);
+		throw error;
+	}
 };
 
 export const KakaoLogin: React.FC<KakaoLoginProps> = ({ onSuccess }) => {
-    const { handleSuccess, handleError } = useSocialLogin({ onSuccess });
+	const { handleSuccess, handleError } = useSocialLogin({ onSuccess });
 
-    const handleKakaoLogin = async () => {
-        try {
-            const result = await signInWithKakao();
-            await handleSuccess(result.token, '카카오');
-        } catch (error) {
-            handleError(error, '카카오');
-        }
-    };
+	const handleKakaoLogin = async () => {
+		try {
+			const result = await signInWithKakao();
+			await handleSuccess(result.token, '카카오');
+		} catch (error) {
+			handleError(error, '카카오');
+		}
+	};
 
-    return (
-        <SocialLoginButton
-            icon={<IconSnsKakao width={24} height={24} />}
-            text="카카오로 시작하기"
-            buttonStyle={socialLoginStyles.kakaoButton}
-            textStyle={socialLoginStyles.kakaoText}
-            onPress={handleKakaoLogin}
-        />
-    );
+	return (
+		<SocialLoginButton
+			icon={<IconSnsKakao width={24} height={24} />}
+			text="카카오로 시작하기"
+			buttonStyle={socialLoginStyles.kakaoButton}
+			textStyle={socialLoginStyles.kakaoText}
+			onPress={handleKakaoLogin}
+		/>
+	);
 };

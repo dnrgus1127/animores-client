@@ -1,10 +1,14 @@
-import React from 'react';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { getAuth, GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
-import { IconSnsGoogle } from '../../../assets/svg';
-import { socialLoginStyles } from './style';
-import { SocialLoginButton } from './SocialLoginButton';
-import { useSocialLogin } from '../hooks/useSocialLogin';
+import React from "react";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithCredential,
+} from "@react-native-firebase/auth";
+import { IconSnsGoogle } from "../../../assets/svg";
+import { socialLoginStyles } from "./style";
+import { SocialLoginButton } from "./SocialLoginButton";
+import { useSocialLogin } from "../hooks/useSocialLogin";
 
 interface GoogleLoginProps {
   onSuccess?: () => void;
@@ -26,13 +30,13 @@ export const signInWithGoogle = async () => {
     const auth = getAuth();
     const userCredential = await signInWithCredential(auth, googleCredential);
     console.log("userCredential", userCredential);
-    
+
     // Firebase ID 토큰 획득
     const firebaseIdToken = await userCredential.user.getIdToken();
 
     return {
       user: userCredential.user,
-      token: firebaseIdToken
+      token: firebaseIdToken,
     };
   } catch (error: any) {
     console.error("Google 로그인 에러", {
@@ -55,9 +59,9 @@ export const GoogleLogin: React.FC<GoogleLoginProps> = ({ onSuccess }) => {
   const handleGoogleLogin = async () => {
     try {
       const result = await signInWithGoogle();
-      await handleSuccess(result.token, 'Google');
+      await handleSuccess(result.token, "Google");
     } catch (error) {
-      handleError(error, 'Google');
+      handleError(error, "Google");
     }
   };
 
