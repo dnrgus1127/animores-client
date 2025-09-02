@@ -51,7 +51,6 @@ module.exports = ({ config }) => {
 		extra: {
 			IMAGE_BASE_URL: process.env.IMAGE_BASE_URL,
 			GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
-			GOOGLE_IOS_URL_SCHEME: process.env.GOOGLE_IOS_URL_SCHEME,
 			KAKAO_APP_KEY: process.env.KAKAO_APP_KEY,
 			FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
 			FIREBASE_AUTH_DOMAIN: process.env.FIREBASE_AUTH_DOMAIN,
@@ -64,12 +63,7 @@ module.exports = ({ config }) => {
 		scheme: 'com.petmilly.app',
 		plugins: [
 			'expo-dev-client',
-			[
-				'@react-native-google-signin/google-signin',
-				{
-					iosUrlScheme: process.env.GOOGLE_IOS_URL_SCHEME,
-				},
-			],
+			'@react-native-google-signin/google-signin',
 			[
 				'@react-native-seoul/kakao-login',
 				{
