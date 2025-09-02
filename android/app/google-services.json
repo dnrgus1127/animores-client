@@ -45,6 +45,13 @@
             {
               "client_id": "883377433308-c2gsfrn1jennpd2cgvknvt07nrhjgveh.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "883377433308-3j3mvtsp9v6vtt3pla1i8lmesskr8uu5.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.petmilly.application"
+              }
             }
           ]
         }
