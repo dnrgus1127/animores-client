@@ -28,7 +28,12 @@ export function usePeriodTodoList(
     return useQuery<IPeriodTodosResponse, unknown, IPeriodTodo[]>({
         queryKey: [QueryKey.TODO_LIST, 'period', start, end, completed, page, size],
         queryFn: () => ToDoService.todo.periodList({ start, end, completed, page, size }),
-        select: resp => resp.data ?? [],
-        enabled: page > 0 && size > 0,
+        select: resp => {
+            const direct = (resp as any)?.data;
+            if (Array.isArray(direct)) return direct as IPeriodTodo[];
+            const nested = (resp as any)?.data?.data;
+            return Array.isArray(nested) ? (nested as IPeriodTodo[]) : [];
+        },
+        enabled: Boolean(start && end) && page > 0 && size > 0,
     });
 }

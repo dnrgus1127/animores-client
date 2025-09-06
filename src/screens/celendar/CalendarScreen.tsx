@@ -1,34 +1,22 @@
 import React, { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { DefaultDayOfWeek } from '../../components/Calendar/base';
-import { CalendarDropDownHeader } from "../../components/Calendar/CalendarHeaders";
-import { CurrentContextProvider } from "../../components/Calendar/CurrentContextProvider";
-import { HeaderLessCalendar } from "../../components/Calendar/HeaderLessCalendar";
+import { CalendarDropDownHeader } from '../../components/Calendar/CalendarHeaders';
+import { CurrentContextProvider } from '../../components/Calendar/CurrentContextProvider';
 import { convertCalendarDateToKorean } from '../../components/Calendar/utils';
 import { SlideUpModal } from '../../components/modal/SlideUpModal';
 import { Colors } from '../../styles/Colors';
 import ToDoCardList from '../todo/ToDoCardList';
 import { CalendarToggle } from './CalendarToggle';
+import DiaryCalendar from './DiaryCalendar';
+import TodoCalendar from './TodoCalendar';
 
 const CalendarScreen = () => {
     const [selectedTab, setSelectedTab] = useState<'todo' | 'diary'>('todo');
     const [selectedDay, setSelectedDay] = useState<string | null>(null);
 
     const date = selectedDay ? new Date(selectedDay) : null;
-
-    // 예시 dayContent 함수 - red view로 부모 크기 채우기
-    const renderDayContent = (date: any) => {
-        return (
-            <View style={{
-                width: 10,
-                height: 4,
-                backgroundColor: 'red',
-                borderRadius: 2,
-                marginTop: 2
-            }} />
-        );
-    };
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -41,11 +29,11 @@ const CalendarScreen = () => {
                 />
                 <View style={{ flex: 1 }}>
                     <DefaultDayOfWeek />
-                    <HeaderLessCalendar 
-                        currentMonth={"2025-03"} 
-                        onSelectDay={(date) => setSelectedDay(date.dateString)}
-                        dayContent={selectedTab === 'diary' ? renderDayContent : undefined}
-                    />
+                    {selectedTab === 'diary' ? (
+                        <DiaryCalendar onSelectDay={date => setSelectedDay(date.dateString)} />
+                    ) : (
+                        <TodoCalendar onSelectDay={date => setSelectedDay(date.dateString)} />
+                    )}
                 </View>
 
                 <SlideUpModal
@@ -53,14 +41,22 @@ const CalendarScreen = () => {
                     onClose={() => setSelectedDay(null)}
                     contentHeight={70}
                 >
-                    <View style={{ alignSelf: "flex-start", paddingHorizontal: 20 }}>
-                        <Text style={styles.dateText}>{convertCalendarDateToKorean({
-                            month: date ? date.getMonth() + 1 : undefined,
-                            day: date?.getDate(),
-                            weekDay: date?.getDay()
-                        })}</Text>
+                    <View style={{ alignSelf: 'flex-start', paddingHorizontal: 20 }}>
+                        <Text style={styles.dateText}>
+                            {convertCalendarDateToKorean({
+                                month: date ? date.getMonth() + 1 : undefined,
+                                day: date?.getDate(),
+                                weekDay: date?.getDay(),
+                            })}
+                        </Text>
                     </View>
-                    <ToDoCardList pets={[]} setTodoIdToDelete={() => { }} />
+                    {selectedTab === 'todo' ? (
+                        <ToDoCardList pets={[]} setTodoIdToDelete={() => {}} />
+                    ) : (
+                        <View style={{ padding: 20 }}>
+                            <Text>해당 날짜의 일지 목록을 노출할 영역</Text>
+                        </View>
+                    )}
                 </SlideUpModal>
             </CurrentContextProvider>
         </SafeAreaView>

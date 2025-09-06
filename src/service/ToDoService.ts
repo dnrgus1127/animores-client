@@ -2,6 +2,9 @@ import axios from "axios";
 import { IAddTodo, IListToDoParam } from '../../types/AddToDo';
 import { IToDoListResponse, IPeriodTodosResponse } from '../../types/ToDo';
 import AxiosContext from "../screens/context/AxiosContext";
+import { normalizeToYmd } from '../js/util';
+
+// moved date utils to src/js/util.js
 
 export namespace ToDoService {
     export const todo = {
@@ -63,11 +66,13 @@ export namespace ToDoService {
         }): Promise<IPeriodTodosResponse> => {
             try {
                 let queryString = `/api/v1/todos?page=${params.page}&size=${params.size}`;
-                if (params.start) {
-                    queryString += `&start=${encodeURIComponent(params.start)}`;
+                const start = normalizeToYmd(params.start);
+                const end = normalizeToYmd(params.end);
+                if (start) {
+                    queryString += `&start=${encodeURIComponent(start)}`;
                 }
-                if (params.end) {
-                    queryString += `&end=${encodeURIComponent(params.end)}`;
+                if (end) {
+                    queryString += `&end=${encodeURIComponent(end)}`;
                 }
                 if (typeof params.completed === 'boolean') {
                     queryString += `&completed=${params.completed}`;
