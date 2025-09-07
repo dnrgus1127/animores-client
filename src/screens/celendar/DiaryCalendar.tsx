@@ -47,22 +47,29 @@ const DiaryCalendar: React.FC<DiaryCalendarProps> = ({ onSelectDay }) => {
             if (!diaryDateSet) return undefined;
             if (!diaryDateSet.has(d.dateString)) return undefined;
             return (
-                <View style={{
-                    width: 10,
-                    height: 4,
-                    backgroundColor: Colors.Pink,
-                    borderRadius: 2,
-                    marginTop: 2
-                }} />
+                <View
+                    style={{
+                        width: 6,
+                        height: 6,
+                        backgroundColor: Colors.Pink,
+                        borderRadius: 3,
+                        marginTop: 2,
+                    }}
+                />
             );
         };
     }, [diaryDateSet]);
 
+    const handleSelectDay = (d: DateData) => {
+        if (!diaryDateSet?.has(d.dateString)) return;
+        onSelectDay?.(d);
+    };
+
     return (
         <View style={{ flex: 1 }}>
-            <HeaderLessCalendar 
+            <HeaderLessCalendar
                 currentMonth={currentMonth}
-                onSelectDay={onSelectDay}
+                onSelectDay={handleSelectDay}
                 dayContent={dayContent}
             />
         </View>
