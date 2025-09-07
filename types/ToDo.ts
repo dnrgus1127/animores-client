@@ -24,8 +24,8 @@ export interface IToDoListResponse {
     toDoList: IToDo[];
 }
 
-// 기간 조회 API 응답을 위한 타입들
-export interface IPeriodTodo {
+// 요약형 ToDo(기간/리스트 등에서 사용하는 경량 정보)
+export interface IToDoOverview {
     todoId: number;
     date: string;
     time: string;
@@ -49,4 +49,4 @@ export interface IApiResponse<T> {
     error?: IApiError;
 }
 
-export type IPeriodTodosResponse = IApiResponse<IPeriodTodo[]>;
+export type IToDoOverviewResponse = IApiResponse<IToDoOverview[]>;

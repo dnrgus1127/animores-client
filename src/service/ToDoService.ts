@@ -1,13 +1,35 @@
 import axios from "axios";
 import { IAddTodo, IListToDoParam } from '../../types/AddToDo';
-import { IToDoListResponse, IPeriodTodosResponse } from '../../types/ToDo';
-import AxiosContext from "../screens/context/AxiosContext";
+import { IToDoListResponse, IToDoOverviewResponse, IToDo, IApiResponse } from '../../types/ToDo';
+import AxiosContext from '../screens/context/AxiosContext';
 import { normalizeToYmd } from '../js/util';
 
 // moved date utils to src/js/util.js
 
 export namespace ToDoService {
     export const todo = {
+        /**
+         * 투두 상세 조회 (상세 정보 전용)
+         * - 요약 리스트(API)에서 받은 todoId를 이용해, 해당 투두의 모든 상세 필드를 조회합니다.
+         * - 엔드포인트: GET /api/v1/todos/{id}
+         * - 사용 예: period/list 등에서 축약 정보 수신 → 이 API로 상세 정보 보강
+         */
+        detail: async (id: number): Promise<IApiResponse<IToDo>> => {
+            try {
+                const response = await AxiosContext.get(`/api/v1/todos/${id}`);
+                return response.data as IApiResponse<IToDo>;
+            } catch (error) {
+                console.error('ToDoService.todo.detail:', error);
+                if (axios.isAxiosError(error)) {
+                    if (error.response) {
+                        console.error('ToDoService.todo.detail:', error.response.data);
+                    } else {
+                        console.error('ToDoService.todo.detail:', error.message);
+                    }
+                }
+                throw error;
+            }
+        },
         create: async (content: IAddTodo) => {
             try {
                 const response = await AxiosContext.post(`/api/v1/todos`, content);
@@ -63,9 +85,9 @@ export namespace ToDoService {
             completed?: boolean;
             page: number;
             size: number;
-        }): Promise<IPeriodTodosResponse> => {
+        }): Promise<IToDoOverviewResponse> => {
             try {
-                let queryString = `/api/v1/todos?page=${params.page}&size=${params.size}`;
+                let queryString = `/api/v1/todos/?page=${params.page}&size=${params.size}`;
                 const start = normalizeToYmd(params.start);
                 const end = normalizeToYmd(params.end);
                 if (start) {
@@ -78,7 +100,7 @@ export namespace ToDoService {
                     queryString += `&completed=${params.completed}`;
                 }
                 const response = await AxiosContext.get(queryString);
-                return response.data as IPeriodTodosResponse;
+                return response.data as IToDoOverviewResponse;
             } catch (error) {
                 console.error('ToDoService.todo.periodList:', error);
                 if (axios.isAxiosError(error)) {

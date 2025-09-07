@@ -8,6 +8,7 @@ import { convertCalendarDateToKorean } from '../../components/Calendar/utils';
 import { SlideUpModal } from '../../components/modal/SlideUpModal';
 import { Colors } from '../../styles/Colors';
 import ToDoCardList from '../todo/ToDoCardList';
+import TodoListByDate from '../todo/TodoListByDate';
 import { CalendarToggle } from './CalendarToggle';
 import DiaryCalendar from './DiaryCalendar';
 import TodoCalendar from './TodoCalendar';
@@ -37,7 +38,7 @@ const CalendarScreen = () => {
                 </View>
 
                 <SlideUpModal
-                    isVisible={selectedDay !== null}
+                    isVisible={selectedTab === 'todo' && selectedDay !== null}
                     onClose={() => setSelectedDay(null)}
                     contentHeight={70}
                 >
@@ -50,13 +51,7 @@ const CalendarScreen = () => {
                             })}
                         </Text>
                     </View>
-                    {selectedTab === 'todo' ? (
-                        <ToDoCardList pets={[]} setTodoIdToDelete={() => {}} />
-                    ) : (
-                        <View style={{ padding: 20 }}>
-                            <Text>해당 날짜의 일지 목록을 노출할 영역</Text>
-                        </View>
-                    )}
+                    {selectedDay && <TodoListByDate date={selectedDay} />}
                 </SlideUpModal>
             </CurrentContextProvider>
         </SafeAreaView>
