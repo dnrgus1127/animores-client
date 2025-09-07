@@ -53,32 +53,35 @@ export function CalenderBase(props: CalenderProps.Base) {
   // onSelectDay prop이 있으면 그것을 사용하고, 없으면 기존의 selectDay 사용
   const handleDayPress = onSelectDay || selectDay;
 
+  const currentString = formatDateToString(effectiveDate);
+
   return (
-    <View onLayout={handleLayout} style={{ flex: 1 }}>
-      <Calendar
-        current={formatDateToString(effectiveDate)}
-        markedDates={markedDates}
-        style={{ height: "100%" }}
-        dayComponent={(props: CalenderProps.Day) => {
-          const Comp = customDayComponent ?? DayComponent;
-          return (
-            <Comp
-              {...props}
-              onDayPress={handleDayPress}
-              content={dayContent ? dayContent(props.date) : undefined}
-            />
-          );
-        }}
-        showSixWeeks={true}
-        customHeader={hideHeader ? () => null : renderCustomHeader}
-        renderArrow={hideHeader ? undefined : renderCustomArrow}
-        hideDayNames={true}
-        theme={CALENDAR_THEME}
-        onMonthChange={(month: DateData) => {
-          const next = new Date(month.year, month.month - 1, 1);
-          onMonthChange?.(next);
-        }}
-      ></Calendar>
-    </View>
+      <View onLayout={handleLayout} style={{ flex: 1 }}>
+          <Calendar
+              key={currentString}
+              current={currentString}
+              markedDates={markedDates}
+              style={{ height: '100%' }}
+              dayComponent={(props: CalenderProps.Day) => {
+                  const Comp = customDayComponent ?? DayComponent;
+                  return (
+                      <Comp
+                          {...props}
+                          onDayPress={handleDayPress}
+                          content={dayContent ? dayContent(props.date) : undefined}
+                      />
+                  );
+              }}
+              showSixWeeks={true}
+              customHeader={hideHeader ? () => null : renderCustomHeader}
+              renderArrow={hideHeader ? undefined : renderCustomArrow}
+              hideDayNames={true}
+              theme={CALENDAR_THEME}
+              onMonthChange={(month: DateData) => {
+                  const next = new Date(month.year, month.month - 1, 1);
+                  onMonthChange?.(next);
+              }}
+          ></Calendar>
+      </View>
   );
 }
