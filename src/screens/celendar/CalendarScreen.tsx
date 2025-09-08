@@ -60,7 +60,7 @@ const CalendarScreen = () => {
 
 const styles = StyleSheet.create({
     dateText: {
-        fontSize: 34,
+        fontSize: 16,
         fontWeight: '600',
         fontFamily: 'Pretendard-SemiBold',
         color: Colors.Gray717171,
