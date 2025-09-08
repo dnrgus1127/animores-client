@@ -26,8 +26,8 @@ const DiaryCalendar: React.FC<DiaryCalendarProps> = ({ onSelectDay }) => {
         queryKey: [QueryKey.DIARY_CALENDAR, currentProfile?.id, currentMonth],
         queryFn: async () => {
             if (!currentProfile?.id) return new Set<string>();
-            const resp = await DiaryService.diary.calendar(currentProfile.id, currentMonth);
-            const items = resp?.data?.data?.diaries ?? [];
+            const data = await DiaryService.diary.calendar(currentProfile.id, currentMonth);
+			const items = data.diaries ?? [];
             const set = new Set<string>();
             for (const item of items) {
                 const d = new Date(item.createdAt);

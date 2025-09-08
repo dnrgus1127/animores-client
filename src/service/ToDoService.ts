@@ -1,9 +1,9 @@
 import axios from "axios";
 import { IAddTodo, IListToDoParam } from '../../types/AddToDo';
-import { IToDoListResponse, IToDoOverviewResponse, IToDo, IApiResponse } from '../../types/ToDo';
+import { IToDoListResponse, IToDoOverviewResponse, IToDo } from '../../types/ToDo';
 import AxiosContext from '../screens/context/AxiosContext';
 import { normalizeToYmd } from '../js/util';
-
+import { IApiResponse } from './type';
 // moved date utils to src/js/util.js
 
 export namespace ToDoService {
