@@ -1,5 +1,5 @@
-import AxiosContext from "../screens/context/AxiosContext";
-import {EXPO_PUBLIC_BASE_URL} from '@env';
+import AxiosContext from '../screens/context/AxiosContext';
+import { EXPO_PUBLIC_BASE_URL } from '@env';
 
 export namespace ProfileService {
 	export const profile = {
@@ -7,7 +7,7 @@ export namespace ProfileService {
 		myProfile: async () => {
 			try {
 				const response = await AxiosContext.get(`/api/v1/account`);
-				console.log(response)
+				console.log(response);
 				return { data: response.data, status: response.status };
 			} catch (error) {
 				console.error('ProfileService.Profile.myProfile:', error);
@@ -18,11 +18,15 @@ export namespace ProfileService {
 		updateNickname: async (formData: FormData) => {
 			console.log(formData);
 			try {
-				const response = await AxiosContext.patch(`/api/v1/account/update-nickname`, formData, {
-					headers: {
-						'Content-Type': 'application/json'
-					},
-				});
+				const response = await AxiosContext.patch(
+					`/api/v1/account/update-nickname`,
+					formData,
+					{
+						headers: {
+							'Content-Type': 'application/json',
+						},
+					}
+				);
 				return { data: response.data, status: response.status };
 			} catch (error) {
 				console.error('ProfileService.profile.updateNickname:', error);
@@ -33,7 +37,7 @@ export namespace ProfileService {
 		//프로필 목록 조회
 		list: async () => {
 			try {
-				console.log(EXPO_PUBLIC_BASE_URL)
+				console.log(EXPO_PUBLIC_BASE_URL, 'EXPO_PUBLIC_BASE_URL');
 				const response = await AxiosContext.get(`/api/v1/profiles`);
 				return { data: response.data };
 			} catch (error) {
@@ -46,8 +50,8 @@ export namespace ProfileService {
 			try {
 				const response = await AxiosContext.post(`/api/v1/profiles`, formData, {
 					headers: {
-						'Content-Type': 'multipart/form-data'
-					}
+						'Content-Type': 'multipart/form-data',
+					},
 				});
 				return { data: response.data, status: response.status };
 			} catch (error) {
@@ -60,7 +64,7 @@ export namespace ProfileService {
 			try {
 				const response = await AxiosContext.put(`/api/v1/profiles`, formData, {
 					headers: {
-						'Content-Type': 'multipart/form-data'
+						'Content-Type': 'multipart/form-data',
 					},
 				});
 				return { data: response.data, status: response.status };
@@ -73,12 +77,14 @@ export namespace ProfileService {
 		delete: async (profileId: string) => {
 			console.log('profileId', profileId);
 			try {
-				const response = await AxiosContext.delete(`/api/v1/profiles/${profileId}`);
+				const response = await AxiosContext.delete(
+					`/api/v1/profiles/${profileId}`
+				);
 				return { data: response.data, status: response.status };
 			} catch (error) {
 				console.error('ProfileService.Profile.edit:', error);
 				return { data: null, status: error || error };
 			}
 		},
-	}
+	};
 }

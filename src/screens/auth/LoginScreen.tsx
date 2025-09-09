@@ -1,31 +1,30 @@
-import {useMutation} from "@tanstack/react-query";
-import React from "react";
-import {useForm} from "react-hook-form";
-import {Pressable, StyleSheet, View} from "react-native";
-import {SafeAreaView} from "react-native-safe-area-context";
-import Toast from "react-native-toast-message";
-import {EmptyCircleIcon, IconSnsApple, IconSnsFacebook, IconSnsKakao, IconSnsNaver,} from "../../assets/svg";
-import InputBox from "../../components/Input/InputBox";
-import Title from "../../components/text/Title";
-import {AuthModel} from "../../model/AuthModel";
-import {AuthService} from "../../service/AuthService";
-import {ScreenName} from "../../statics/constants/ScreenName";
-import {Colors} from "../../styles/Colors";
-import {commonStyles} from "../../styles/commonStyles";
-import {setTokens} from "../../utils/storage/Storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
+import { useForm } from "react-hook-form";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
+import Title from "../../components/text/Title";
+import { AuthModel } from "../../model/AuthModel";
+import { AuthService } from "../../service/AuthService";
+import { ScreenName } from "../../statics/constants/ScreenName";
+import { Colors } from "../../styles/Colors";
+import { commonStyles } from "../../styles/commonStyles";
+import { setTokens } from "../../utils/storage/Storage";
+import SocialLogin from "./social/SocialLogin";
+
 
 const LoginScreen = ({ navigation }: any) => {
   const { control, handleSubmit } = useForm<AuthModel.ILoginModel>();
   const loginFunction = async (input: AuthModel.ILoginModel): Promise<AuthModel.ILoginResponseModel> => {
     return await AuthService.Auth.login(input.email, input.password);
   };
-  
-  const { isLoading, mutate } = useMutation<AuthModel.ILoginResponseModel,Error,AuthModel.ILoginModel>(loginFunction,{
+
+  const { isLoading, mutate } = useMutation<AuthModel.ILoginResponseModel, Error, AuthModel.ILoginModel>(loginFunction, {
     onSuccess: (response) => {
       if (response.success) {
-        const {accessToken, refreshToken} = response.data;
+        const { accessToken, refreshToken } = response.data;
         if (accessToken && refreshToken) {
           setTokens(accessToken, refreshToken);
           AsyncStorage.setItem("userToken", accessToken);
@@ -43,7 +42,7 @@ const LoginScreen = ({ navigation }: any) => {
       }
     },
     onError: (error: Error) => {
-      if(axios.isAxiosError(error)) {
+      if (axios.isAxiosError(error)) {
         console.log(error.response?.data);
       }
       Toast.show({
@@ -60,80 +59,34 @@ const LoginScreen = ({ navigation }: any) => {
   return (
     <SafeAreaView style={styles.container}>
       <Title
-        text={"로그인"}
-        fontSize={18}
+        text={"PETMILY"}
+        fontSize={24}
         fontWeight="bold"
         style={{ textAlign: "center", paddingVertical: 26 }}
       />
-      <View style={{ paddingHorizontal: 20 }}>
-        <InputBox
-          name={"email"}
-          placeholder="이메일"
-          control={control}
-          style={{ marginTop: 40, marginBottom: 10 }}
-        />
-        <InputBox
-          name={"password"}
-          placeholder="비밀번호"
-          control={control}
-          secureTextEntry={true}
-        />
-        <View style={styles.autoLogin}>
-          <EmptyCircleIcon />
+      <View style={{ flex: 1, paddingHorizontal: 20 }}>
+        <View style={{ flex: 1.5, justifyContent: 'center', alignItems: 'center' }}>
           <Title
-            text={"자동 로그인"}
-            color={Colors.AEAEAE}
-            style={{
-              marginLeft: 12,
-              paddingBottom: 4,
-            }}
+            text={"반려동물의 일상과 추억을 한 곳에"}
+            fontSize={20}
+            fontWeight="bold"
+            style={{ textAlign: 'center', lineHeight: 26 }}
           />
+          <Text style={{ color: Colors.Gray717171, textAlign: 'center', fontSize: 16 }}>스케줄, 할일을 쉽고 편하게 관리하고</Text>
+          <Text style={{ color: Colors.Gray717171, textAlign: 'center', fontSize: 16 }}>내 반려동물을 자랑해 보세요!</Text>
         </View>
-        <Pressable
-          onPress={handleSubmit(onsubmit)}
-          disabled={isLoading}
-          style={styles.loginButton}
-          children={<Title text="로그인" color={Colors.White}
-          />}
-        />
-        <View style={[commonStyles.commonRowContainer, { marginTop: 68 }]}>
-          <View style={commonStyles.separator} />
-          <Title
-            text={"SNS 간편 로그인"}
-            color={Colors.AEAEAE}
-            style={{ paddingHorizontal: 8 }}
-          />
-          <View style={commonStyles.separator} />
+        <View style={{ flex: 3, justifyContent: 'center', alignItems: 'center' }}>
+          <SocialLogin />
         </View>
-      </View>
-      <View style={commonStyles.commonRowContainer}>
-        <View style={styles.loginContainer}>
-          <Pressable>
-            <IconSnsNaver />
-          </Pressable>
-          <Pressable>
-            <IconSnsKakao />
-          </Pressable>
-          <Pressable>
-            <IconSnsFacebook />
-          </Pressable>
-          <Pressable>
-            <IconSnsApple />
-          </Pressable>
+        <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center' }}>
+          <View style={styles.textButtonRow}>
+            <Pressable><Title text="문의하기" color={Colors.AEAEAE} fontSize={13} /></Pressable>
+            <View style={commonStyles.verticalBar} />
+            <Pressable><Title text="둘러보기" color={Colors.AEAEAE} fontSize={13} /></Pressable>
+            <View style={commonStyles.verticalBar} />
+            <Pressable><Title text="설정하기" color={Colors.AEAEAE} fontSize={13} /></Pressable>
+          </View>
         </View>
-      </View>
-      <View style={[commonStyles.commonRowContainer, { marginTop: 92 }]}>
-        <Pressable>
-          <Title text="아이디 찾기" color={Colors.AEAEAE} />
-        </Pressable>
-        <View style={commonStyles.verticalBar} />
-        <Pressable>
-          <Title text="비밀번호 찾기" color={Colors.AEAEAE} />
-        </Pressable>
-        <View style={commonStyles.verticalBar} />
-        <Pressable onPress={() => navigation.navigate(ScreenName.Join)}>
-          <Title text="회원가입" fontWeight="bold" />
-        </Pressable>
       </View>
     </SafeAreaView>
   );
@@ -145,37 +98,20 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.White,
+    justifyContent: 'flex-start',
   },
-  loginInputWrap: {
-    alignItems: "center",
-    marginHorizontal: 50,
+  mainLoginButton: {
+    width: '100%',
+    height: 56,
+    backgroundColor: '#fb3f7e',
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
   },
-  checkboxWrap: {
-    flexDirection: "row",
-    marginTop: 15,
-  },
-  autoLoginLabel: {
-    color: Colors.AEAEAE,
-  },
-  checkedLabel: {
-    color: "#000",
-  },
-  loginButton: {
-    height: 58,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 15,
-    backgroundColor: Colors.FB3F7E,
-  },
-  autoLogin: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 14,
-  },
-  loginContainer: {
-    marginTop: 30,
-    flexDirection: "row",
-    justifyContent: "space-around",
-    width: "60%",
+  textButtonRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

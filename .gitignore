@@ -31,8 +31,37 @@ yarn-error.*
 # local env files
 .env
 .env*.local
+.env*.dev
+.env*.prod
+
+# expo dynamic config caches
+app.config.*.json
+
+# local secrets (do not commit)
+google-services.json
+GoogleService-Info.plist
+
+# editor/tooling
 
 # typescript
 *.tsbuildinfo
 yarn.lock
 package.lock
+
+# --- Build artifacts (RN/Expo) ---
+ios/build/
+ios/**/build/
+ios/**/xcuserdata/
+
+ios/Pods/
+
+android/build/
+android/app/build/
+android/**/build/
+android/.gradle/
+.gradle/
+
+.expo/
+.expo-shared/
+dist/
+# --- end build artifacts ---

@@ -1,0 +1,62 @@
+{
+  "project_info": {
+    "project_number": "883377433308",
+    "project_id": "petmilly-2e866",
+    "storage_bucket": "petmilly-2e866.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:883377433308:android:b2f93ad91df77ee0a8a219",
+        "android_client_info": {
+          "package_name": "com.petmilly.application"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "883377433308-a7ab4rlujbgp1bss064grhu5o985qdou.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.petmilly.application",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "883377433308-o0j9p9mn3n8t4800n4g07b08tbagbgln.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.petmilly.application",
+            "certificate_hash": "b869ecbf20584e6dc8f3ba6484167b82a2f9adfb"
+          }
+        },
+        {
+          "client_id": "883377433308-c2gsfrn1jennpd2cgvknvt07nrhjgveh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAX2coD499he-8r3L-eHpedv2LTiDjk3Gg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "883377433308-c2gsfrn1jennpd2cgvknvt07nrhjgveh.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "883377433308-3j3mvtsp9v6vtt3pla1i8lmesskr8uu5.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.petmilly.application"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
