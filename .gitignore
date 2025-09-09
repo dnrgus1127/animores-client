@@ -64,4 +64,7 @@ android/.gradle/
 .expo/
 .expo-shared/
 dist/
+
+GoogleService-Info.plist
+google-services.json
 # --- end build artifacts ---
