@@ -1,7 +1,6 @@
-import { useNavigation } from '@react-navigation/native';
-import Toast from 'react-native-toast-message';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ScreenName } from '../../../statics/constants/ScreenName';
+import { useNavigation } from "@react-navigation/native";
+import Toast from "react-native-toast-message";
+import { ScreenName } from "../../../statics/constants/ScreenName";
 
 interface UseSocialLoginProps {
   onSuccess?: () => void;
@@ -12,9 +11,6 @@ export const useSocialLogin = ({ onSuccess }: UseSocialLoginProps = {}) => {
 
   const handleSuccess = async (token: string, providerName: string) => {
     try {
-      // 토큰 저장
-      await AsyncStorage.setItem("userToken", token);
-
       // 성공 메시지 표시
       Toast.show({
         type: "success",
@@ -46,4 +42,4 @@ export const useSocialLogin = ({ onSuccess }: UseSocialLoginProps = {}) => {
     handleError,
     navigation,
   };
-}; 
+};

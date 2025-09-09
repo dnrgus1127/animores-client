@@ -22,18 +22,18 @@ import Toast from "react-native-toast-message";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../../navigation/type";
+import { getAuth } from "@react-native-firebase/auth";
 
 interface IMypageList {
   id: number;
   name: string;
   image: React.FC<SvgProps>;
   screen?: any;
-  detailScreen? : string;
+  detailScreen?: string;
 }
 
 const MypageScreen = () => {
-  const navigation =
-    useNavigation<StackNavigationProp<RootStackParamList, ScreenName.Mypage>>();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList, ScreenName.Mypage>>();
 
   const myPageTopList: IMypageList[] = [
     {
@@ -47,7 +47,7 @@ const MypageScreen = () => {
       name: "펫 관리",
       image: PetIcon,
       screen: ScreenName.PetManagement,
-      detailScreen : "Home"
+      detailScreen: "Home",
     },
     {
       id: 3,
@@ -62,7 +62,7 @@ const MypageScreen = () => {
       id: 4,
       name: "공지 사항",
       image: NoticeIcon,
-      screen: ScreenName.Notice
+      screen: ScreenName.Notice,
     },
     {
       id: 5,
@@ -80,6 +80,7 @@ const MypageScreen = () => {
 
   const handleLogout = async () => {
     try {
+      await getAuth().signOut();
       await AsyncStorage.clear();
 
       Toast.show({
@@ -90,8 +91,8 @@ const MypageScreen = () => {
     } catch (e) {
       Toast.show({
         type: "error",
-        text1: "로그아웃 실패"
-      })
+        text1: "로그아웃 실패",
+      });
     }
   };
 
@@ -112,10 +113,7 @@ const MypageScreen = () => {
                 <Pressable
                   key={m.id}
                   onPress={() => navigation.navigate(m.screen, m.detailScreen)}
-                  style={[
-                    styles.myPageContainer,
-                    { paddingTop: index === 0 ? 30 : 0 },
-                  ]}
+                  style={[styles.myPageContainer, { paddingTop: index === 0 ? 30 : 0 }]}
                 >
                   <m.image />
                   <Title text={m.name} style={{ marginLeft: 10 }} />
@@ -131,10 +129,7 @@ const MypageScreen = () => {
                 <Pressable
                   key={m.id}
                   onPress={() => navigation.navigate(m.screen)}
-                  style={[
-                    styles.myPageContainer,
-                    { paddingTop: index === 0 ? 30 : 0 },
-                  ]}
+                  style={[styles.myPageContainer, { paddingTop: index === 0 ? 30 : 0 }]}
                 >
                   <m.image />
                   <Title text={m.name} style={{ marginLeft: 10 }} />
@@ -152,11 +147,7 @@ const MypageScreen = () => {
           <View style={styles.logoutContainer}>
             <Pressable onPress={handleLogout} style={styles.rowView}>
               <LogoutIcon />
-              <Title
-                text={"로그아웃"}
-                color={Colors.AEAEAE}
-                style={{ marginLeft: 10 }}
-              />
+              <Title text={"로그아웃"} color={Colors.AEAEAE} style={{ marginLeft: 10 }} />
             </Pressable>
             <View
               style={{
@@ -167,11 +158,7 @@ const MypageScreen = () => {
             />
             <Pressable style={styles.rowView}>
               <WithdrawIcon />
-              <Title
-                text={"탈퇴하기"}
-                color={Colors.AEAEAE}
-                style={{ marginLeft: 10 }}
-              />
+              <Title text={"탈퇴하기"} color={Colors.AEAEAE} style={{ marginLeft: 10 }} />
             </Pressable>
           </View>
         </View>
@@ -185,7 +172,7 @@ export default MypageScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.F9F9FB
+    backgroundColor: Colors.F9F9FB,
   },
   myPageContainer: {
     flexDirection: "row",
@@ -218,7 +205,7 @@ const styles = StyleSheet.create({
   logoutContainer: {
     flexDirection: "row",
     justifyContent: "center",
-    marginTop: 50
+    marginTop: 50,
   },
   versionInformationContainer: {
     flexDirection: "row",

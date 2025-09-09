@@ -7,7 +7,7 @@ import { RecoilRoot } from "recoil";
 
 //navigate pages
 import { NavigationContainer } from "@react-navigation/native";
-import { LogBox } from "react-native";
+import { ActivityIndicator, LogBox } from "react-native";
 import FullStackNavigation from "./src/navigation/FullStackNavigation";
 
 // firebase
@@ -20,9 +20,8 @@ LogBox.ignoreAllLogs();
 SplashScreen.preventAutoHideAsync();
 
 const App = () => {
-  const { isAuthenticated, loading: authLoading } = useAuthStatus();
+  const { isAuthenticated, loading } = useAuthStatus();
   // TODO 인증 이외의 로딩이 필요한 작업(예: 초기 데이터 로드) 추가 시 loading 변수에 추가
-  const loading = authLoading;
 
   useEffect(() => {
     const prepareApp = async () => {
@@ -33,6 +32,10 @@ const App = () => {
 
     prepareApp();
   }, [loading]);
+
+  if (loading) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
 
   return (
     <>
