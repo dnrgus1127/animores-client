@@ -2,15 +2,11 @@ import { useQueries, useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { QueryKey } from '../statics/constants/Querykey';
 import { ToDoService } from '../service/ToDoService';
-import { IToDoListResponse, IToDo, IToDoOverviewResponse, IToDoOverview } from '../../types/ToDo';
+import { PeriodTodoListParams, TodoOverviewResponse } from '../service/type/api/todo';
+import { IToDoListResponse, IToDo, TodoOverview } from '../../types/ToDo';
 
 // TODO todoList에서 기간으로 조회할 수 있도록 업데이트 되면 기간 추가
-export function useTodoList(
-    pets: number[] = [],
-    done: boolean | null = null,
-    page: number = 1,
-    size: number = 15
-) {
+export function useTodoList(pets: number[] = [], done: boolean | null = null, page: number = 1, size: number = 15) {
     return useQuery<IToDoListResponse, unknown, IToDo[]>({
         queryKey: [QueryKey.TODO_LIST, pets, done, page, size],
         queryFn: () => ToDoService.todo.list({ done, pets, page, size }),
@@ -18,22 +14,32 @@ export function useTodoList(
     });
 }
 
-// 기간/완료 상태 기반 투두 목록 훅
-export function usePeriodTodoList(
-    start?: string,
-    end?: string,
-    completed?: boolean,
-    page: number = 1,
-    size: number = 15
-) {
-    return useQuery<IToDoOverviewResponse, unknown, IToDoOverview[]>({
+/**
+ * @desc 기간별 투두 목록 조회 훅 파라미터 (기본값 포함)
+ */
+export interface UsePeriodTodoListParams extends Partial<PeriodTodoListParams> {
+    start?: string;
+    end?: string;
+    completed?: boolean;
+    page?: number;
+    size?: number;
+}
+
+/**
+ * @desc 기간/완료 상태 기반 투두 목록 훅
+ * @param {UsePeriodTodoListParams} params 기간별 조회 파라미터
+ * @returns {import('@tanstack/react-query').UseQueryResult<TodoOverview[], unknown>} React Query 결과
+ */
+export function usePeriodTodoList(params: UsePeriodTodoListParams) {
+    const { start, end, completed, page = 1, size = 15 } = params;
+    return useQuery<TodoOverviewResponse, unknown, TodoOverview[]>({
         queryKey: [QueryKey.TODO_LIST, 'period', start, end, completed, page, size],
         queryFn: () => ToDoService.todo.periodList({ start, end, completed, page, size }),
         select: resp => {
             const direct = (resp as any)?.data;
-            if (Array.isArray(direct)) return direct as IToDoOverview[];
+            if (Array.isArray(direct)) return direct as TodoOverview[];
             const nested = (resp as any)?.data?.data;
-            return Array.isArray(nested) ? (nested as IToDoOverview[]) : [];
+            return Array.isArray(nested) ? (nested as TodoOverview[]) : [];
         },
         enabled: Boolean(start && end) && page > 0 && size > 0,
     });

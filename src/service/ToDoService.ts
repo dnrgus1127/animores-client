@@ -1,10 +1,11 @@
 import axios from "axios";
 import { IAddTodo, IListToDoParam } from '../../types/AddToDo';
-import { IToDoListResponse, IToDoOverviewResponse, IToDo } from '../../types/ToDo';
+import { IToDoListResponse, IToDo } from '../../types/ToDo';
+import { PeriodTodoListParams, TodoOverviewResponse } from './type/api/todo';
 import AxiosContext from '../screens/context/AxiosContext';
 import { normalizeToYmd } from '../js/util';
 import { IApiResponse } from './type';
-// moved date utils to src/js/util.js
+import { PeriodTodoListResponse } from '../types/api/todo';
 
 export namespace ToDoService {
     export const todo = {
@@ -73,19 +74,10 @@ export namespace ToDoService {
         },
         /**
          * @desc 기간/완료 상태 필터 기반 목록 조회
-         * @param params.start YYYY-MM-DD
-         * @param params.end YYYY-MM-DD
-         * @param params.completed 완료 여부 필터
-         * @param params.page 페이지 번호
-         * @param params.size 페이지 크기
+         * @param {PeriodTodoListParams} params 기간별 조회 파라미터
+         * @returns {Promise<TodoOverviewResponse>} 투두 개요 목록 응답
          */
-        periodList: async (params: {
-            start?: string;
-            end?: string;
-            completed?: boolean;
-            page: number;
-            size: number;
-        }): Promise<IToDoOverviewResponse> => {
+        periodList: async (params: PeriodTodoListParams): Promise<PeriodTodoListResponse> => {
             try {
                 let queryString = `/api/v1/todos/?page=${params.page}&size=${params.size}`;
                 const start = normalizeToYmd(params.start);
@@ -100,7 +92,7 @@ export namespace ToDoService {
                     queryString += `&completed=${params.completed}`;
                 }
                 const response = await AxiosContext.get(queryString);
-                return response.data as IToDoOverviewResponse;
+                return response.data as TodoOverviewResponse;
             } catch (error) {
                 console.error('ToDoService.todo.periodList:', error);
                 if (axios.isAxiosError(error)) {
@@ -115,9 +107,7 @@ export namespace ToDoService {
         },
         today: async (page: number, size: number) => {
             try {
-                const response = await AxiosContext.get(
-                    `/api/v1/todos/today?page=${page}&size=${size}`
-                );
+                const response = await AxiosContext.get(`/api/v1/todos/today?page=${page}&size=${size}`);
                 return { data: response.data, status: response.status };
             } catch (error) {
                 console.error('ToDoService.todo.today:', error);
