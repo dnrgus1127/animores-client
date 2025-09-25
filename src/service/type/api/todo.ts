@@ -30,14 +30,14 @@ export interface TodoListParams {
  * @desc 기간별 투두 목록 조회 파라미터 (5개 파라미터)
  */
 export interface PeriodTodoListParams {
-    /** 시작 날짜 (YYYY-MM-DD) */
-    start?: string;
-    /** 종료 날짜 (YYYY-MM-DD) */
-    end?: string;
-    /** 완료 여부 필터 */
-    completed?: boolean;
-    /** 페이지 번호 */
-    page: number;
-    /** 페이지 크기 */
-    size: number;
+	/** 시작 날짜 (YYYY-MM-DD) */
+	start?: string;
+	/** 종료 날짜 (YYYY-MM-DD) */
+	end?: string;
+	/** 완료 여부 필터 */
+	completed?: boolean;
+	/** 페이지 번호 (기본값: 0) */
+	page?: number;
+	/** 페이지 크기 (기본값: 20) */
+	size?: number;
 }

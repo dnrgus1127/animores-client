@@ -79,31 +79,34 @@ export namespace ToDoService {
          */
         periodList: async (params: PeriodTodoListParams): Promise<PeriodTodoListResponse> => {
             try {
-                let queryString = `/api/v1/todos/?page=${params.page}&size=${params.size}`;
-                const start = normalizeToYmd(params.start);
-                const end = normalizeToYmd(params.end);
-                if (start) {
-                    queryString += `&start=${encodeURIComponent(start)}`;
-                }
-                if (end) {
-                    queryString += `&end=${encodeURIComponent(end)}`;
-                }
-                if (typeof params.completed === 'boolean') {
-                    queryString += `&completed=${params.completed}`;
-                }
-                const response = await AxiosContext.get(queryString);
-                return response.data as TodoOverviewResponse;
-            } catch (error) {
-                console.error('ToDoService.todo.periodList:', error);
-                if (axios.isAxiosError(error)) {
-                    if (error.response) {
-                        console.error('ToDoService.todo.periodList:', error.response.data);
-                    } else {
-                        console.error('ToDoService.todo.periodList:', error.message);
-                    }
-                }
-                throw error;
-            }
+				// 기본값 설정
+				const { start, end, completed, page = 0, size = 20 } = params;
+
+				let queryString = `/api/v1/todos/?page=${page}&size=${size}`;
+				const startNormalized = normalizeToYmd(start);
+				const endNormalized = normalizeToYmd(end);
+				if (startNormalized) {
+					queryString += `&start=${encodeURIComponent(startNormalized)}`;
+				}
+				if (endNormalized) {
+					queryString += `&end=${encodeURIComponent(endNormalized)}`;
+				}
+				if (typeof completed === 'boolean') {
+					queryString += `&completed=${completed}`;
+				}
+				const response = await AxiosContext.get(queryString);
+				return response.data as TodoOverviewResponse;
+			} catch (error) {
+				console.error('ToDoService.todo.periodList:', error);
+				if (axios.isAxiosError(error)) {
+					if (error.response) {
+						console.error('ToDoService.todo.periodList:', error.response.data);
+					} else {
+						console.error('ToDoService.todo.periodList:', error.message);
+					}
+				}
+				throw error;
+			}
         },
         today: async (page: number, size: number) => {
             try {

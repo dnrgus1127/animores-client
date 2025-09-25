@@ -88,4 +88,75 @@ export const daySinceBirth = (dateString: string): number => {
   return Math.floor(diffTime / (1000 * 60 * 60 * 24));
 };
 
+/**
+ * @desc 다양한 형태의 월 입력을 받아 해당 월의 시작일과 마지막일을 YYYY-MM-DD 형식으로 반환합니다.
+ */
+export function calculateMonthBoundaries(monthInput: number | string | Date): { start: string; end: string } {
+  let targetDate: Date;
+
+  try {
+    if (typeof monthInput === 'number') {
+      // 월 숫자 (1-12)
+      if (monthInput < 1 || monthInput > 12) {
+        throw new Error(`Invalid month: ${monthInput}. Month must be between 1 and 12.`);
+      }
+      const now = new Date();
+      targetDate = new Date(now.getFullYear(), monthInput - 1, 1);
+    } else if (typeof monthInput === 'string') {
+      if (/^\d{4}-\d{2}$/.test(monthInput)) {
+        // YYYY-MM 형식
+        const [year, month] = monthInput.split('-').map(Number);
+        if (month < 1 || month > 12) {
+          throw new Error(`Invalid month in date: ${monthInput}`);
+        }
+        targetDate = new Date(year, month - 1, 1);
+      } else if (/^\d{4}-\d{2}-\d{2}$/.test(monthInput)) {
+        // YYYY-MM-DD 형식
+        targetDate = new Date(monthInput);
+        if (isNaN(targetDate.getTime())) {
+          throw new Error(`Invalid date: ${monthInput}`);
+        }
+      } else {
+        // 기타 문자열 형식
+        targetDate = new Date(monthInput);
+        if (isNaN(targetDate.getTime())) {
+          throw new Error(`Invalid date format: ${monthInput}`);
+        }
+      }
+    } else if (monthInput instanceof Date) {
+      if (isNaN(monthInput.getTime())) {
+        throw new Error('Invalid Date object');
+      }
+      targetDate = new Date(monthInput);
+    } else {
+      throw new Error(`Unsupported input type: ${typeof monthInput}`);
+    }
+
+    // 월의 첫 날과 마지막 날 계산
+    const year = targetDate.getFullYear();
+    const month = targetDate.getMonth();
+    
+    const startDate = new Date(year, month, 1);
+    const endDate = new Date(year, month + 1, 0); // 다음 달의 0일 = 현재 달의 마지막 날
+
+    return {
+      start: formatDateToYmd(startDate),
+      end: formatDateToYmd(endDate),
+    };
+  } catch (error) {
+    throw new Error(`Failed to calculate month boundaries: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * @desc TodoOverview 배열로부터 날짜(YYYY-MM-DD) 집합을 생성합니다.
+ */
+export function createDateSetFromTodos(todos: Array<{ date?: string }>): Set<string> {
+  const set = new Set<string>();
+  for (const item of todos ?? []) {
+    if (item?.date) set.add(item.date);
+  }
+  return set;
+}
+
 
