@@ -22,6 +22,13 @@ import { usePet, usePetQuery, useProfileData } from './hooks/usePetQuery';
 
 const { width } = Dimensions.get('window');
 
+/**
+ * FIXME: 백엔드 이슈로 인해 species 객체가 임시로 응답에서 제외됨
+ * - 백엔드 수정 완료 시: 아래 TEMP_SPECIES_FALLBACK 상수 제거
+ * - 99번 라인을 `petData.species.name`으로 복구
+ */
+const TEMP_SPECIES_FALLBACK = '고양이';
+
 export function PetInfoScreen() {
 	const navigation = useNavigation<StackNavigationProp<RootStackParamList['PetManagement'], 'PetInfo'>>();
 	const { petId } = useNavigationParams<'PetManagement', 'PetInfo'>();
@@ -96,7 +103,8 @@ export function PetInfoScreen() {
 					<Text style={styles.nameGender}>{petData.gender === 0 ? '군' : '양'}</Text>
 				</View>
 				<View style={styles.petInfoContainer}>
-					<PetInfo title="품종" content={getBreedName(petData.breed.id)} subTitle={'고양이'} />
+					{/* TODO: 백엔드 수정 후 petData.species.name으로 복구 */}
+					<PetInfo title="품종" content={getBreedName(petData.breed.id)} subTitle={petData.species?.name ?? TEMP_SPECIES_FALLBACK} />
 					<PetInfo title="몸무게" content={`${petData.weight} Kg`} subTitle="정상 체중" />
 					<PetInfo
 						title="태어난지"
