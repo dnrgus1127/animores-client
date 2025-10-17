@@ -7,8 +7,8 @@ export interface IToDo {
     time: string;
     isUsingAlarm: boolean;
     color: string;
-    completeProfileImage: string|null;
-    completeDateTime: string|null;
+    completeProfileImage: string | null;
+    completeDateTime: string | null;
 }
 
 interface IPet {
@@ -17,9 +17,23 @@ interface IPet {
 }
 
 export interface IToDoListResponse {
-  curPage: number;
-  size: number;
-  totalCount: number;
-  totalPage: number;
-  toDoList: IToDo[];
+    curPage: number;
+    size: number;
+    totalCount: number;
+    totalPage: number;
+    toDoList: IToDo[];
+}
+
+// 요약형 ToDo (기간/리스트 등에서 사용하는 경량 정보)
+export interface TodoOverview {
+    todoId: number;
+    date: string;
+    time: string;
+    isAllDay: boolean;
+    content: string;
+    tag: string;
+    color: string;
+    isUsingAlarm: boolean;
+    unit: string; // e.g. 'HOUR'
+    intervalNum: number;
 }

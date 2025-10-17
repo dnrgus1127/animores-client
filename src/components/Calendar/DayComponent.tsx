@@ -13,25 +13,23 @@ export function DayComponent(props: DayComponentProps) {
     const dayStyleList = getDayStyle(props);
 
     const onPress = () => {
-        props.state !== "disabled" && props.onDayPress(props.date);
-    }
+        props.state !== 'disabled' && props.onDayPress(props.date);
+    };
 
-    // 스타일을 안전하게 결합
-    const textStyles: TextStyle[] = [
-        ...dayStyleList,
-        { aspectRatio: 1, textAlign: "center" }
-    ];
+    // 텍스트/배경 스타일 분리 적용을 위한 병합
+    const mergedStyle: TextStyle = Object.assign({}, ...dayStyleList);
+    const circleBackgroundColor = (mergedStyle.backgroundColor as string) || 'transparent';
+    const textColor = (mergedStyle.color as string) || '#000000';
+    const fontWeight = (mergedStyle.fontWeight as TextStyle['fontWeight']) || undefined;
 
     return (
         <Pressable onPress={onPress} style={[{ flex: 1 }, styles.dayContainer]}>
-            <Text style={textStyles}>
-                {String(props.date?.day || '')}
-            </Text>
-            {props.content && (
-                <View style={styles.contentContainer}>
-                    {props.content}
-                </View>
-            )}
+            <View style={[styles.dayCircle, { backgroundColor: circleBackgroundColor }]}>
+                <Text style={[styles.dayText, { color: textColor, fontWeight }]}>
+                    {String(props.date?.day || '')}
+                </Text>
+            </View>
+            {props.content && <View style={styles.contentContainer}>{props.content}</View>}
         </Pressable>
     );
 }
@@ -40,13 +38,24 @@ const styles = StyleSheet.create({
     dayContainer: {
         paddingLeft: 5,
         paddingTop: 3,
-        alignItems: "center",
-        flexDirection: "column",
+        alignItems: 'center',
+        flexDirection: 'column',
         fontFamily: 'Pretendard-SemiBold',
+    },
+    dayCircle: {
+        width: 28,
+        height: 28,
+        borderRadius: 14,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    dayText: {
+        textAlign: 'center',
+        includeFontPadding: false,
     },
     contentContainer: {
         marginTop: 2,
-        alignItems: "center",
-        justifyContent: "center",
+        alignItems: 'center',
+        justifyContent: 'center',
     },
 });
