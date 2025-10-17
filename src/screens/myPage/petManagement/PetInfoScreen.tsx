@@ -3,7 +3,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect } from 'react';
 import { Dimensions, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Shadow } from 'react-native-shadow-2';
 import asset from '../../../assets/png';
 import { TrashCan_SVG } from '../../../assets/svg/TrashCan';
@@ -38,6 +38,7 @@ export function PetInfoScreen() {
 	const [showDialog, toggleDialog] = useDialog();
 	const { refetch } = useProfileData();
 	const { initFormValues } = usePetForm();
+	const insets = useSafeAreaInsets();
 
 	const onSubmit = (petId: number) => {
 		toggleDialog();
@@ -70,7 +71,7 @@ export function PetInfoScreen() {
 			></LinearGradient>
 			<View style={styles.background2}></View>
 			<ScrollView
-				style={styles.scrollView}
+				style={[styles.scrollView, { top: insets.top }]}
 				contentContainerStyle={styles.contentContainer}
 			>
 				<View
@@ -185,7 +186,6 @@ const styles = StyleSheet.create({
 
 	scrollView: {
 		position: 'absolute',
-		top: 0,
 		left: 0,
 		height: '100%',
 		width: '100%',
