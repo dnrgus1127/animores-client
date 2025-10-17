@@ -2,6 +2,7 @@ import {useNavigation} from "@react-navigation/native";
 import {StackNavigationProp} from "@react-navigation/stack";
 import React, {useState} from "react";
 import {Image, Platform, Pressable, StyleSheet, View} from "react-native";
+import {SafeAreaView} from "react-native-safe-area-context";
 import {IPet, ISpecies} from "../../../../types/PetTypes";
 import SingleButton from "../../../components/button/SingleButton";
 import Title from "../../../components/text/Title";
@@ -28,7 +29,7 @@ const PetType = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <HeaderNavigation
         middletitle="펫 추가"
         hasBackButton={true}
@@ -60,7 +61,7 @@ const PetType = () => {
           <SingleButton title={"다음"} disabled={!userSelectPetType} style={{marginTop: 70}} onPress={onPressNextButton}/>
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
