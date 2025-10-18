@@ -1,7 +1,7 @@
 import {useNavigation} from "@react-navigation/native";
 import {StackNavigationProp} from "@react-navigation/stack";
 import React, {useEffect} from "react";
-import {StyleProp, StyleSheet, Text, ViewStyle} from "react-native";
+import {StyleProp, StyleSheet, Text, View, ViewStyle} from "react-native";
 import {ScrollView} from "react-native-gesture-handler";
 import {SafeAreaView} from "react-native-safe-area-context";
 import HeaderNavigation from "../../../navigation/HeaderNavigation";
