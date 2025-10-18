@@ -3,15 +3,10 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import dayjs from "dayjs";
-import "dayjs/locale/ko";
-import timezone from "dayjs/plugin/timezone";
-import utc from "dayjs/plugin/utc";
 import React, { useState } from "react";
-import { FlatList, Pressable, StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
-import { CommentIcon, More, UserImage } from "../../assets/svg";
 import FloatingButton from "../../components/button/FloatingButton";
 import BottomModal from "../../components/modal/BottomModal";
 import Title from "../../components/text/Title";
@@ -20,26 +15,15 @@ import HeaderNavigation from "../../navigation/HeaderNavigation";
 import { DiaryService } from "../../service/DiaryService";
 import { QueryKey } from "../../statics/constants/Querykey";
 import { Colors } from "../../styles/Colors";
-import CenterModal from "../../components/modal/CenterModal";
 import CommentList from "./CommentList";
 import { ScreenName } from "../../statics/constants/ScreenName";
 import { useNavigation } from "@react-navigation/native";
-import { useRecoilState } from "recoil";
-
-dayjs.locale("ko");
-dayjs.extend(utc);
-dayjs.extend(timezone);
+import DiaryList from "../../components/diary/DiaryList";
 
 const DairyScreen = () => {
-  const moreLength = 17; //17자 이상이면 말줄임
-
   const queryClient = useQueryClient();
-  
-  const baseUrl = "https://animores-image.s3.ap-northeast-2.amazonaws.com";
-
   const navigation = useNavigation();
 
-  const [expandedItems, setExpandedItems] = useState<number[]>([]);
   const [isFirstVisibleMore, setIsFirstVisibleMore] = useState<boolean>(false); //더보기(수정/삭제) 모달
   const [isVisibleDelete, setIsVisibleDelete] = useState<boolean>(false); // 일지삭제 확인 모달 보이기
   const [isVisibleMenu, setIsVisibleMenu] = useState<boolean>(false); //플로팅버튼
@@ -47,16 +31,8 @@ const DairyScreen = () => {
   const [isComment, setIsComment] = useState<boolean>(false); //댓글 유무
   const [diaryId, setDiaryId] = useState<number | null>(null);  //댓글 diary Id
   const [profileId, setProfileId] = useState<number | null>(null);  //댓글 profile Id
-  const [selectedDiaryId, setSelectedDiaryId] = useState<number | null>(null);  //선택된 diary Id
   const [selectedProfileId, setSelectedProfileId] = useState<number | null>(null);  //선택된 profile Id
-  const [selectedItem, setSelectedItem] = useState<DiaryModel.IDiaryModel>({
-    item: {
-      diaryId: '',
-      name: '',
-      content: '',
-      createdAt: '',
-    }
-  });
+  const [selectedItem, setSelectedItem] = useState<DiaryModel.IDiaryModel | null>(null);
   
   //일지 리스트
   //TODO: profile api 가져와서 profileId에 넣기
@@ -77,30 +53,6 @@ const DairyScreen = () => {
         },
       }
     );
-
-  //일지 수정
-  const { mutate: updateDiaryMutate } = useMutation(
-    ({ diaryId }: { diaryId: number }) =>
-      DiaryService.diary.update(diaryId),
-    {
-      onSuccess: async (data) => {
-        if (data && data.status === 200) {
-          Toast.show({
-            type: "success",
-            text1: "수정되었습니다.",
-          });
-
-          setIsFirstVisibleMore(false);
-          setIsVisibleDelete(false);
-          await queryClient.invalidateQueries([QueryKey.DIARY_LIST]);
-          //일지 목록 쿼리를 무효화함
-        }
-      },
-      onError: (error) => {
-        console.error("Delete error:", error);
-      },
-    }
-  );
 
   //일지 삭제
   const { mutate: deleteDiaryMutate } = useMutation(
@@ -129,120 +81,35 @@ const DairyScreen = () => {
   const diaryData =
     data?.pages.flatMap((page) => page?.data?.data.diaries) ?? [];
 
-  //더보기
-  const toggleExpand = (itemId: number) => {
-    if (expandedItems.includes(itemId)) {
-      setExpandedItems(expandedItems.filter((id) => id !== itemId));
-    } else {
-      setExpandedItems([...expandedItems, itemId]);
+  // More 아이콘 클릭 핸들러
+  const handlePressMore = (item: DiaryModel.IDiaryModel) => {
+    setIsFirstVisibleMore(true);
+    setSelectedProfileId(item.profileId);
+    setSelectedItem(item);
+  };
+
+  // 댓글 아이콘 클릭 핸들러
+  const handlePressComment = (item: DiaryModel.IDiaryModel) => {
+    getCommentList(item);
+    setIsVisibleComment(true);
+  };
+
+  const getSelectedItem = () => {
+    if (selectedItem) {
+      navigation.navigate(ScreenName.UpdateDiary as never, selectedItem as never);
+      setIsFirstVisibleMore(false);
     }
-  };
-
-  const renderItem = ({
-    item,
-    index,
-  }: {
-    item: DiaryModel.IDiaryModel;
-    index: number;
-  }) => {
-    const isExist = expandedItems.includes(item?.diaryId);
-
-    const contentToShow =
-      item?.content.length > moreLength
-        ? item?.content.slice(0, moreLength) + "..."
-        : item?.content;
-
-    return (
-      <View style={styles.renderItemContainer}>
-        <View style={styles.top}>
-          <UserImage />
-          <View style={styles.titleContainer}>
-            <Title
-              text={item?.name}
-              fontSize={16}
-              fontWeight={"bold"}
-              style={{ marginBottom: 2 }}
-            />
-            <Title
-              text={dayjs
-                .utc(item?.createdAt)
-                .utcOffset(9)
-                .format("YYYY.MM.DD HH:mm A")}
-              color={Colors.AEAEAE}
-            />
-          </View>
-          <Pressable
-            onPress={() => {
-              setIsFirstVisibleMore(true);
-              setSelectedProfileId(item.profileId);
-              setSelectedItem(prev => ({
-                ...prev,
-                item: {
-                  diaryId: item.diaryId,
-                  name: item.name,
-                  content: item.content,
-                  createdAt: item.createdAt,
-                }
-              }))
-            }}
-          >
-            <More style={styles.moreIcon} />
-          </Pressable>
-        </View>
-        <View style={styles.contentContainer}>
-          <Title text={contentToShow} />
-          {!isExist && item?.content.length > moreLength && (
-            <Pressable
-              onPress={() => {
-                toggleExpand(item?.diaryId);
-              }}
-            >
-              <Title
-                text={"더 보기"}
-                color={Colors.AEAEAE}
-                style={{ marginLeft: 6 }}
-              />
-            </Pressable>
-          )}
-        </View>
-        {item?.imageUrl && (
-          <View style={{ marginTop: 22 }}>{/* TODO: 이미지 */}</View>
-        )}
-        <Pressable
-          onPress={() => {
-            getCommentList(item); // 댓글 리스트
-            setIsVisibleComment(true); // 댓글 모달 보여짐
-          }}
-          style={styles.commentIconContainer}
-        >
-          <CommentIcon />
-          {/* TODO:댓글 수 수정 */}
-          <Title text={item?.commentCount} color={Colors.AEAEAE} style={{ marginLeft: 8 }} />
-        </Pressable>
-
-        {index !== diaryData?.length - 1 && <View style={styles.bottomLine} />}
-      </View>
-    );
-  };
-
-  const getSelectedItem = (item: DiaryModel.IDiaryModel) => {
-    navigation.navigate(ScreenName.UpdateDiary as never, item)
-    setIsFirstVisibleMore(false)
   }
 
   //더보기 모달 footer
-  const FooterMore: React.ReactNode = (props: IProps) => {
-    const { item } = props;
-
+  const FooterMore = () => {
     return (
       <View style={styles.bottomModalContainer}>
         <View style={styles.footerTopLine} />
         <View style={[styles.footer, { marginTop: 33 }]}>
           <View style={[styles.buttonContainer, { marginRight: 10 }]}>
             <Pressable
-              onPress={
-                () => getSelectedItem(item)
-              }
+              onPress={getSelectedItem}
               style={styles.buttonContainer}
             >
               <Title
@@ -255,7 +122,6 @@ const DairyScreen = () => {
           </View>
           <Pressable
             onPress={() => {
-              console.log(selectedDiaryId, isVisibleDelete);
               setIsVisibleDelete(true);
             }}
             style={styles.buttonContainer}
@@ -290,17 +156,9 @@ const DairyScreen = () => {
     fetchNextPage();
   };
 
-  const handleUpdate = async () => {
-    if (selectedDiaryId !== null) {
-      updateDiaryMutate({ diaryId: selectedDiaryId });
-    } else {
-      console.log('diary update error')
-    }
-  };
-
   const handleDelete = async () => {
-    if (selectedDiaryId !== null && selectedProfileId !== null) {
-      deleteDiaryMutate({ diaryId: selectedDiaryId, profileId: selectedProfileId });
+    if (selectedItem && selectedProfileId !== null) {
+      deleteDiaryMutate({ diaryId: selectedItem.diaryId, profileId: selectedProfileId });
     } else {
       console.log('diary delete error')
     }
@@ -309,12 +167,13 @@ const DairyScreen = () => {
   return (
     <>
       <SafeAreaView style={styles.container}>
-        <HeaderNavigation middletitle="일지" hasBackButton={false} />
-        <FlatList
-          keyExtractor={(item, index) => `diary-${item?.diaryId}-${index}`}
-          data={diaryData}
-          renderItem={renderItem}
-          onEndReachedThreshold={0.6}
+        <HeaderNavigation miwwddletitle="일지" hasBackButton={false} />
+        <DiaryList
+          diaries={diaryData}
+          onPressMore={handlePressMore}
+          onPressComment={handlePressComment}
+          enableActions={true}
+          isLoading={isFetchingNextPage}
           onEndReached={loadMoreData}
         />
         {/* 플로팅 버튼 */}
@@ -350,17 +209,16 @@ const DairyScreen = () => {
             _subTitle="삭제 이후에는 게시물이 영구적으로 삭제되며, 복원하실 수 없습니다."
             _onDelete={handleDelete}
           >
-            <FooterMore 
-              item={selectedItem} // useEffect안에 정의 해도 됨
-            />
+            <FooterMore />
           </BottomModal>
 
           <CommentList
-            visible={isVisibleComment} 
+            visible={isVisibleComment}
             setIsVisibleComment={setIsVisibleComment}
-            diaryId={diaryId}
+            diaryId={diaryId ?? 0}
             isComment={isComment}
-            profileId={profileId}
+            profileId={profileId ?? 0}
+            setSelectedCommentId={() => {}}
           />
         </View>
       </SafeAreaView>
@@ -375,39 +233,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.White,
   },
-  renderItemContainer: {
-    flex: 1,
-    paddingTop: 20,
-    backgroundColor: Colors.White,
-  },
-  top: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginHorizontal: 20,
-  },
-  titleContainer: {
-    flex: 1,
-    marginLeft: 12,
-  },
-  moreIcon: {
-    alignSelf: "flex-end",
-  },
-  contentContainer: {
-    flexDirection: "row",
-    marginTop: 22,
-    marginHorizontal: 20,
-  },
-  commentIconContainer: {
-    flexDirection: "row",
-    marginTop: 18,
-    marginBottom: 20,
-    marginLeft: 20,
-    alignItems: "center",
-  },
-  bottomLine: {
-    borderBottomWidth: 6,
-    borderBottomColor: Colors.F4F4F4,
-  },
   bottomModalContainer: {
     marginTop: 15,
   },
@@ -415,28 +240,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     paddingHorizontal: 20,
   },
-  loadingFooter: {
-    paddingVertical: 20,
-    borderTopWidth: 1,
-    borderColor: "#CED0CE",
-  },
   footerTopLine: {
     backgroundColor: Colors.Gray838383,
     height: 1.5,
     width: 50,
     alignSelf: "center",
-  },
-  commentContainer: {
-    marginHorizontal: 20,
-    flexDirection: "row",
-    marginTop: 20,
-  },
-  comment: {
-    backgroundColor: Colors.F4F4F4,
-    marginLeft: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    borderRadius: 10,
   },
   buttonContainer: {
     backgroundColor: Colors.FB3F7E,
@@ -444,28 +252,6 @@ const styles = StyleSheet.create({
     height: 50,
     justifyContent: "center",
     borderRadius: 10,
-  },
-  createRocordIcon: {
-    position: "absolute",
-    bottom: 68,
-    right: 0,
-    zIndex: 1,
-  },
-  cancleIconContainer: {
-    marginTop: 27,
-    alignItems: "flex-end",
-    marginRight: 12,
-  },
-  pinkButtonContainer: {
-    marginRight: 20,
-  },
-  pinkButton: {
-    backgroundColor: Colors.FB3F7E,
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    borderRadius: 99,
-    flexDirection: "row",
-    alignItems: "center",
   },
   floatingButtonContainer: {
     position: "absolute",
