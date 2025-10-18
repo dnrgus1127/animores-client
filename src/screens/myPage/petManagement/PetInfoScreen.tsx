@@ -1,10 +1,9 @@
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect } from 'react';
-import { Dimensions, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Shadow } from 'react-native-shadow-2';
+import { Dimensions, Image, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import asset from '../../../assets/png';
 import { TrashCan_SVG } from '../../../assets/svg/TrashCan';
 import { Edit_SVG } from '../../../assets/svg/component/Edit';
@@ -22,11 +21,6 @@ import { usePet, usePetQuery, useProfileData } from './hooks/usePetQuery';
 
 const { width } = Dimensions.get('window');
 
-/**
- * FIXME: 백엔드 이슈로 인해 species 객체가 임시로 응답에서 제외됨
- * - 백엔드 수정 완료 시: 아래 TEMP_SPECIES_FALLBACK 상수 제거
- * - 99번 라인을 `petData.species.name`으로 복구
- */
 const TEMP_SPECIES_FALLBACK = '고양이';
 
 export function PetInfoScreen() {
@@ -38,7 +32,6 @@ export function PetInfoScreen() {
 	const [showDialog, toggleDialog] = useDialog();
 	const { refetch } = useProfileData();
 	const { initFormValues } = usePetForm();
-	const insets = useSafeAreaInsets();
 
 	const onSubmit = (petId: number) => {
 		toggleDialog();
@@ -58,211 +51,223 @@ export function PetInfoScreen() {
 
 	if (isFetching || !isSuccess)
 		return (
-			<View>
+			<View style={styles.loadingContainer}>
 				<Text>Loading...</Text>
 			</View>
 		);
 
 	return (
 		<SafeAreaView style={styles.container}>
-			<LinearGradient
-				colors={['#ffcf9b', '#FFAF87', '#FF8C78', '#FA5F6E']}
-				style={styles.background1}
-			></LinearGradient>
-			<View style={styles.background2}></View>
-			<ScrollView
-				style={[styles.scrollView, { top: insets.top }]}
-				contentContainerStyle={styles.contentContainer}
-			>
-				<View
-					style={[styles.headerButtonBox, { height: width * 0.08, opacity: 0.8 }]}
-				>
-					<Pressable onPress={() => navigation.pop()}>
-						<LeftArrow color={Colors.White} />
+			{/* Header */}
+			<View style={styles.header}>
+				<Pressable onPress={() => navigation.pop()} style={styles.headerButton}>
+					<LeftArrow color={Colors.DarkGrey} />
+				</Pressable>
+				<Text style={styles.headerTitle}>펫 정보</Text>
+				<View style={styles.headerRightButtons}>
+					<Pressable onPress={() => navigation.navigate(StackName.PetManagement.AddPet, { petId })} style={styles.headerButton}>
+						<Edit_SVG color={Colors.DarkGrey} />
 					</Pressable>
-					<View style={{ flexDirection: 'row', gap: 5, opacity: 0.8 }}>
-						<Pressable onPress={() => navigation.navigate(StackName.PetManagement.AddPet, { petId })}>
-							<Edit_SVG color={Colors.DarkGrey} />
-						</Pressable>
-						<Pressable onPress={toggleDialog}>
-							<TrashCan_SVG color={Colors.DarkGrey} />
-						</Pressable>
+					<Pressable onPress={toggleDialog} style={styles.headerButton}>
+						<TrashCan_SVG color={Colors.DarkGrey} />
+					</Pressable>
+				</View>
+			</View>
+
+			<ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+				{/* Pet Profile Section */}
+				<View style={styles.profileSection}>
+					<View style={styles.profileImageContainer}>
+						<Image
+							style={styles.profileImage}
+							source={asset.profile}
+						/>
 					</View>
+					<Text style={styles.petName}>{petData.name}</Text>
+					<Text style={styles.petBreed}>{getBreedName(petData.breed.id)}</Text>
 				</View>
-				<Image
-					style={[
-						{
-							width: width * 0.6,
-							height: width * 0.6,
-							marginTop: width * 0.1,
-						},
-					]}
-					source={asset.profile}
-				></Image>
-				<View style={styles.nameContainer}>
-					<Text style={styles.name}>{petData.name}</Text>
-					<Text style={styles.nameGender}>{petData.gender === 0 ? '군' : '양'}</Text>
-				</View>
-				<View style={styles.petInfoContainer}>
-					{/* TODO: 백엔드 수정 후 petData.species.name으로 복구 */}
-					<PetInfo title="품종" content={getBreedName(petData.breed.id)} subTitle={petData.species?.name ?? TEMP_SPECIES_FALLBACK} />
-					<PetInfo title="몸무게" content={`${petData.weight} Kg`} subTitle="정상 체중" />
-					<PetInfo
-						title="태어난지"
-						content={`${daySinceBirth(petData.birthday)}일`}
-						subTitle={convertYYYYMMDDToKorean(petData.birthday)}
+
+				{/* Basic Info Section */}
+				<View style={styles.infoSection}>
+					<InfoCard
+						iconName="calendar-outline"
+						label="생일"
+						value={convertYYYYMMDDToKorean(petData.birthday)}
+						badge={`${daySinceBirth(petData.birthday)}일`}
+					/>
+					<InfoCard
+						iconName="scale-outline"
+						label="몸무게"
+						value={`${petData.weight} kg`}
+					/>
+					<InfoCard
+						iconName="paw-outline"
+						label="품종"
+						value={getBreedName(petData.breed.id)}
+						badge={petData.species?.name ?? TEMP_SPECIES_FALLBACK}
+					/>
+					<InfoCard
+						iconName={petData.gender === 0 ? 'male' : 'female'}
+						label="성별"
+						value={petData.gender === 0 ? '남아' : '여아'}
 					/>
 				</View>
-				<Dialog
-					visible={showDialog}
-					title={'펫 삭제'}
-					description={'저장된 내용이 삭제됩니다.'}
-					onCancel={toggleDialog}
-					onSubmit={() => onSubmit(petId)}
-				/>
 			</ScrollView>
+
+			<Dialog
+				visible={showDialog}
+				title={'펫 삭제'}
+				description={'저장된 내용이 삭제됩니다.'}
+				onCancel={toggleDialog}
+				onSubmit={() => onSubmit(petId)}
+			/>
 		</SafeAreaView>
 	);
 }
 
-function PetInfo({ title, content, subTitle }: { title: string; content: string; subTitle: string }) {
+function InfoCard({ iconName, label, value, badge }: { iconName: keyof typeof Ionicons.glyphMap; label: string; value: string; badge?: string }) {
 	return (
-		<Shadow style={styles.petInfoBox}>
-			<View style={petInfoStyle.container}>
-				<Text style={petInfoStyle.title}>{title}</Text>
-				<Text style={petInfoStyle.content}>{content}</Text>
-				<Text style={petInfoStyle.subTitle}>{subTitle}</Text>
+		<View style={infoCardStyles.container}>
+			<Ionicons name={iconName} size={24} color={Colors.Gray717171} style={infoCardStyles.icon} />
+			<View style={infoCardStyles.textContainer}>
+				<Text style={infoCardStyles.label}>{label}</Text>
+				<Text style={infoCardStyles.value}>{value}</Text>
 			</View>
-		</Shadow>
+			{badge && (
+				<View style={infoCardStyles.badge}>
+					<Text style={infoCardStyles.badgeText}>{badge}</Text>
+				</View>
+			)}
+		</View>
 	);
 }
-
-const baseStyle = StyleSheet.create({
-	item: {
-		paddingHorizontal: 15,
-		paddingVertical: 13,
-		fontWeight: 'bold',
-		color: Colors.DarkGrey,
-		fontSize: 12,
-		borderBottomWidth: 0.5,
-		borderColor: Colors.C1C1C1,
-	},
-	shadow: {
-		shadowColor: Colors.Black,
-		shadowOffset: { width: 3, height: 3 },
-		elevation: 2,
-	},
-
-	profileButton: {
-		backgroundColor: Colors.White,
-		borderRadius: 4,
-		width: '50%',
-		padding: 5,
-		flexDirection: 'row',
-		justifyContent: 'center',
-		borderWidth: 0.5,
-		borderColor: Colors.C1C1C1,
-	},
-	shadowText: {
-		textShadowColor: 'rgba(0, 0, 0, 0.3)', // 그림자 색상
-		textShadowOffset: { width: 2, height: 2 }, // 그림자 위치
-		textShadowRadius: 10, // 그림자 퍼짐 정도
-	},
-});
 
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		flexDirection: 'column',
-	},
-	background1: {
-		flex: 0.7,
-		backgroundColor: Colors.Black,
-	},
-	background2: {
-		flex: 0.3,
 		backgroundColor: Colors.White,
 	},
-
-	scrollView: {
-		position: 'absolute',
-		left: 0,
-		height: '100%',
-		width: '100%',
-	},
-	contentContainer: {
+	loadingContainer: {
 		flex: 1,
+		justifyContent: 'center',
 		alignItems: 'center',
-		paddingHorizontal: 15,
-		paddingTop: 60,
-		gap: 15,
-	},
-	content: {
 		backgroundColor: Colors.White,
-		width: '100%',
-		borderRadius: 5,
-		...baseStyle.shadow,
 	},
-	nameContainer: {
+	header: {
 		flexDirection: 'row',
-		gap: 5,
-	},
-
-	petInfoContainer: {
-		width: '100%',
-		flexDirection: 'column',
-		gap: 10,
-	},
-	petInfoBox: {
-		width: '100%',
-		paddingVertical: 20,
-		paddingHorizontal: 20,
-		backgroundColor: Colors.White,
-		borderRadius: 10,
-	},
-
-	name: {
-		fontSize: 35,
-		lineHeight: 40,
-		fontWeight: 'bold',
-		color: Colors.White,
-		...baseStyle.shadowText,
-	},
-
-	nameGender: {
-		fontSize: 20,
-		fontWeight: 'bold',
-		color: Colors.White,
-		alignSelf: 'flex-end',
-		lineHeight: 40,
-		...baseStyle.shadowText,
-	},
-
-	headerButtonBox: {
-		position: 'absolute',
-		width: '100%',
-		height: 30,
-		marginTop: 15,
-		paddingHorizontal: 15,
-		flexDirection: 'row',
+		alignItems: 'center',
 		justifyContent: 'space-between',
+		paddingHorizontal: 16,
+		paddingVertical: 12,
+		borderBottomWidth: 1,
+		borderBottomColor: Colors.F9F9FB,
+	},
+	headerButton: {
+		padding: 8,
+	},
+	headerTitle: {
+		fontSize: 18,
+		fontWeight: '600',
+		color: Colors.DarkGrey,
+	},
+	headerRightButtons: {
+		flexDirection: 'row',
+		gap: 8,
+	},
+	scrollView: {
+		flex: 1,
+	},
+	scrollContent: {
+		paddingBottom: 24,
+	},
+	profileSection: {
 		alignItems: 'center',
+		paddingVertical: 32,
+		paddingHorizontal: 24,
+	},
+	profileImageContainer: {
+		width: width * 0.35,
+		height: width * 0.35,
+		borderRadius: (width * 0.35) / 2,
+		backgroundColor: Colors.F9F9FB,
+		overflow: 'hidden',
+		marginBottom: 16,
+		...Platform.select({
+			ios: {
+				shadowColor: Colors.Black,
+				shadowOffset: { width: 0, height: 2 },
+				shadowOpacity: 0.1,
+				shadowRadius: 8,
+			},
+			android: {
+				elevation: 4,
+			},
+		}),
+	},
+	profileImage: {
+		width: '100%',
+		height: '100%',
+	},
+	petName: {
+		fontSize: 28,
+		fontWeight: 'bold',
+		color: Colors.DarkGrey,
+		marginBottom: 4,
+	},
+	petBreed: {
+		fontSize: 15,
+		color: Colors.Gray717171,
+	},
+	infoSection: {
+		paddingHorizontal: 20,
+		gap: 12,
 	},
 });
 
-const petInfoStyle = StyleSheet.create({
-	container: {},
-	title: {
-		fontSize: 14,
-		marginBottom: 8,
+const infoCardStyles = StyleSheet.create({
+	container: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		backgroundColor: Colors.F9F9FB,
+		borderRadius: 12,
+		padding: 16,
+		...Platform.select({
+			ios: {
+				shadowColor: Colors.Black,
+				shadowOffset: { width: 0, height: 1 },
+				shadowOpacity: 0.05,
+				shadowRadius: 4,
+			},
+			android: {
+				elevation: 1,
+			},
+		}),
 	},
-	content: {
-		fontSize: 18,
-		fontWeight: 'bold',
-		marginBottom: 4,
+	icon: {
+		marginRight: 12,
 	},
-	subTitle: {
+	textContainer: {
+		flex: 1,
+	},
+	label: {
 		fontSize: 12,
 		color: Colors.Gray717171,
+		marginBottom: 4,
+	},
+	value: {
+		fontSize: 16,
+		fontWeight: '600',
+		color: Colors.DarkGrey,
+	},
+	badge: {
+		backgroundColor: '#FFF4E6',
+		paddingHorizontal: 12,
+		paddingVertical: 6,
+		borderRadius: 16,
+	},
+	badgeText: {
+		fontSize: 12,
+		fontWeight: '500',
+		color: '#F59E0B',
 	},
 });
