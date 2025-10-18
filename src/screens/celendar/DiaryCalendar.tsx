@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import { HeaderLessCalendar } from '../../components/Calendar/HeaderLessCalendar';
 import type { DateData } from 'react-native-calendars/src/types';
@@ -7,7 +7,7 @@ import { CurrentProfileAtom } from '../../recoil/AuthAtom';
 import { Colors } from '../../styles/Colors';
 import { useMonthBoundaries } from '../../components/Calendar/hooks/useMonthBoundaries';
 import { useDotDayContent } from '../../components/Calendar/hooks/useDotDayContent';
-import { useDiaryCalendarDateSet } from '../../hooks/useDiaryCalendar';
+import { useMonthDiaryList, createDateSetFromDiaries } from '../../hooks/useDiaryList';
 
 interface DiaryCalendarProps {
 	onSelectDay?: (date: DateData) => void;
@@ -16,39 +16,25 @@ interface DiaryCalendarProps {
 const DiaryCalendar: React.FC<DiaryCalendarProps> = ({ onSelectDay }) => {
     const currentProfile = useRecoilValue(CurrentProfileAtom);
 	const { currentMonth } = useMonthBoundaries();
-	const {
-		dateSet: diaryDateSet,
-		data,
-		isLoading,
-		isError,
-		error,
-	} = useDiaryCalendarDateSet({
+
+	const { data: diaries } = useMonthDiaryList({
 		profileId: currentProfile?.id ?? null,
-		monthDate: currentMonth,
+		monthInput: currentMonth,
 		enabled: !!currentProfile?.id,
 		staleTimeMs: 60 * 1000,
 	});
 
-    useEffect(() => {
-		console.log('[DiaryCalendar] fetch diary calendar', {
-			profileId: currentProfile?.id,
-			month: currentMonth,
-			isLoading,
-			isError,
-			error: isError ? String(error) : undefined,
-			data,
-		});
-	}, [currentProfile?.id, currentMonth, isLoading, isError, error, data]);
+	const dateSet = useMemo(() => createDateSetFromDiaries(diaries ?? []), [diaries]);
 
     const dayContent: (d: DateData) => React.ReactNode = useDotDayContent({
-		dateSet: diaryDateSet,
+		dateSet,
 		color: Colors.Pink,
 		size: 6,
 		marginTop: 2,
 	});
 
     const handleSelectDay = (d: DateData) => {
-		if (!diaryDateSet?.has(d.dateString)) return;
+		if (!dateSet?.has(d.dateString)) return;
 		onSelectDay?.(d);
 	};
 
