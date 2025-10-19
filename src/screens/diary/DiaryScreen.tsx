@@ -38,7 +38,7 @@ const DiaryScreen = () => {
   
   //일지 리스트
   //TODO: profile api 가져와서 profileId에 넣기
-  const { data, fetchNextPage, isFetchingNextPage, hasNextPage } =
+  const { data, fetchNextPage, isFetchingNextPage, hasNextPage, refetch, isRefetching } =
     useInfiniteQuery(
       [QueryKey.DIARY_LIST],
       ({ pageParam = 1 }) => DiaryService.diary.list(1, pageParam, 5),
@@ -158,6 +158,10 @@ const DiaryScreen = () => {
     fetchNextPage();
   };
 
+  const handleRefresh = () => {
+    refetch();
+  };
+
   const handleDelete = async () => {
     if (selectedItem && selectedProfileId !== null) {
       deleteDiaryMutate({ diaryId: selectedItem.diaryId, profileId: selectedProfileId });
@@ -177,6 +181,8 @@ const DiaryScreen = () => {
           enableActions={true}
           isLoading={isFetchingNextPage}
           onEndReached={loadMoreData}
+          refreshing={isRefetching}
+          onRefresh={handleRefresh}
         />
         {/* 플로팅 버튼 */}
         <View
