@@ -18,11 +18,13 @@ import { Colors } from "../../styles/Colors";
 import CommentList from "./CommentList";
 import { ScreenName } from "../../statics/constants/ScreenName";
 import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { RootStackParamList } from "../../navigation/type";
 import DiaryList from "../../components/diary/DiaryList";
 
-const DairyScreen = () => {
+const DiaryScreen = () => {
   const queryClient = useQueryClient();
-  const navigation = useNavigation();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
   const [isFirstVisibleMore, setIsFirstVisibleMore] = useState<boolean>(false); //더보기(수정/삭제) 모달
   const [isVisibleDelete, setIsVisibleDelete] = useState<boolean>(false); // 일지삭제 확인 모달 보이기
@@ -96,7 +98,7 @@ const DairyScreen = () => {
 
   const getSelectedItem = () => {
     if (selectedItem) {
-      navigation.navigate(ScreenName.UpdateDiary as never, selectedItem as never);
+      navigation.navigate(ScreenName.UpdateDiary, { item: selectedItem });
       setIsFirstVisibleMore(false);
     }
   }
@@ -167,7 +169,7 @@ const DairyScreen = () => {
   return (
     <>
       <SafeAreaView style={styles.container}>
-        <HeaderNavigation miwwddletitle="일지" hasBackButton={false} />
+        <HeaderNavigation middletitle="일지" hasBackButton={false} />
         <DiaryList
           diaries={diaryData}
           onPressMore={handlePressMore}
@@ -226,7 +228,7 @@ const DairyScreen = () => {
   );
 };
 
-export default DairyScreen;
+export default DiaryScreen;
 
 const styles = StyleSheet.create({
   container: {

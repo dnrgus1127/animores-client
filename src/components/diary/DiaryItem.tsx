@@ -97,7 +97,7 @@ const DiaryItem: React.FC<DiaryItemProps> = ({
             >
                 <CommentIcon />
                 <Title
-                    text={item?.commentCount}
+                    text={String(item?.commentCount)}
                     color={Colors.AEAEAE}
                     style={{ marginLeft: 8 }}
                 />
