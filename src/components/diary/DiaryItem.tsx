@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { Image, Pressable, ScrollView, View } from 'react-native';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import 'dayjs/locale/ko';
+import { IMAGE_BASE_URL } from '@env';
 import { CommentIcon, More, UserImage } from '../../assets/svg';
 import Title from '../text/Title';
 import { Colors } from '../../styles/Colors';
 import { DiaryItemProps } from './types';
 import { diaryStyles } from './styles';
+import DiaryImage from './DiaryImage';
 
 dayjs.locale('ko');
 dayjs.extend(utc);
@@ -35,6 +37,19 @@ const DiaryItem: React.FC<DiaryItemProps> = ({
             ? item?.content.slice(0, MORE_LENGTH) + '...'
             : item?.content;
 
+    // media 배열에서 이미지만 필터링 및 URL 변환
+    const imagesToDisplay = React.useMemo(() => {
+        if (item?.media && item.media.length > 0) {
+            return item.media
+                .filter((mediaItem) => mediaItem.type === 'I')
+                .sort((a, b) => a.order - b.order)
+                .map((mediaItem) => `${IMAGE_BASE_URL}/${mediaItem.url}`);
+        }
+
+        return [];
+    }, [item?.media]);
+
+
     const handlePressMore = () => {
         if (enableActions && onPressMore) {
             onPressMore(item);
@@ -54,7 +69,14 @@ const DiaryItem: React.FC<DiaryItemProps> = ({
     return (
         <View style={diaryStyles.renderItemContainer}>
             <View style={diaryStyles.top}>
-                <UserImage />
+                {item?.imageUrl ? (
+                    <Image
+                        source={{ uri: `${IMAGE_BASE_URL}/${item.imageUrl}` }}
+                        style={diaryStyles.profileImage}
+                    />
+                ) : (
+                    <UserImage />
+                )}
                 <View style={diaryStyles.titleContainer}>
                     <Title
                         text={item?.name}
@@ -90,7 +112,22 @@ const DiaryItem: React.FC<DiaryItemProps> = ({
                     </Pressable>
                 )}
             </View>
-            {item?.imageUrl && <View style={{ marginTop: 22 }}>{/* TODO: 이미지 */}</View>}
+            {imagesToDisplay.length > 0 && (
+                <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    style={diaryStyles.imageGalleryContainer}
+                >
+                    {imagesToDisplay.map((imageUrl, index) => (
+                        <View key={index} style={diaryStyles.imageWrapper}>
+                            <DiaryImage
+                                uri={imageUrl}
+                                style={diaryStyles.diaryImage}
+                            />
+                        </View>
+                    ))}
+                </ScrollView>
+            )}
             <Pressable
                 onPress={handlePressComment}
                 style={diaryStyles.commentIconContainer}

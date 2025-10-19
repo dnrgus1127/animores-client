@@ -14,8 +14,9 @@ const CreatDiary = () => {
 
   // 일지 등록
   const { mutate } = useMutation({
-    mutationFn: async (data: FormData) => {
-      return DiaryService.diary.create(data).data;
+    mutationFn: async (formData: FormData) => {
+       const {data} = await DiaryService.diary.create(formData);
+       return data;
     }
   });
 

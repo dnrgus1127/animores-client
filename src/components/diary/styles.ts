@@ -14,6 +14,11 @@ export const diaryStyles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
     },
+    profileImage: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+    },
     titleContainer: {
         flex: 1,
         marginLeft: 12,
@@ -34,6 +39,17 @@ export const diaryStyles = StyleSheet.create({
     bottomLine: {
         borderBottomWidth: 6,
         borderBottomColor: Colors.F4F4F4,
+    },
+    imageGalleryContainer: {
+        marginTop: 22,
+    },
+    imageWrapper: {
+        marginRight: 9,
+    },
+    diaryImage: {
+        width: 80,
+        height: 80,
+        borderRadius: 10,
     },
 
     // DiaryList 스타일
