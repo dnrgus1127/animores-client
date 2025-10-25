@@ -1,5 +1,7 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 import { Colors } from '../../styles/Colors';
+
+const SCREEN_WIDTH = Dimensions.get('window').width;
 
 /**
  * 일지 컴포넌트 공통 스타일
@@ -50,6 +52,30 @@ export const diaryStyles = StyleSheet.create({
         width: 80,
         height: 80,
         borderRadius: 10,
+    },
+    fullWidthImageContainer: {
+        marginTop: 22,
+        width: SCREEN_WIDTH,
+        marginLeft: -20, // paddingHorizontal 20 상쇄
+        position: 'relative',
+    },
+    fullWidthImageWrapper: {
+        width: SCREEN_WIDTH,
+        aspectRatio: 1, // 정사각형 비율
+    },
+    fullWidthImage: {
+        width: '100%',
+        height: '100%',
+        borderRadius: 0,
+    },
+    imageIndicator: {
+        position: 'absolute',
+        top: 12,
+        right: 12,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+        borderRadius: 12,
     },
 
     // DiaryList 스타일

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Image, Pressable, ScrollView, View } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { Image, Pressable, FlatList, View, Dimensions, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
@@ -11,6 +11,8 @@ import { Colors } from '../../styles/Colors';
 import { DiaryItemProps } from './types';
 import { diaryStyles } from './styles';
 import DiaryImage from './DiaryImage';
+
+const SCREEN_WIDTH = Dimensions.get('window').width;
 
 dayjs.locale('ko');
 dayjs.extend(utc);
@@ -31,6 +33,8 @@ const DiaryItem: React.FC<DiaryItemProps> = ({
     totalCount,
 }) => {
     const [isExpanded, setIsExpanded] = useState(false);
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const flatListRef = useRef<FlatList>(null);
 
     const contentToShow =
         item?.content.length > MORE_LENGTH
@@ -65,6 +69,23 @@ const DiaryItem: React.FC<DiaryItemProps> = ({
     const isLastItem = typeof index === 'number' && typeof totalCount === 'number'
         ? index === totalCount - 1
         : false;
+
+    // 이미지 스크롤 이벤트 핸들러
+    const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+        const offsetX = event.nativeEvent.contentOffset.x;
+        const newIndex = Math.round(offsetX / SCREEN_WIDTH);
+        setCurrentImageIndex(newIndex);
+    };
+
+    // 이미지 렌더링
+    const renderImageItem = ({ item: imageUrl }: { item: string }) => (
+        <View style={diaryStyles.fullWidthImageWrapper}>
+            <DiaryImage
+                uri={imageUrl}
+                style={diaryStyles.fullWidthImage}
+            />
+        </View>
+    );
 
     return (
         <View style={diaryStyles.renderItemContainer}>
@@ -113,20 +134,29 @@ const DiaryItem: React.FC<DiaryItemProps> = ({
                 )}
             </View>
             {imagesToDisplay.length > 0 && (
-                <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    style={diaryStyles.imageGalleryContainer}
-                >
-                    {imagesToDisplay.map((imageUrl, index) => (
-                        <View key={index} style={diaryStyles.imageWrapper}>
-                            <DiaryImage
-                                uri={imageUrl}
-                                style={diaryStyles.diaryImage}
+                <View style={diaryStyles.fullWidthImageContainer}>
+                    <FlatList
+                        ref={flatListRef}
+                        data={imagesToDisplay}
+                        renderItem={renderImageItem}
+                        keyExtractor={(_, index) => index.toString()}
+                        horizontal
+                        pagingEnabled
+                        showsHorizontalScrollIndicator={false}
+                        onScroll={handleScroll}
+                        scrollEventThrottle={16}
+                        bounces={false}
+                    />
+                    {imagesToDisplay.length > 1 && (
+                        <View style={diaryStyles.imageIndicator}>
+                            <Title
+                                text={`${currentImageIndex + 1}/${imagesToDisplay.length}`}
+                                color={Colors.White}
+                                fontSize={12}
                             />
                         </View>
-                    ))}
-                </ScrollView>
+                    )}
+                </View>
             )}
             <Pressable
                 onPress={handlePressComment}
