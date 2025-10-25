@@ -2,6 +2,7 @@ import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useState} from 'react';
 import {StyleSheet, View} from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import InputSearch from '../../../components/Input/InputSearch';
 import SingleButton from '../../../components/button/SingleButton';
 import Title from '../../../components/text/Title';
@@ -27,7 +28,7 @@ const BreedType = () => {
     if (!breedList) return;
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <HeaderNavigation middletitle="펫 추가" hasBackButton={true} onPressBackButton={() => navigation.goBack()}/>
             <View style={styles.horizontalContainer}>
                 <View style={{flex: 2.5}}>
@@ -39,7 +40,7 @@ const BreedType = () => {
                     <SingleButton title={"다음"} disabled={!keyword} onPress={onPressNextButton} style={{marginTop: 70}}/>
                 </View>
             </View>
-        </View>
+        </SafeAreaView>
     );
 };
 
