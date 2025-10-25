@@ -53,14 +53,15 @@ export const usePetForm = (onSuccess?: () => void, petId?: number) => {
 
 
     const initFormValues = (petData: IPetResponse) => {
-        form.setValue("name", petData.name);
-        form.setValue("birthday", convertYYYYMMDDToKorean(petData.birthday));
-        form.setValue("weight", `${petData.weight}`);
-        form.setValue("gender", petData.gender);
-        form.setValue("breed", petData.breed.name);
-        form.setValue("petSpecies", petData.species.id);
-        setSpeciesId(petData.species.id);
-    }
+		// console.log(petData, 'petData--------');
+		form.setValue('name', petData.name);
+		form.setValue('birthday', convertYYYYMMDDToKorean(petData.birthday));
+		form.setValue('weight', `${petData.weight}`);
+		form.setValue('gender', petData.gender);
+		form.setValue('breed', petData.breed.name);
+		form.setValue('petSpecies', 1);
+		setSpeciesId(1);
+	}
 
     const clearValue = useCallback((filedName: string) => {
         form.setValue(filedName, "");

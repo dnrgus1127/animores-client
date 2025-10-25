@@ -43,3 +43,12 @@ ios/
 
 .idea
 .idea/
+.cursor
+
+
+# 소셜 로그인 머지 시에 제거 필요
+google-services.json
+
+.settings.json
+
+.prettierrc

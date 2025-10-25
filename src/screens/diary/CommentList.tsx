@@ -7,7 +7,9 @@ import React, { useState, useEffect } from "react";
 import {
   Dimensions,
   Image,
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -74,58 +76,62 @@ const CommentList = (props: CommentProps) => {
         visible={visible}
         animationType="fade"
       >
-        <View style={styles.modalOverlay}>
-          <TouchableOpacity onPress={() => setIsVisibleComment(false)} style={{ flex: 1 }} />
-          <View>
-            <View
-              style={{ backgroundColor: "#fff", height: 530, borderTopLeftRadius: 20, borderTopRightRadius: 20, paddingBottom: 30, }}
-            >
-              <View style={styles.footerTopLine} />
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={{ flex: 1 }}
+          >
+            <View style={styles.modalOverlay}>
+              <TouchableOpacity onPress={() => setIsVisibleComment(false)} style={{ flex: 1 }} />
+              <View style={styles.modalContainer}>
+                <View style={styles.footerTopLine} />
 
-              <Title
-                text={"댓글"}
-                fontSize={16}
-                style={{ textAlign: "center", marginTop: 10, marginBottom: 10 }}
-              />
+                <Title
+                  text={"댓글"}
+                  fontSize={16}
+                  style={{ textAlign: "center", marginTop: 10, marginBottom: 10 }}
+                />
 
-              <ScrollView>
+                <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
                   {isComment ?
-                    comments.map(item => (
-                      <CommentBar 
-                      item={item} 
-                      setIsVisibleComment={setIsVisibleComment} 
-                      setSelectedCommentId={setSelectedCommentId}
-                      setSelectedCommentName={setSelectedCommentName}
-                      profileId={profileId}
-                    />
+                    comments.map((item, index) => (
+                      <CommentBar
+                        key={index}
+                        item={item}
+                        setIsVisibleComment={setIsVisibleComment}
+                        setSelectedCommentId={setSelectedCommentId}
+                        setSelectedCommentName={setSelectedCommentName}
+                        profileId={profileId}
+                      />
                     )
                   ) : null}
-              </ScrollView>
+                </ScrollView>
 
-              {/* 댓글/대댓글 입력창 
-                댓글달기, 대댓글달기(답글달기) 함수 호출 시
-                AddComment 컴포넌트에 해당 파라미터 전달
-                - 댓글일 경우 파라미터에 게시글 작성자 id를 전달
-                - 대댓글일 경우 파라미터에 댓글 작성자 id를 전달
-              */}
-              {selectedCommentId !== null ? (
-                <AddComment 
-                  diaryCommentId={selectedCommentId} 
-                  diaryCommentName={selectedCommentName}
-                  setSelectedCommentId={setSelectedCommentId}
-                  refetch={refetch} 
-                /> // * 대댓글일 경우
-              ) : (
-                <AddComment 
-                  diaryId={diaryId} 
-                  diaryCommentName={selectedCommentName}
-                  setSelectedCommentId={setSelectedCommentId}
-                  refetch={refetch} 
-                /> // * 댓글일 경우
-              )}
+                {/* 댓글/대댓글 입력창
+                  댓글달기, 대댓글달기(답글달기) 함수 호출 시
+                  AddComment 컴포넌트에 해당 파라미터 전달
+                  - 댓글일 경우 파라미터에 게시글 작성자 id를 전달
+                  - 대댓글일 경우 파라미터에 댓글 작성자 id를 전달
+                */}
+                {selectedCommentId !== null ? (
+                  <AddComment
+                    diaryCommentId={selectedCommentId}
+                    diaryCommentName={selectedCommentName}
+                    setSelectedCommentId={setSelectedCommentId}
+                    refetch={refetch}
+                  /> // * 대댓글일 경우
+                ) : (
+                  <AddComment
+                    diaryId={diaryId}
+                    diaryCommentName={selectedCommentName}
+                    setSelectedCommentId={setSelectedCommentId}
+                    refetch={refetch}
+                  /> // * 댓글일 경우
+                )}
+              </View>
             </View>
-          </View>
-        </View>
+          </KeyboardAvoidingView>
+        </GestureHandlerRootView>
         <Toast />
       </Modal>
     </View>
@@ -139,12 +145,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContainer: {
-    alignItems: 'center',
-    padding: 20,
-    height: SCREEN_HEIGHT * 0.5,
     backgroundColor: 'white',
+    height: SCREEN_HEIGHT * 0.7,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
+    paddingBottom: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -3 },
     shadowOpacity: 0.1,
@@ -369,12 +374,13 @@ const CommentBar = (props: CommentProps) => {
   };
 
   return (
-    <GestureHandlerRootView>
+    <View>
       <View style={styles.cardContainer}>
         <SwipeableComment
           item={item}
           onDelete={(id) => handleDelete(id, currentProfile?.id ?? -1)}
           isReply={false}
+          onClickReply={onClickReply}
         />
       </View>
 
@@ -390,7 +396,7 @@ const CommentBar = (props: CommentProps) => {
           )
         ) : null}
       </View>
-    </GestureHandlerRootView>
+    </View>
   )
 };
 

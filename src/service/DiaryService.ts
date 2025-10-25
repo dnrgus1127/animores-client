@@ -3,6 +3,7 @@ import axios from 'axios';
 import { DiaryModel } from '../model/DiaryModel';
 import { IApiResponse } from './type';
 import { apiHandler } from './apiHandler';
+import {readdirOrErrorSync} from "rimraf/dist/commonjs/readdir-or-error";
 
 // 일지
 export namespace DiaryService {
@@ -12,8 +13,9 @@ export namespace DiaryService {
 				const response = await AxiosContext.get(
 					`/api/v1/diaries?profileId=${profileId}&page=${page}&size=${size}`
 				);
-				return { data: response.data, status: response.status };
-			} catch (error) {
+
+                return { data: response.data, status: response.status };
+            } catch (error) {
 				console.error('DiaryService.diary.list:', error);
 				return { data: null, status: error || 500 };
 			}
@@ -151,7 +153,6 @@ export namespace DiaryService {
 					AxiosContext.get<IApiResponse<DiaryModel.IDiaryCalendarData>>(
 						`/api/v1/diaries/calendar?profileId=${profileId}&date=${date}`
 					),
-				{ totalCount: 0, diaries: [] },
 				'DiaryService.diary.calendar'
 			);
 		},
