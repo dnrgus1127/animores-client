@@ -1,13 +1,23 @@
 import { IMAGE_BASE_URL } from "@env";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Image, Pressable, StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
 import { useRecoilValue } from "recoil";
-import { IToDo } from "../../../types/ToDo";
+import { IToDoList } from "../../../types/ToDo";
 import { ClockIcon } from "../../assets/svg";
 import SwipeableCard from "../../components/SwipeableCard";
 import { minuteTickSelector } from "../../recoil/MinuteTickAtom";
 import { ToDoService } from "../../service/ToDoService";
 import { Colors } from "../../styles/Colors";
+import BasicCheckbox from "../../components/BasicCheckbox";
+
+interface ToDoCardProps {
+  todo: IToDoList;
+  onDelete: () => void;
+  isChecked: boolean;
+  onCheckChange: (id: string, isChecked: boolean) => void;
+  onClickUpdateTodo: () => void;
+  style?: StyleProp<ViewStyle>;
+}
 
 const HIDDEN_MENU_WIDTH = 70;
 const TIMING_DURATION = 500;
@@ -122,64 +132,85 @@ const PetBadge = ({ pet }: { pet: { id: number; name: string } }) => {
     );
 };
 
-const ToDoCard = ({ todo, onDelete, style }: { todo: IToDo, onDelete: () => void, style?: StyleProp<ViewStyle> }) => {
-    // 현재 시간 획득 및 매 분(00초) 마다 리렌더링
-    const curTime = useRecoilValue(minuteTickSelector);
-    const todoTime = todo.time || "18:00";
-    const isPastDue = isPast(curTime, todoTime);
+const ToDoCard = ({ todo, onDelete, isChecked, onCheckChange, onClickUpdateTodo, style }: ToDoCardProps) => {
+  // 현재 시간 획득 및 매 분(00초) 마다 리렌더링
+  const curTime = useRecoilValue(minuteTickSelector);
+  const todoTime = todo.time || "18:00";
+  const isPastDue = isPast(curTime, todoTime);
+  //const todoUnit = todo.unit || "월, 수, 금";
 
-    const hiddenContent = (
-        <View style={styles.hiddenContent}>
-            <Pressable onPress={() => onDelete()}>
-                <Text style={styles.hiddenMenuText}>삭제</Text>
-            </Pressable>
-            <View style={{ width: 24, height: 1, backgroundColor: Colors.White, marginVertical: 15 }} />
-            <Pressable onPress={() => ToDoService.todo.check(todo.id)}>
-                <Text style={styles.hiddenMenuText}>수정</Text>
-            </Pressable>
-        </View>
-    );
+  const todoUnit = (unit: string) => {
+      switch (unit) {
+          case 'HOUR': return '매시간'; // 매시간은 없애기로
+          case 'WEEK': return '매주';
+          case 'DAY': return '매일';
+          case 'MONTH': return '매달';
+          default: return '';
+      }
+  }
+
+  const hiddenContent = (
+    <View style={styles.hiddenContent}>
+      <Pressable onPress={() => onDelete()}>
+        <Text style={styles.hiddenMenuText}>삭제</Text>
+      </Pressable>
+      <View style={{ width: 24, height: 1, backgroundColor: Colors.White, marginVertical: 15 }} />
+      <Pressable onPress={onClickUpdateTodo}>
+        <Text style={styles.hiddenMenuText}>수정</Text>
+      </Pressable>
+    </View>
+  );
 
     return (
-        <SwipeableCard
-            containerStyle={[styles.container, style]}
-            cardStyle={styles.card}
-            hiddenCardStyle={styles.hidden_card}
-            hiddenMenuWidth={HIDDEN_MENU_WIDTH}
-            timingDuration={TIMING_DURATION}
-            hiddenContent={hiddenContent}
-        >
-            <View style={styles.cardContent}>
-                <View>
-                    <View style={{ marginVertical: 10 }}>
-                        <Text style={{ fontSize: 20,  fontWeight: 'bold' }}>{todo.title}</Text>
-                    </View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <View style={{ flexDirection: 'row' }}>
-                            {todo.pets.map((pet, index) => (
-                                <PetBadge key={`pet-${pet.id}-${index}`} pet={pet} />
-                            ))}
-                        </View>
-                    </View>
-                    <View style={{ flexDirection: "row", alignItems: 'center', marginTop: 5 }}>
-                        <ClockIcon width={24} height={24} color={isPast(curTime, todoTime) ? Colors.FF9999 : Colors.Black} />
-                        {/* TODO 폰트 font-family: Pretendard-Bold */}
-                        <Text style={{ fontSize: 16, textDecorationLine: isPastDue ? "line-through" : "none", color: isPastDue ? Colors.FF9999 : Colors.Black, fontWeight: 600, marginLeft: 8, lineHeight: 36 }}>{formatTime(todoTime)}</Text>
-                        <Text style={{ fontSize: 14, color: Colors.Gray838383, marginLeft: 8, lineHeight: 36 }}>월, 수, 금</Text>
-                    </View>
-                </View>
-                <View>
-                    {todo.completeProfileImage ?
-                        <View style={styles.profile}>
-                            <Image source={require(`../../assets/images/2a820159-1f51-473a-a11c-764539054ca0.jpg`)} style={{ position: 'absolute', height: 30, width: 30, zIndex: 3 }} />
-                            <Image source={{ uri: `${IMAGE_BASE_URL}/${todo.completeProfileImage}` }} style={{ height: 30, width: 30 }} />
-                        </View>
-                        :
-                        <Pressable onPress={() => ToDoService.todo.check(todo.id)} style={{ ...styles.profile, ...styles.check_box }} />
-                    }
-                </View>
+      <SwipeableCard
+        containerStyle={[styles.container, style]}
+        cardStyle={styles.card}
+        hiddenCardStyle={styles.hidden_card}
+        hiddenMenuWidth={HIDDEN_MENU_WIDTH}
+        timingDuration={TIMING_DURATION}
+        hiddenContent={hiddenContent}
+      >
+        <View style={[styles.cardContent, { opacity: isChecked ? "0.5" : "1" }]}>
+          <View style={[styles.leftSide, { borderLeftColor: todo.color }]}>
+            <View style={{ marginVertical: 10 }}>
+              <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
+                {todo.content ? todo.content : todo.tag}
+              </Text>
             </View>
-        </SwipeableCard>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View style={{ flexDirection: 'row' }}>
+                {todo.pets.map((pet, index) => (
+                  <PetBadge key={`pet-${pet.id}-${index}`} pet={pet} />
+                ))}
+              </View>
+            </View>
+            <View style={{ flexDirection: "row", alignItems: 'center', marginTop: 5 }}>
+              <ClockIcon width={24} height={24} color={isPast(curTime, todoTime) ? Colors.FF9999 : Colors.Black} />
+              {/* TODO 폰트 font-family: Pretendard-Bold */}
+              <Text style={{ fontSize: 16, textDecorationLine: isPastDue ? "line-through" : "none", color: isPastDue ? Colors.FF9999 : Colors.Black, fontWeight: "600", marginLeft: 8, lineHeight: 36 }}>{formatTime(todoTime)}</Text>
+              <Text style={{ fontSize: 14, color: Colors.Gray838383, marginLeft: 8, lineHeight: 36 }}>{todoUnit(todo.unit)}</Text>
+            </View>
+          </View>
+          <View style={styles.rightSide}>
+            <View style={{ }}>
+              <BasicCheckbox
+                id={String(todo.id)}
+                label=''
+                isChecked={isChecked}
+                onValueChangeHandler={onCheckChange}
+              />
+            </View>
+            {todo.completeProfileImage ?
+              <View style={styles.profile}>
+                <Image source={require("../../assets/images/2a820159-1f51-473a-a11c-764539054ca0.jpg")} style={{ position: 'absolute', height: 30, width: 30, zIndex: 3 }} />
+                <Image source={{ uri: `${IMAGE_BASE_URL}/${todo.completeProfileImage}` }} style={{ height: 30, width: 30 }} />
+              </View>
+              :
+              <Pressable onPress={() => ToDoService.todo.check(String(todo.id))} style={{ ...styles.profile, ...styles.check_box }} />
+            }
+          </View>
+        </View>
+      </SwipeableCard>
     );
 };
 
@@ -188,20 +219,26 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     card: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        width: '100%',
-        minHeight: 80,
-        borderRadius: 10,
-        backgroundColor: Colors.White,
-        paddingHorizontal: 20,
-        paddingVertical: 16,
-        elevation: 3,
-        shadowColor: '#000',
-        shadowOpacity: 0.1,
-        shadowOffset: { width: 0, height: 2 },
-        shadowRadius: 5,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      overflow: 'hidden',
+      paddingRight: 20,
+      width: '100%',
+      minHeight: 80,
+      borderRadius: 10,
+      backgroundColor: Colors.White,
+      elevation: 3,
+      shadowColor: '#000',
+      shadowOpacity: 0.1,
+      shadowOffset: { width: 0, height: 2 },
+      shadowRadius: 5,
+    },
+    leftSide: {
+      paddingLeft: 20,
+      paddingVertical: 16,
+      borderLeftStyle: 'solid',
+      borderLeftWidth: 4,
     },
     cardContent: {
         flexDirection: 'row',
@@ -236,11 +273,20 @@ const styles = StyleSheet.create({
         fontWeight: '400',
         lineHeight: 18,
     },
+
+    rightSide: {
+      paddingLeft: 20,
+      paddingVertical: 16, 
+      display: 'flex', 
+      flexDirection: 'column', 
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      height: '100%',
+    },
     profile: {
         width: 30,
         height: 30,
         borderRadius: 15,
-        position: 'relative',
     },
     check_box: {
         backgroundColor: Colors.White,

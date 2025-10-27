@@ -6,7 +6,7 @@ import { commonStyles } from '../styles/commonStyles';
 export interface CheckboxProps {
   isChecked: boolean;
   disabled?: boolean;
-  onValueChangeHandler?: (checked: boolean) => void;
+  onValueChangeHandler?: (id: string, checked: boolean) => void;
   label?: React.ReactNode;
   style?: StyleSheet;
   id?: string;
@@ -17,7 +17,7 @@ const BasicCheckbox = (props: CheckboxProps) => {
 
   const onPressHandeler = () => {
     if (onValueChangeHandler) {
-      onValueChangeHandler(!isChecked);
+      onValueChangeHandler(id, !isChecked);
     }
   }
   
@@ -26,7 +26,6 @@ const BasicCheckbox = (props: CheckboxProps) => {
       style={styles.checkboxWrap}
       disabled={disabled}
       onPress={onPressHandeler}
-      id={id}
     >
       <View
         style={[
@@ -48,6 +47,7 @@ const BasicCheckbox = (props: CheckboxProps) => {
           {label}
         </Text>
       )}
+      {/* <Text>{id}</Text> */}
     </Pressable>
   )
 }

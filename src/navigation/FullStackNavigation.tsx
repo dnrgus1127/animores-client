@@ -17,6 +17,7 @@ import EditProfileScreen from "../screens/myPage/profile/EditProfile";
 import ProfileManagementScreen from "../screens/myPage/profile/ProfileManagementScreen";
 import ProfilesScreen from "../screens/myPage/profile/ProfilesScreen";
 import AddTodo from "../screens/todo/AddTodo";
+import UpdateTodo from "../screens/todo/UpdateTodo";
 import {ScreenName} from "../statics/constants/ScreenName";
 import BottomTabNavigator from "./BottomTabStackNavigator";
 import {PetManagementScreen} from "../screens/myPage/petManagement/PetManagementHome";
@@ -109,6 +110,11 @@ const FullStackNavigation: React.FC<FullStackNavigationProps> = ({ isAuthenticat
         <RootStack.Screen
           name={ScreenName.AddTodo}
           component={AddTodo}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
+          name={ScreenName.UpdateTodo}
+          component={UpdateTodo}
           options={{ headerShown: false }}
         />
         <RootStack.Screen
