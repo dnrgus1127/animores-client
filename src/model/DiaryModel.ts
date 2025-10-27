@@ -38,4 +38,28 @@ export namespace DiaryModel {
 		name: string
 		imageUrl: string
 	}
+
+	// 캘린더 API 관련 타입들
+	export interface IDiaryCalendarItem {
+		diaryId: number
+		content: string
+		createdAt: string
+		profileId: number
+		name: string
+		imageUrl: string
+	}
+
+	export interface IDiaryCalendarData {
+		totalCount: number
+		diaries: IDiaryCalendarItem[]
+	}
+
+	export interface IDiaryCalendarResponse {
+		success: boolean
+		data: IDiaryCalendarData
+		error: {
+			code: string
+			message: string
+		}
+	}
 }

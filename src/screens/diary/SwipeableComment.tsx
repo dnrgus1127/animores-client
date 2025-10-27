@@ -23,7 +23,7 @@ import { Easing } from "react-native-reanimated";
 export interface CommentProps {
   onDelete: () => void;
   isReply: boolean;
-  onClickReply: (commentId: Number, commentName: string) => void;
+  onClickReply?: (commentId: number, name: string) => void;
 }
 
 const baseUrl = process.env.IMAGE_BASE_URL;
@@ -86,7 +86,7 @@ const SwipeableComment = (props: CommentProps) => {
               </View>
               <Title text={item.content} fontSize={14} style={{ marginTop: 8 }} />
             </View>
-            {!isReply && (
+            {!isReply && onClickReply && (
               <Pressable
                 onPress={() => onClickReply(item.commentId, item.name)}
                 style={{ marginLeft: 12, alignSelf: 'flex-end' }}

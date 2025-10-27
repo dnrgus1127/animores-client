@@ -3,6 +3,7 @@ import {StackNavigationProp} from "@react-navigation/stack";
 import React, {useEffect} from "react";
 import {StyleProp, StyleSheet, Text, View, ViewStyle} from "react-native";
 import {ScrollView} from "react-native-gesture-handler";
+import {SafeAreaView} from "react-native-safe-area-context";
 import HeaderNavigation from "../../../navigation/HeaderNavigation";
 import {RootStackParamList} from "../../../navigation/type";
 import {StackName} from "../../../statics/constants/ScreenName";
@@ -39,21 +40,25 @@ const AddPet = () => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList["PetManagement"], "PetType">>();
     // navigation param
     const {petId} = useNavigationParams<"PetManagement", "AddPet">();
-    const {submit, initFormValues, clearValue} = usePetForm(() => navigation.navigate(StackName.PetManagement.Home), petId);
+    const {
+        submit,
+        initFormValues,
+        clearValue
+    } = usePetForm(() => navigation.navigate(StackName.PetManagement.Home), petId);
 
     // 펫 정보 수정이라면, petId로 펫 정보 불러와서 필드 값 업데이트
-    const {data : petDetails} = petId ? usePet(petId) : {data : null};
-    
+    const {data: petDetails} = petId ? usePet(petId) : {data: null};
+
     useEffect(() => {
         petDetails && initFormValues(petDetails);
     }, [petDetails]);
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <HeaderNavigation middletitle="펫 추가" hasBackButton={true} onPressBackButton={() => navigation.pop()}/>
             <ScrollView style={styles.horizontalContainer}>
                 <PetImagePicker/>
-                <View style={{gap: 20, paddingVertical : 20}}>
+                <View style={{gap: 20, paddingVertical: 20}}>
                     <CustomForm.Input name="name" label={"반려동물 이름"}
                                       placeholder={"반려동물의 이름을 입력해주세요"}
                                       trailingIcon={<ReviseIcon/>}
@@ -71,7 +76,7 @@ const AddPet = () => {
                     <CustomForm.SubmitButton text={"제출"} onPress={() => submit()}/>
                 </View>
             </ScrollView>
-        </View>
+        </SafeAreaView>
     );
 };
 
