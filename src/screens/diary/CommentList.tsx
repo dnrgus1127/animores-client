@@ -375,6 +375,7 @@ const CommentBar = (props: CommentProps) => {
           item={item}
           onDelete={(id) => handleDelete(id, currentProfile?.id ?? -1)}
           isReply={false}
+          onClickReply={onClickReply}
         />
       </View>
 

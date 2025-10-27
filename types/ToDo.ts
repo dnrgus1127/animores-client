@@ -16,10 +16,20 @@ interface IPet {
     name: string;
 }
 
+export interface IToDoList {
+  todoId: number;
+  date: string;
+  time: string | null;
+  isAllDay: boolean;
+  content: string;
+  tag: string | null;
+  color: string;
+  isUsingAlarm: boolean;
+  unit: string;
+  intervalNum: number;
+}
+
 export interface IToDoListResponse {
-  curPage: number;
-  size: number;
-  totalCount: number;
-  totalPage: number;
-  toDoList: IToDo[];
+  success: boolean;
+  data: IToDoList[];
 }

@@ -23,6 +23,7 @@ import { Easing } from "react-native-reanimated";
 export interface CommentProps {
   onDelete: () => void;
   isReply: boolean;
+  onClickReply: (commentId: Number, commentName: string) => void;
 }
 
 const baseUrl = process.env.IMAGE_BASE_URL;
@@ -46,7 +47,7 @@ function timeAgo(isoDate: string) {
 }
 
 const SwipeableComment = (props: CommentProps) => {
-  const { item, onDelete, isReply = false } = props;
+  const { item, onDelete, isReply = false, onClickReply } = props;
   const translateX = useSharedValue(0);
 
   const panGesture = Gesture.Pan()

@@ -10,6 +10,7 @@ export enum ScreenName {
 	UpdateDiary = 'UpdateDiary',
 	Diary = 'Diary',
 	AddTodo = 'AddTodo',
+	UpdateTodo = 'UpdateTodo',
 	AlertSetting = 'AlertSetting',
 	CustomerService = 'CustomerService',
 	Information = 'Information',

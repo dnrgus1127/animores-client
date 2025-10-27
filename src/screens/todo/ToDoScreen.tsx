@@ -9,7 +9,8 @@ import FloatingButton from "../../components/button/FloatingButton";
 import CenterModal from "../../components/modal/CenterModal";
 import { usePetList } from "../../hooks/usePetList";
 import PetListModal from "./modal/PetListModal";
-import ToDoCardList from "./ToDoCardList";
+import AllToDoCardList from "./AllToDoCardList";
+import TodayToDoCardList from "./TodayToDoCardList";
 
 
 export default function ToDoScreen() {
@@ -27,15 +28,24 @@ export default function ToDoScreen() {
 
 
   const FirstRoute = () => (
-    <View style={[styles.scene, { backgroundColor: '#673ab7' }]}>
-      <Text style={styles.text}>오늘 할 일</Text>
+    <View style={styles.scene}>
+      <View style={{ display: 'flex', alignItems: 'center', width: '100%', flex: 1 }}>
+        <TodayToDoCardList pets={pets} setTodoIdToDelete={setTodoIdToDelete} />
+      </View>
+      <FloatingButtonContainer isVisibleMenu={isVisibleMenu}>
+        <FloatingButton
+          isVisibleMenu={isVisibleMenu}
+          onPressCancel={() => setIsVisibleMenu(false)}
+          onPressFloating={() => setIsVisibleMenu(!isVisibleMenu)}
+        />
+      </FloatingButtonContainer>
     </View>
   );
 
   const SecondRoute = () => (
     <View style={styles.scene}>
       <View style={{ display: 'flex', alignItems: 'center', width: '100%', flex: 1 }}>
-        <ToDoCardList pets={pets} setTodoIdToDelete={setTodoIdToDelete} />
+        <AllToDoCardList pets={pets} setTodoIdToDelete={setTodoIdToDelete} />
       </View>
       <FloatingButtonContainer isVisibleMenu={isVisibleMenu}>
         <FloatingButton
@@ -88,9 +98,23 @@ export default function ToDoScreen() {
         renderTabBar={props => (
           <TabBar
             {...props}
-            indicatorStyle={{ backgroundColor: 'white' }}
-            style={{ backgroundColor: 'black' }}
-            labelStyle={{ color: 'white', fontWeight: 'bold' }}
+            indicatorStyle={{
+              backgroundColor: '#fff',
+              width: layout.width/2 - 10,
+              height: '100%',
+              borderRadius: 30,
+              borderColor: '#f8f8f8',
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.1,
+              shadowRadius: 4,
+              elevation: 5,
+              
+            }}
+            style={{ borderWidth: 5, borderColor: '#f8f8f8', backgroundColor: '#f8f8f8', borderRadius: 30 }}
+            labelStyle={{ color: '#aeaeae', fontWeight: 'bold' }}
+            activeColor="#1e1e1e"
+            inactiveColor="gray"
           />
         )}
       />
