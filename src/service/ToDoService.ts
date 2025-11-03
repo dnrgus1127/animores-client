@@ -49,17 +49,21 @@ export namespace ToDoService {
         },
         list: async (params: IListToDoParam): Promise<IToDoListResponse> => {
             try {
-                var queryString = `/api/v1/todos?page=${params.page}&size=${params.size}`;
-                if (params.done !== null) {
-                    queryString += `&done=${params.done}`;
+                var startEnd = ''
+                var completed = ''
+                var queryString = `/api/v1/todos/?${startEnd}${completed}page=${params.page}&size=${params.size}`;
+                if(params.start != null) {
+                    startEnd = `&start=${params.start}`;
                 }
-                if (params.pets !== null) {
-                    for (const pet of params.pets) {
-                        queryString += `&pets=${pet}`;
-                    }
+                if(params.end != null) {
+                    startEnd = `&end=${params.end}`;
                 }
+                if(params.completed !=  null) {
+                    completed = `&completed=${params.completed}`;
+                }
+                console.log(params.start, params.end);
                 const response = await AxiosContext.get(queryString);
-                return response.data.data;
+                return response.data;
             } catch (error) {
                 console.error('ToDoService.todo.list:', error);
                 if (axios.isAxiosError(error)) {
@@ -120,7 +124,7 @@ export namespace ToDoService {
         check: async (id: number) => {
             try {
                 const response = await AxiosContext.post(`/api/v1/todos/${id}/check`);
-                console.log(response);
+                console.log(response.data);
                 return { data: response.data, status: response.status };
             } catch (error) {
                 console.error('ToDoService.todo.check:', error);
@@ -131,6 +135,21 @@ export namespace ToDoService {
                 }
             }
         },
+		update: async (id: number) => {
+			try {
+				const response = await AxiosContext.patch(
+                    `/api/v1/todos/${id}`, 
+					{
+						headers: {
+							'Content-Type': 'application/json',
+						},
+					});
+				return { data: response.data, status: response.status };
+			} catch (error) {
+				console.error('ToDoService.todo.update:', error);
+				return { data: null, status: error || error };
+			}
+		},
         delete: async (id: number) => {
             try {
                 const response = await AxiosContext.delete(`/api/v1/todos/${id}`);

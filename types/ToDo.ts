@@ -16,12 +16,22 @@ interface IPet {
     name: string;
 }
 
+export interface IToDoList {
+  todoId: number;
+  date: string;
+  time: string | null;
+  isAllDay: boolean;
+  content: string;
+  tag: string | null;
+  color: string;
+  isUsingAlarm: boolean;
+  unit: string;
+  intervalNum: number;
+}
+
 export interface IToDoListResponse {
-    curPage: number;
-    size: number;
-    totalCount: number;
-    totalPage: number;
-    toDoList: IToDo[];
+  success: boolean;
+  data: IToDoList[];
 }
 
 // 요약형 ToDo (기간/리스트 등에서 사용하는 경량 정보)
