@@ -11,7 +11,7 @@ export interface CheckboxProps {
   style?: StyleSheet;
   id?: string;
 }
-  
+
 const BasicCheckbox = (props: CheckboxProps) => {
   const { isChecked, disabled, onValueChangeHandler, label, id } = props;
 
@@ -20,9 +20,9 @@ const BasicCheckbox = (props: CheckboxProps) => {
       onValueChangeHandler(!isChecked);
     }
   }
-  
+
   return (
-    <Pressable 
+    <Pressable
       style={styles.checkboxWrap}
       disabled={disabled}
       onPress={onPressHandeler}
@@ -39,7 +39,7 @@ const BasicCheckbox = (props: CheckboxProps) => {
           <IconCheck style={commonStyles.checkboxIcon} />
         )}
       </View>
-      
+
       {label && (
         <Text style={[
           styles.autoLoginLabel,

@@ -1,11 +1,12 @@
-import {createNativeStackNavigator} from "@react-navigation/native-stack";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
-import {StyleSheet} from "react-native";
-import {SafeAreaView} from "react-native-safe-area-context";
-import {RootStackParams} from "../../types/RootStackParams";
+import { StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { RootStackParams } from "../../types/RootStackParams";
 import JoinCompleted from "../screens/auth/JoinCompleted";
 import JoinScreen from "../screens/auth/JoinScreen";
 import LoginScreen from "../screens/auth/LoginScreen";
+import SocialSignupScreen from "../screens/auth/SocialSignupScreen";
 import CreateDiary from "../screens/diary/CreateDiary";
 import UpdateDiary from "../screens/diary/UpdateDiary";
 import HomeScreen from "../screens/home/HomeScreen";
@@ -17,9 +18,9 @@ import EditProfileScreen from "../screens/myPage/profile/EditProfile";
 import ProfileManagementScreen from "../screens/myPage/profile/ProfileManagementScreen";
 import ProfilesScreen from "../screens/myPage/profile/ProfilesScreen";
 import AddTodo from "../screens/todo/AddTodo";
-import {ScreenName} from "../statics/constants/ScreenName";
+import { ScreenName } from "../statics/constants/ScreenName";
 import BottomTabNavigator from "./BottomTabStackNavigator";
-import {PetManagementScreen} from "../screens/myPage/petManagement/PetManagementHome";
+import { PetManagementScreen } from "../screens/myPage/petManagement/PetManagementHome";
 
 const RootStack = createNativeStackNavigator<RootStackParams>();
 
@@ -39,6 +40,11 @@ const FullStackNavigation: React.FC<FullStackNavigationProps> = ({ isAuthenticat
         <RootStack.Screen
           name={ScreenName.Login}
           component={LoginScreen}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
+          name={ScreenName.SocialSignup}
+          component={SocialSignupScreen}
           options={{ headerShown: false }}
         />
         <RootStack.Screen

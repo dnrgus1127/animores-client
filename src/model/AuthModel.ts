@@ -36,4 +36,9 @@ export namespace AuthModel {
 		nickname: string;
 		isAdPermission: boolean;
 	}
+
+	export interface ICheckNicknameResponse {
+		success: boolean;
+		data: boolean; // true if nickname exists, false if available
+	}
 }

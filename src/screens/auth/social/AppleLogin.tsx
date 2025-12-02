@@ -12,7 +12,7 @@ export const signInWithApple = async () => {
   try {
     // TODO: 애플 로그인 로직 구현
     console.log('애플 로그인 미구현');
-    
+
     // 임시로 성공 응답 반환 (실제 구현 시 제거)
     return {
       user: null,
@@ -30,7 +30,7 @@ export const AppleLogin: React.FC<AppleLoginProps> = ({ onSuccess }) => {
   const handleAppleLogin = async () => {
     try {
       const result = await signInWithApple();
-      await handleSuccess(result.token, 'Apple');
+      await handleSuccess(result.user, result.token, 'Apple', 'apple');
     } catch (error) {
       handleError(error, 'Apple');
     }

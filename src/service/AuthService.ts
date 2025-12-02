@@ -5,11 +5,11 @@ import { AxiosResponse } from 'axios';
 
 export const AuthService = {
 	Auth: {
-		login: async (email: string, password: string) : Promise<AuthModel.ILoginResponseModel> => {
+		login: async (email: string, password: string): Promise<AuthModel.ILoginResponseModel> => {
 			const response = await AxiosContext.post<AuthModel.ILoginResponseModel>(
 				`/api/v1/account/sign-in`, { email, password });
 			return response.data;
-		},	
+		},
 		refreshToken: async (refreshToken: string) => {
 			const response = await AxiosContext.post<AuthModel.ILoginResponseModel>(
 				`/api/v1/account/refresh`, { refreshToken });
@@ -30,8 +30,12 @@ export const AuthService = {
 				`/api/v1/account/sign-up`, { email, password, nickname, isAdPermission });
 			return response.data;
 		},
-		setNewPassword: async () => {
-			
-		}
+
+		checkNickname: async (nickname: string): Promise<AuthModel.ICheckNicknameResponse> => {
+			const response = await AxiosContext.get<AuthModel.ICheckNicknameResponse>(
+				`/api/v1/account/check-nickname/${nickname}`
+			);
+			return response.data;
+		},
 	},
 };

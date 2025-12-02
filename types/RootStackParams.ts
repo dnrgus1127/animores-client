@@ -25,4 +25,11 @@ export type RootStackParams = {
 	UserVerification: undefined;
 	ResetPassword: undefined;
 	NewPassword: undefined;
+	SocialSignup: {
+		firebaseUser: {
+			uid: string;
+			email: string | null;
+		};
+		provider: 'google' | 'kakao' | 'apple';
+	};
 };

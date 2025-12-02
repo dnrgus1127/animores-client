@@ -65,7 +65,7 @@ export const KakaoLogin: React.FC<KakaoLoginProps> = ({ onSuccess }) => {
 	const handleKakaoLogin = async () => {
 		try {
 			const result = await signInWithKakao();
-			await handleSuccess(result.token, '카카오');
+			await handleSuccess(result.user, result.token, '카카오', 'kakao');
 		} catch (error) {
 			handleError(error, '카카오');
 		}

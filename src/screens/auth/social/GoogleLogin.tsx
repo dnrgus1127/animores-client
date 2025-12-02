@@ -59,7 +59,7 @@ export const GoogleLogin: React.FC<GoogleLoginProps> = ({ onSuccess }) => {
   const handleGoogleLogin = async () => {
     try {
       const result = await signInWithGoogle();
-      await handleSuccess(result.token, "Google");
+      await handleSuccess(result.user, result.token, "Google", "google");
     } catch (error) {
       handleError(error, "Google");
     }

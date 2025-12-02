@@ -7,11 +7,11 @@ export const commonStyles = StyleSheet.create({
     padding: 20,
   },
   commonRowContainer: {
-    flexDirection: 'row', 
-    alignItems: 'center', 
+    flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'center',
   },
-  headerTitleWrap: { 
+  headerTitleWrap: {
     flexDirection: "row",
     padding: 15,
     backgroundColor: "#fff",
@@ -32,6 +32,7 @@ export const commonStyles = StyleSheet.create({
     height: 20,
     marginRight: 5,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   checked: {
     borderColor: '#FB3F7E',
@@ -41,21 +42,19 @@ export const commonStyles = StyleSheet.create({
     backgroundColor: '#DBDBDB',
   },
   checkboxIcon: {
-    width: 14,
-    height: 10,
-    marginTop: 1,
-    marginLeft: 6,
+    width: 10,
+    height: 7,
   },
   separator: {
-    flex: 1, 
-    height: 1, 
+    flex: 1,
+    height: 1,
     backgroundColor: '#AEAEAE',
   },
   verticalBar: {
-    borderLeftWidth: 1, 
-    borderLeftColor: '#AEAEAE', 
-    height: 15, 
-    marginLeft: 8, 
+    borderLeftWidth: 1,
+    borderLeftColor: '#AEAEAE',
+    height: 15,
+    marginLeft: 8,
     marginRight: 8,
   },
 })

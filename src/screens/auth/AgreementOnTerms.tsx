@@ -6,21 +6,16 @@ import { Colors } from "../../styles/Colors";
 
 
 interface IProps {
-  checkedAgreements: (value:string[], valid:boolean) => void
+  checkedAgreements: (value: string[], valid: boolean) => void
 }
 
 const AgreementOnterms = (props: IProps) => {
   const { checkedAgreements } = props
-  
+
   const [checkItems, setCheckItems] = useState<string[]>([])
   const [allChecked, setAllChecked] = useState<boolean>(false)
 
   const agreementList = [
-    {
-      id: 'receiveAdvertising',
-      label: '광고 수신동의(선택)',
-      required: false
-    },
     {
       id: 'termsOfUse',
       label: '이용 약관에 동의합니다.(필수)',
@@ -30,10 +25,15 @@ const AgreementOnterms = (props: IProps) => {
       id: 'privacyPolicy',
       label: '개인정보 수집 이용에 동의합니다.(필수)',
       required: true
+    },
+    {
+      id: 'receiveAdvertising',
+      label: '광고 수신동의(선택)',
+      required: false
     }
   ]
 
-  
+
   useEffect(() => {
     const requiredLength = agreementList.filter((item) => item.required)
     let checkedRequired = requiredLength.filter((item) => checkItems.includes(item.id)).length
@@ -46,7 +46,7 @@ const AgreementOnterms = (props: IProps) => {
   }, [checkItems])
 
   // 약관 동의 체크 시
-  const checkItemHandler = (id:string, isChecked:boolean) => {
+  const checkItemHandler = (id: string, isChecked: boolean) => {
 
     if (!isChecked) {
       setCheckItems([...checkItems, id])
@@ -64,7 +64,7 @@ const AgreementOnterms = (props: IProps) => {
   const allCheckedHandler = () => {
     setAllChecked(!allChecked)
 
-    if (!allChecked) { 
+    if (!allChecked) {
       setCheckItems(agreementList.map((item) => item.id))
     } else {
       setCheckItems([])
@@ -79,13 +79,13 @@ const AgreementOnterms = (props: IProps) => {
         onValueChangeHandler={() => allCheckedHandler()}
         label='전체 동의합니다.'
       />
-      
+
       <View style={commonStyles.commonRowContainer}>
-        <View style={[commonStyles.separator, {marginTop: 15}]} />
+        <View style={[commonStyles.separator, { marginTop: 15 }]} />
       </View>
 
       {agreementList.map((item) => (
-        <BasicCheckbox 
+        <BasicCheckbox
           key={item.id}
           isChecked={checkItems.includes(item.id)}
           onValueChangeHandler={() => checkItemHandler(item.id, checkItems.includes(item.id))}
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.White,
   },
   joinInputWrap: {
-    flexDirection: 'row', 
+    flexDirection: 'row',
     alignItems: 'flex-end',
   },
   label: {
@@ -112,11 +112,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   inputButton: {
-    backgroundColor: '#F2F2F2', 
-    padding: 12, 
-    borderRadius: 5, 
-    marginStart: 10, 
-    width: 104, 
+    backgroundColor: '#F2F2F2',
+    padding: 12,
+    borderRadius: 5,
+    marginStart: 10,
+    width: 104,
     alignItems: 'center',
   },
   disabled: {

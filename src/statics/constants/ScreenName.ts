@@ -29,19 +29,20 @@ export enum ScreenName {
 	EditProfile = 'EditProfile',
 	ProfileManagement = 'ProfileManagement',
 	ToDoList = 'ToDoList',
+	SocialSignup = 'SocialSignup',
 }
 
 /**
  * ScreenName 실제 Navigation Stack 별로 나눠 가독성을 높이기 위하여 수정 중
  */
 export const StackName = {
-    PetManagement : {
+	PetManagement: {
 		Home: "Home",
-        PetType: "PetType",
-        BreedType : "BreedType",
-        AddPet: "AddPet",
+		PetType: "PetType",
+		BreedType: "BreedType",
+		AddPet: "AddPet",
 		PetInfo: "PetInfo",
-    } as const
+	} as const
 } as const;
 
 export type StackNameKey = keyof typeof StackName;
