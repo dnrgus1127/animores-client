@@ -16,18 +16,20 @@ const instance = axios.create({
 //요청 인터셉터
 instance.interceptors.request.use(
   async config => {
-    // TODO 프로덕션에서 제거 예정, 개발환경 admin 아이디
-    config.headers.userId = "13";
-
     // 로그인 되어 있는 경우 Firebase Token 추가
-    const firebaseToken = await auth().currentUser?.getIdToken();
-    if (firebaseToken) {
-      config.headers.Authorization = `Bearer ${firebaseToken}`;
+    try {
+      const firebaseToken = await auth().currentUser?.getIdToken();
+      if (firebaseToken) {
+        config.headers.Authorization = `Bearer ${firebaseToken}`;
+      }
+    } catch (error) {
+      // Firebase 토큰 획득 실패 (극히 드문 예외 상황)
+      // - 사용자가 삭제됨 (백엔드에서 삭제)
+      // - Refresh Token 만료 (매우 드뭄)
+      // - 네트워크 오류로 토큰 갱신 실패
+      console.error('[AxiosContext] Firebase 토큰 획득 실패:', error);
+      // 토큰 없이 요청 계속 진행 (백엔드에서 401 처리)
     }
-
-    // // 디버깅: 실제 전송되는 헤더 확인
-    // console.log("Request Headers:", config.headers);
-    // console.log("Request URL:", (config.baseURL || "") + (config.url || ""));
 
     return config;
   },

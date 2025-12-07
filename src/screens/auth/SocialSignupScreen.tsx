@@ -131,7 +131,7 @@ const SocialSignupScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <HeaderNavigation middletitle="회원가입" />
+      <HeaderNavigation middletitle="회원가입" hasBackButton={true} onPressBackButton={() => navigation.goBack()} />
       <ScrollView style={styles.scrollView}>
         <View style={styles.content}>
           {/* 환영 메시지 */}

@@ -68,3 +68,12 @@ dist/
 GoogleService-Info.plist
 google-services.json
 # --- end build artifacts ---
+
+.idea/*
+.claude/
+.vscode/*
+docs/
+ios/*
+android/*
+CLAUDE.md
+.prettierrc

@@ -55,9 +55,6 @@ export const useSocialLogin = ({ onSuccess }: UseSocialLoginProps = {}) => {
           // 기존 가입자 - 로그인 처리
           console.log(`[소셜 로그인] 기존 가입자 로그인 (nickName: ${userInfo.nickName})`);
 
-          // TODO: 백엔드에서 받은 토큰 저장 필요
-          // await setTokens(response.data.accessToken, response.data.refreshToken);
-
           Toast.show({
             type: "success",
             text1: `${providerName} 로그인 성공`,
