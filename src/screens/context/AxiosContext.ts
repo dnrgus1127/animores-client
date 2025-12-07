@@ -1,6 +1,8 @@
 import { EXPO_PUBLIC_BASE_URL } from "@env";
 import axios, { AxiosRequestConfig, isAxiosError } from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { auth } from "../../service/firebase";
+import { DEVELOPER_MODE } from "../../statics/constants/DeveloperMode";
 
 // Axios 인스턴스 생성
 const instance = axios.create({
@@ -16,19 +18,28 @@ const instance = axios.create({
 //요청 인터셉터
 instance.interceptors.request.use(
   async config => {
-    // 로그인 되어 있는 경우 Firebase Token 추가
-    try {
-      const firebaseToken = await auth().currentUser?.getIdToken();
-      if (firebaseToken) {
-        config.headers.Authorization = `Bearer ${firebaseToken}`;
+    // 개발자 모드 확인
+    const isDeveloperMode = await AsyncStorage.getItem(DEVELOPER_MODE.STORAGE_KEY);
+
+    if (isDeveloperMode === 'true') {
+      // 개발자 모드: userId 헤더 추가
+      config.headers['userId'] = DEVELOPER_MODE.USER_ID;
+      console.log('[AxiosContext] 개발자 모드 활성화 - userId:', DEVELOPER_MODE.USER_ID);
+    } else {
+      // 일반 모드: Firebase 토큰 사용
+      try {
+        const firebaseToken = await auth().currentUser?.getIdToken();
+        if (firebaseToken) {
+          config.headers.Authorization = `Bearer ${firebaseToken}`;
+        }
+      } catch (error) {
+        // Firebase 토큰 획득 실패 (극히 드문 예외 상황)
+        // - 사용자가 삭제됨 (백엔드에서 삭제)
+        // - Refresh Token 만료 (매우 드뭄)
+        // - 네트워크 오류로 토큰 갱신 실패
+        console.error('[AxiosContext] Firebase 토큰 획득 실패:', error);
+        // 토큰 없이 요청 계속 진행 (백엔드에서 401 처리)
       }
-    } catch (error) {
-      // Firebase 토큰 획득 실패 (극히 드문 예외 상황)
-      // - 사용자가 삭제됨 (백엔드에서 삭제)
-      // - Refresh Token 만료 (매우 드뭄)
-      // - 네트워크 오류로 토큰 갱신 실패
-      console.error('[AxiosContext] Firebase 토큰 획득 실패:', error);
-      // 토큰 없이 요청 계속 진행 (백엔드에서 401 처리)
     }
 
     return config;

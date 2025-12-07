@@ -56,5 +56,16 @@ export const socialLoginStyles = StyleSheet.create({
         ...baseSocialButtonStyle.socialText,
         color: '#fff',
     },
+    developerButton: {
+        ...baseSocialButtonStyle.socialButton,
+        backgroundColor: '#FF6B35',
+        borderWidth: 2,
+        borderColor: '#FF0000',
+    },
+    developerText: {
+        ...baseSocialButtonStyle.socialText,
+        color: '#fff',
+        fontWeight: 'bold',
+    },
     textCenterWrap: baseSocialButtonStyle.textCenterWrap,
 }); 

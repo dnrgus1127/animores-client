@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { AppleLogin } from './AppleLogin';
 import { GoogleLogin } from './GoogleLogin';
 import { KakaoLogin } from './KakaoLogin';
+import { DeveloperLogin } from './DeveloperLogin';
 import { socialLoginStyles } from './style';
 
 const SocialLogin: React.FC = () => {
@@ -11,6 +12,7 @@ const SocialLogin: React.FC = () => {
             <KakaoLogin />
             <GoogleLogin />
             <AppleLogin />
+            <DeveloperLogin />
         </View>
     );
 };
