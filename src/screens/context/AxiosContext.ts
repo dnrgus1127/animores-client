@@ -24,7 +24,9 @@ instance.interceptors.request.use(
     if (isDeveloperMode === 'true') {
       // 개발자 모드: userId 헤더 추가
       config.headers['userId'] = DEVELOPER_MODE.USER_ID;
-      console.log('[AxiosContext] 개발자 모드 활성화 - userId:', DEVELOPER_MODE.USER_ID);
+      if (__DEV__) {
+        console.log('[AxiosContext] 개발자 모드 활성화 - userId:', DEVELOPER_MODE.USER_ID);
+      }
     } else {
       // 일반 모드: Firebase 토큰 사용
       try {
@@ -37,7 +39,10 @@ instance.interceptors.request.use(
         // - 사용자가 삭제됨 (백엔드에서 삭제)
         // - Refresh Token 만료 (매우 드뭄)
         // - 네트워크 오류로 토큰 갱신 실패
-        console.error('[AxiosContext] Firebase 토큰 획득 실패:', error);
+        if (__DEV__) {
+          console.error('[AxiosContext] Firebase 토큰 획득 실패:', error);
+        }
+        // TODO: 프로덕션에서는 Sentry 등으로 에러 트래킹
         // 토큰 없이 요청 계속 진행 (백엔드에서 401 처리)
       }
     }
@@ -45,7 +50,9 @@ instance.interceptors.request.use(
     return config;
   },
   error => {
-    console.error("Request Interceptor Error:", error);
+    if (__DEV__) {
+      console.error("Request Interceptor Error:", error);
+    }
     return Promise.reject(error);
   }
 );
@@ -53,28 +60,34 @@ instance.interceptors.request.use(
 //응답 인터셉터
 instance.interceptors.response.use(
   response => {
-    console.log("Response Success:", response.status, response.config.url);
+    if (__DEV__) {
+      console.log("Response Success:", response.status, response.config.url);
+    }
     return response;
   },
   async error => {
-    console.log("=== Response Error Details ===");
+    if (__DEV__) {
+      console.log("=== Response Error Details ===");
 
-    if (isAxiosError(error)) {
-      console.log("Error Code:", error.code);
-      console.log("Error Message:", error.message);
-      console.log("Error Status:", error.response?.status);
-      console.log("Error Data:", error.response?.data);
-      console.log("Request Config:", error.config);
+      if (isAxiosError(error)) {
+        console.log("Error Code:", error.code);
+        console.log("Error Message:", error.message);
+        console.log("Error Status:", error.response?.status);
+        console.log("Error Data:", error.response?.data);
+        console.log("Request Config:", error.config);
+      }
+
+      // 네트워크 에러인지 HTTP 에러인지 구분
+      if (error.code === "ERR_NETWORK") {
+        console.log("🚨 NETWORK ERROR - 서버 연결 불가");
+      } else if (error.response) {
+        console.log("🚨 HTTP ERROR - 서버 응답 에러");
+      } else {
+        console.log("🚨 UNKNOWN ERROR - 알 수 없는 에러");
+      }
     }
 
-    // 네트워크 에러인지 HTTP 에러인지 구분
-    if (error.code === "ERR_NETWORK") {
-      console.log("🚨 NETWORK ERROR - 서버 연결 불가");
-    } else if (error.response) {
-      console.log("🚨 HTTP ERROR - 서버 응답 에러");
-    } else {
-      console.log("🚨 UNKNOWN ERROR - 알 수 없는 에러");
-    }
+    // TODO: 프로덕션에서는 Sentry 등으로 에러 트래킹
 
     return Promise.reject(error);
   }

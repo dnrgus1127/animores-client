@@ -9,6 +9,7 @@ import { RecoilRoot } from "recoil";
 import { NavigationContainer } from "@react-navigation/native";
 import { ActivityIndicator, LogBox } from "react-native";
 import FullStackNavigation from "./src/navigation/FullStackNavigation";
+import ErrorBoundary from "./src/components/ErrorBoundary";
 
 // firebase
 import useAuthStatus from "./src/hooks/useAuthStatus";
@@ -16,7 +17,11 @@ import "./src/service/firebase"; // Firebase 초기화를 위해 import
 
 const queryClient = new QueryClient();
 
-LogBox.ignoreAllLogs();
+// 개발 환경에서만 로그 무시 활성화
+if (__DEV__) {
+  LogBox.ignoreAllLogs();
+}
+
 SplashScreen.preventAutoHideAsync();
 
 const App = () => {
@@ -38,7 +43,7 @@ const App = () => {
   }
 
   return (
-    <>
+    <ErrorBoundary>
       <RecoilRoot>
         <QueryClientProvider client={queryClient}>
           <NavigationContainer>
@@ -49,7 +54,7 @@ const App = () => {
           </NavigationContainer>
         </QueryClientProvider>
       </RecoilRoot>
-    </>
+    </ErrorBoundary>
   );
 };
 

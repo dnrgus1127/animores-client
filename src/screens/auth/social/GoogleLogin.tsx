@@ -29,7 +29,6 @@ export const signInWithGoogle = async () => {
     // Firebase에 사용자 로그인
     const auth = getAuth();
     const userCredential = await signInWithCredential(auth, googleCredential);
-    console.log("userCredential", userCredential);
 
     // Firebase ID 토큰 획득
     const firebaseIdToken = await userCredential.user.getIdToken();
@@ -39,16 +38,19 @@ export const signInWithGoogle = async () => {
       token: firebaseIdToken,
     };
   } catch (error: any) {
-    console.error("Google 로그인 에러", {
-      code: error.code,
-      message: error.message,
-      stack: error.stack,
-      name: error.name,
-      statusCode: error.statusCode,
-      status: error.status,
-      playServicesAvailable: await GoogleSignin.hasPlayServices(),
-      isSignedIn: await GoogleSignin.isSignedIn(),
-    });
+    if (__DEV__) {
+      console.error("Google 로그인 에러", {
+        code: error.code,
+        message: error.message,
+        stack: error.stack,
+        name: error.name,
+        statusCode: error.statusCode,
+        status: error.status,
+        playServicesAvailable: await GoogleSignin.hasPlayServices(),
+        isSignedIn: await GoogleSignin.isSignedIn(),
+      });
+    }
+    // TODO: 프로덕션에서는 Sentry 등 에러 트래킹 도구로 전송
     throw error;
   }
 };

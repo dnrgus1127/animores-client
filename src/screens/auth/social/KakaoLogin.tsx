@@ -47,14 +47,10 @@ export const signInWithKakao = async () => {
 			token: token.accessToken,
 		};
 	} catch (error) {
-		if (error && typeof error === 'object') {
-			for (const key in error) {
-				if (Object.prototype.hasOwnProperty.call(error, key)) {
-					//   console.log(`\nerror[${key}]:`, (error as any)[key]);
-				}
-			}
+		if (__DEV__) {
+			console.error('카카오 로그인 에러:', error);
 		}
-		console.error('카카오 로그인 에러:', error);
+		// TODO: 프로덕션에서는 Sentry 등 에러 트래킹 도구로 전송
 		throw error;
 	}
 };
