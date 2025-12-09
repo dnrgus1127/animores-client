@@ -23,6 +23,7 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../../navigation/type";
 import { getAuth } from "@react-native-firebase/auth";
+import { DEVELOPER_MODE } from "../../statics/constants/DeveloperMode";
 
 interface IMypageList {
   id: number;
@@ -80,7 +81,15 @@ const MypageScreen = () => {
 
   const handleLogout = async () => {
     try {
-      await getAuth().signOut();
+      // 개발자 모드 확인
+      const isDeveloperMode = await AsyncStorage.getItem(DEVELOPER_MODE.STORAGE_KEY);
+
+      // 개발자 모드가 아닌 경우에만 Firebase 로그아웃
+      if (!isDeveloperMode) {
+        await getAuth().signOut();
+      }
+
+      // AsyncStorage 전체 삭제 (개발자 모드 플래그 포함)
       await AsyncStorage.clear();
 
       Toast.show({
@@ -89,6 +98,7 @@ const MypageScreen = () => {
       });
       navigation.navigate(ScreenName.Login);
     } catch (e) {
+      console.error('[MypageScreen] 로그아웃 에러:', e);
       Toast.show({
         type: "error",
         text1: "로그아웃 실패",
