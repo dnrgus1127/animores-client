@@ -1,6 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
 import Toast from "react-native-toast-message";
 import { ScreenName } from "../../../statics/constants/ScreenName";
+import { AuthErrorType } from "../../../statics/constants/AuthErrorTypes";
 import AxiosContext from "../../context/AxiosContext";
 
 interface UseSocialLoginProps {
@@ -16,18 +17,23 @@ export const useSocialLogin = ({ onSuccess }: UseSocialLoginProps = {}) => {
     providerName: string,
     provider: 'google' | 'kakao' | 'apple'
   ) => {
+    // 로딩 화면 표시
+    navigation.navigate(ScreenName.AuthLoading, {
+      message: '인증 정보를 확인하고 있습니다...',
+    });
+
     try {
       // ============================================================
       // 특수 상황: nickName 기반 최초 가입자 판별 로직
       // ============================================================
       // 현재 개발 상황으로 인해 사용자 존재 여부를 확인하는 별도의 API 대신,
       // 유저 정보를 직접 조회하여 nickName 필드의 null 여부로 최초 가입자를 판별합니다.
-      // 
+      //
       // [판별 로직]
       // 1. /api/v1/account API를 호출하여 사용자 계정 정보를 조회
       // 2. nickName === null: 최초 가입자 → SocialSignup 화면으로 이동
       // 3. nickName !== null: 기존 가입자 → 로그인 처리 후 Profiles 화면으로 이동
-      // 
+      //
       // [주의사항]
       // - 소셜 로그인 시 백엔드에서 자동으로 계정이 생성되지만 nickName은 null 상태
       // - 사용자가 회원가입 절차를 완료해야 nickName이 설정됨
@@ -44,7 +50,7 @@ export const useSocialLogin = ({ onSuccess }: UseSocialLoginProps = {}) => {
           // 최초 가입자 - 회원가입 페이지로 이동
           console.log(`[소셜 로그인] 최초 가입자 감지 (nickName: ${userInfo.nickName})`);
 
-          navigation.navigate(ScreenName.SocialSignup, {
+          navigation.replace(ScreenName.SocialSignup, {
             firebaseUser: {
               uid: firebaseUser.uid,
               email: firebaseUser.email,
@@ -64,23 +70,26 @@ export const useSocialLogin = ({ onSuccess }: UseSocialLoginProps = {}) => {
           if (onSuccess) {
             onSuccess();
           } else {
-            navigation.navigate(ScreenName.Profiles);
+            navigation.replace(ScreenName.Profiles);
           }
         }
-      } catch (apiError) {
+      } catch (apiError: any) {
         // ============================================================
-        // API 호출 실패 시 안전하게 회원가입 페이지로 이동
+        // API 호출 실패 시 에러 화면으로 이동
         // ============================================================
-        // 네트워크 오류, 인증 실패 등의 경우 사용자가 회원가입 절차를 
-        // 다시 진행할 수 있도록 SocialSignup 화면으로 이동
         console.error(`[소셜 로그인] 사용자 정보 조회 실패:`, apiError);
 
-        navigation.navigate(ScreenName.SocialSignup, {
-          firebaseUser: {
-            uid: firebaseUser.uid,
-            email: firebaseUser.email,
+        // 네트워크 에러인지 서버 에러인지 판별
+        const errorType = apiError.message?.includes('Network')
+          ? AuthErrorType.NETWORK_ERROR
+          : AuthErrorType.SERVER_ERROR;
+
+        navigation.replace(ScreenName.AuthError, {
+          errorType,
+          onRetry: () => {
+            // 재시도 시 다시 로그인 처리
+            handleSuccess(firebaseUser, token, providerName, provider);
           },
-          provider,
         });
       }
     } catch (error) {
@@ -92,10 +101,20 @@ export const useSocialLogin = ({ onSuccess }: UseSocialLoginProps = {}) => {
 
   const handleError = (error: any, providerName: string) => {
     console.error(`${providerName} 로그인 에러:`, error);
-    Toast.show({
-      type: "error",
-      text1: `${providerName} 로그인 실패`,
-      text2: "다시 시도해주세요.",
+
+    // 에러 타입 판별
+    let errorType = AuthErrorType.SNS_AUTH_FAILED;
+
+    if (error?.code === 'auth/cancelled-popup-request' || error?.code === 'auth/popup-closed-by-user') {
+      errorType = AuthErrorType.SNS_AUTH_CANCELLED;
+    } else if (error?.message?.includes('Network')) {
+      errorType = AuthErrorType.NETWORK_ERROR;
+    }
+
+    // 에러 화면으로 이동
+    navigation.navigate(ScreenName.AuthError, {
+      errorType,
+      customMessage: `${providerName} 로그인 중 오류가 발생했습니다.`,
     });
   };
 
