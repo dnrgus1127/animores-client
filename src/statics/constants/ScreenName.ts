@@ -30,6 +30,8 @@ export enum ScreenName {
 	ProfileManagement = 'ProfileManagement',
 	ToDoList = 'ToDoList',
 	SocialSignup = 'SocialSignup',
+	AuthLoading = 'AuthLoading',
+	AuthError = 'AuthError',
 }
 
 /**

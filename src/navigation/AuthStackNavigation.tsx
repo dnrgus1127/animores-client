@@ -5,6 +5,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { RootStackParams } from "../../types/RootStackParams";
 import LoginScreen from "../screens/auth/LoginScreen";
 import SocialSignupScreen from "../screens/auth/SocialSignupScreen";
+import AuthLoadingScreen from "../screens/auth/AuthLoadingScreen";
+import AuthErrorScreen from "../screens/auth/AuthErrorScreen";
 import CreateDiary from "../screens/diary/CreateDiary";
 import AlertSettingScreen from "../screens/myPage/alert/AlertSettingScreen";
 import CustomerServiceScreen from "../screens/myPage/customerService/CustomerServiceScreen";
@@ -107,6 +109,16 @@ const AuthStackNavigation = () => {
         <RootStack.Screen
           name={ScreenName.SocialSignup}
           component={SocialSignupScreen}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
+          name={ScreenName.AuthLoading}
+          component={AuthLoadingScreen}
+          options={{ headerShown: false }}
+        />
+        <RootStack.Screen
+          name={ScreenName.AuthError}
+          component={AuthErrorScreen}
           options={{ headerShown: false }}
         />
         <RootStack.Screen
